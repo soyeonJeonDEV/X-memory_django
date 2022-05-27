@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="sign-up-form mt-5 signup_modal">
+  <h4 class="mb-5"><i class="fas fa-user-plus"></i> 계정생성</h4>
+  <form method="post" class="post-form">
+    {% csrf_token %}
+    {% include "error/form_error.html" %}
+    <div class="form-group">
+        <label for="username">사용자 이름</label>
+        <input type="text" class="form-control" name="username" placeholder="사용자 이름을 입력하세요."
+          id="username" value="{{ form.username.value|default_if_none:'' }}">
+    </div>
+    <div class="form-group">
+      <label for="password1">비밀번호</label>
+      <input type="password" class="form-control" name="password1"  placeholder="비밀번호를 입력하세요."
+        id="password1" value="{{ form.password1.value|default_if_none:'' }}">
+    </div>
+    <div class="form-group">
+        <label for="password2">비밀번호 확인</label>
+        <input type="password" class="form-control" name="password2"  placeholder="확인용 비밀번호를 입력하세요."
+          id="password2" value="{{ form.password2.value|default_if_none:'' }}">
+    </div>
+    <div class="form-group">
+        <label for="email">이메일</label>
+        <input type="text" class="form-control" name="email" id="email"  placeholder="email을 입력하세요."
+          value="{{ form.email.value|default_if_none:'' }}">
+    </div>
+    <button type="submit" class="btn btn-light" style="border-color: #aaaaaa;"><i class="fas fa-user-plus"></i> 생성하기</button>
+  </form>
+</div>
+{% endblock %}

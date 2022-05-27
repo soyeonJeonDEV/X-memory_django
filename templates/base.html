@@ -1,0 +1,39 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>x-앨범</title>
+
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
+      integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" type="text/css" href="{% static 'bootstrap.min.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}" />
+
+    <!-- font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet" />
+  </head>
+
+  <body class="post_list_background_set">
+    {% block upload_js %}
+    {% comment %} <!-- 먼저 로딩되어야 작동하는 js 파일 -->
+    <script src="{% static 'upper.js' %}"></script> {% endcomment %}
+    {% endblock %} {% include 'nav.html' %} {% block content %}{% endblock %} {% block script %}
+
+    <!-- jQuery JS -->
+    <script src="{% static 'jquery-3.6.0.min.js' %}"></script>
+    <!-- Bootstrap JS -->
+    <script src="{% static 'bootstrap.min.js' %}"></script>
+
+    {% endblock %}
+  </body>
+</html>

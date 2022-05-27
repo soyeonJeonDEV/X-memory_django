@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="main_body">
+    <div class="sub_body">
+        <div style="display:flex; flex-direction: column; text-align: center; width:320px;">
+            <div class="profile_photo">
+                {% if person.profile.image%}
+                  <img class="profile_img" src = "{{person.profile.image.url}}">
+                {% else %}
+                  <img class = 'profile_img' src = "/static/images/DefualtProfile.jpg">
+                {% endif %}
+            </div>
+            <div style = ' flex-direction: column; display: inline-block; padding-top : 30px;'>
+            {% if person.id == user.id %}
+            <a href="{% url 'dailyphoto:modify_profile' %}"><button id="button_write_feed" type="button" 
+                style="margin-left: 10px;font-size: 14px;width: 150px; height: 50px; border: 1px solid silver; background-color: transparent">
+                프로필변경</button></a>
+                {% endif%}
+
+            </div>
+
+            <div style="display: flex; flex-direction:column; margin: 40px 20px">
+                <div class="mb-3" style="display: flex; flex-direction: column; ">
+                    <div style="font-size: 35px; "> {{ person.profile.nickname }} </div>
+                    
+                </div>
+                <div class="mb-3" style="display: flex; flex-direction: column; " id="description">
+                <div class="text" style="font-size: 15px;"> {{person.profile.description}}</div>
+                </div>
+
+                <div class="mb-3"  style="display: flex; flex-direction: column;">
+                    <div style="font-size: 15px;"> {{person.email}}</div>
+                    </div>
+                    <div style = 'display: flex; flex-direction: column; '>
+                      <div>
+                        <div>
+                          내가 보는 친구 : {{ person.followings.all|length }} / 나를 보는 친구 : {{ person.followers.all|length }}
+                        </div>
+  
+                        <div>
+                          {% if user != person %}
+                            <div>
+                              <form action="{% url 'dailyphoto:follow' person.pk%}" method='POST'>
+                                {% csrf_token %}
+                                {% if user in person.followers.all %}
+                                  <input type="submit" value='일기친구 취소'>
+                                {% else %}
+                                  <input type="submit" value='일기친구'>
+                                {% endif %}
+                              </form>
+                            </div>  
+                          {% endif %}
+                        </div>
+                      </div>
+                      
+            </div>
+            
+            </div>
+            <div class = "display:inlin-block">
+            {% if person.profile.music %}
+            <audio autoplay controls loop><source src = "{{person.profile.music.url}}"></audio>
+            {% endif %}
+            </div>
+         </div>
+        <div class = 'feed_body'>
+            <div class = 'sub_feed_body'> 
+                {% for post in post_photo %}
+                        <div class = 'big_feed'>
+                          
+                        {% if post.photo %}
+                        <a href="{% url 'dailyphoto:detail' id=post.id %}"><img class="row_feed" src = "/media/{{post.photo}}"></a>
+                        {% else %}
+                        <a href="{% url 'dailyphoto:detail' id=post.id %}"><img class="row_feed" src = "/static/images/logo2.png"></a>
+                        {% endif%}
+                                              
+                        </div>
+                {%endfor%}
+            </div>
+        </div>
+    </div>
+</div>       
+         
+
+{% endblock content %}

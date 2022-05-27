@@ -1,0 +1,45 @@
+{% extends "base.html" %} {% block content %}
+
+<div>
+  <div class="mb-3" style="background-color: white; width: 500px; height: 500px; border: 3px solid rgba(0, 0, 0, 0.3); border-radius: 5%">
+    <div style="display: flex; align-items: center; justify-content: center">
+      <img style="height: 100px; object-fit: contain; margin: 30px 0" src="{{baseUrl}}images/logo.png" />
+    </div>
+
+    <form method="post" class="post-form" action="{% url 'login' %}">
+      {% csrf_token %}
+
+      <!-- 로그인 성공 후 이동되는 URL -->
+      <input type="hidden" name="next" value="{{ next }}" />
+
+      {% include "error/form_error.html" %}
+      <div class="form-group">
+        <label for="username"><i class="fas fa-user"></i> 사용자ID</label>
+        <input
+          style="margin: 0% 5%; width:90%;"
+          type="text"
+          class="form-control"
+          name="username"
+          placeholder="사용자 ID를 입력하세요."
+          id="username"
+          value="{{ form.username.value|default_if_none:'' }}"
+        />
+      </div>
+      <div class="form-group">
+        <label for="password"><i class="fas fa-lock"></i> 비밀번호</label>
+        <input
+          style="margin: 0% 5%; width:90%;"
+          type="password"
+          class="form-control"
+          name="password"
+          placeholder="비밀번호를 입력하세요."
+          id="password"
+          value="{{ form.password.value|default_if_none:'' }}"
+        />
+      </div>
+      <button type="submit" class="btn btn-light" style="border-color: #aaaaaa;"><i class="fas fa-sign-in-alt mr-2"></i> 로그인</button>
+      <a href="{%url 'signup' %}" class="btn btn-light" style="border-color: #aaaaaa;"><i class="fas fa-user-plus mr-2"></i> 회원가입</a>
+    </form>
+  </div>
+  {% endblock %}
+</div>
