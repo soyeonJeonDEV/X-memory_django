@@ -22,8 +22,8 @@ from album import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('album.urls'),name='index'),
-    path('login',views.signup),
+    path('', include('album.urls')),
+    # path('login',views.signup),
     
 ]
 

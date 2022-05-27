@@ -1,6 +1,22 @@
 {% extends 'base.html' %}
 
 {% block content %}
+
+<button type="button" onclick="alert('Hello World!')">헬로월드</button>
+
+<a href={% url 'logout' %}><button type="button">로그아웃</button></a>
+
+<a href={% url 'upload' %}><button type="button">업로드-test중"</button></a>
+
+<input type="button" value="버튼4">
+
+<br>
+현재 로그인한 유저아이디 : {{user.id}}
+<br>
+유저이름 : {{user.username}}
+<br>
+
+
 <div class="main_body">
     <div class="sub_body">
         <div style="display:flex; flex-direction: column; text-align: center; width:320px;">
@@ -8,7 +24,7 @@
                 {% if person.profile.image%}
                   <img class="profile_img" src = "{{person.profile.image.url}}">
                 {% else %}
-                  <img class = 'profile_img' src = "/static/images/DefualtProfile.jpg">
+                  <img class = 'profile_img' src = "/static/images/camera.png">
                 {% endif %}
             </div>
             <div style = ' flex-direction: column; display: inline-block; padding-top : 30px;'>
@@ -22,24 +38,24 @@
 
             <div style="display: flex; flex-direction:column; margin: 40px 20px">
                 <div class="mb-3" style="display: flex; flex-direction: column; ">
-                    <div style="font-size: 35px; "> {{ person.profile.nickname }} </div>
+                    {% comment %} <div style="font-size: 35px; "> {{ person.profile.nickname }} </div> {% endcomment %}
                     
                 </div>
                 <div class="mb-3" style="display: flex; flex-direction: column; " id="description">
-                <div class="text" style="font-size: 15px;"> {{person.profile.description}}</div>
+                {% comment %} <div class="text" style="font-size: 15px;"> {{person.profile.description}}</div> {% endcomment %}
                 </div>
 
                 <div class="mb-3"  style="display: flex; flex-direction: column;">
-                    <div style="font-size: 15px;"> {{person.email}}</div>
+                    {% comment %} <div style="font-size: 15px;"> {{person.email}}</div> {% endcomment %}
                     </div>
                     <div style = 'display: flex; flex-direction: column; '>
                       <div>
                         <div>
-                          내가 보는 친구 : {{ person.followings.all|length }} / 나를 보는 친구 : {{ person.followers.all|length }}
+                          {% comment %} 내가 보는 친구 : {{ person.followings.all|length }} / 나를 보는 친구 : {{ person.followers.all|length }} {% endcomment %}
                         </div>
   
                         <div>
-                          {% if user != person %}
+                          {% comment %} {% if user != person %}
                             <div>
                               <form action="{% url 'dailyphoto:follow' person.pk%}" method='POST'>
                                 {% csrf_token %}
@@ -50,18 +66,12 @@
                                 {% endif %}
                               </form>
                             </div>  
-                          {% endif %}
+                          {% endif %} {% endcomment %}
                         </div>
                       </div>
                       
             </div>
             
-            </div>
-            <div class = "display:inlin-block">
-            {% if person.profile.music %}
-            <audio autoplay controls loop><source src = "{{person.profile.music.url}}"></audio>
-            {% endif %}
-            </div>
          </div>
         <div class = 'feed_body'>
             <div class = 'sub_feed_body'> 
@@ -69,9 +79,9 @@
                         <div class = 'big_feed'>
                           
                         {% if post.photo %}
-                        <a href="{% url 'dailyphoto:detail' id=post.id %}"><img class="row_feed" src = "/media/{{post.photo}}"></a>
+                        <a href="{% url 'dailyphoto:detail' id=photo.id %}"><img class="row_feed" src = "/media/{{post.photo}}"></a>
                         {% else %}
-                        <a href="{% url 'dailyphoto:detail' id=post.id %}"><img class="row_feed" src = "/static/images/logo2.png"></a>
+                        <a href="{% url 'dailyphoto:detail' id=photo.id %}"><img class="row_feed" src = "/static/images/camera2.png"></a>
                         {% endif%}
                                               
                         </div>
