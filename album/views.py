@@ -7,6 +7,12 @@ from django.contrib.auth import get_user_model
 from django.utils import timezone
 from .forms import UserForm, PhotoForm
 from .models import Photo
+import logging
+import boto3
+from botocore.exceptions import ClientError
+import os
+import time
+
 
 @login_required(login_url='login')
 def index(request):
@@ -57,16 +63,22 @@ def upload(request):
       # photo가 입력되었는지 확인하고 넣어줌
       if 'photo' in request.FILES:
         post.photo=request.FILES['photo']
+        # print(post.photo)
+        # print(type(post.photo))
+        
+        photo_object_key='public/test_folder/'+str(int(time.time()))+'.jpg'
+        upload_file(post.photo,'cloud01-2',photo_object_key)
 
-      # # 리스트로 입력된 icons를 스트링으로 변환해서 필드에 넣어줌
-      # icons = request.POST.getlist('icons[]')
-      # post.icons='&'.join(icons)
+        s3url = 's3://cloud01-2/'+photo_object_key
+        post.photo=s3url
+
       # author, create_date 지정
       post.author= request.user
       post.create_date=timezone.now()
       # 세이브
       post.save()
       print('post save made')
+
       return redirect('index')
 
     else:
@@ -78,3 +90,30 @@ def upload(request):
     
   context = {'form': form }
   return render(request, 'upload.html', context )
+
+
+
+
+def upload_file(file_name, bucket, object_name=None):
+  """Upload a file to an S3 bucket
+
+  :param file_name: File to upload
+  :param bucket: Bucket to upload to
+  :param object_name: S3 object name. If not specified then file_name is used
+  :return: True if file was uploaded, else False
+  """
+
+  # If S3 object_name was not specified, use file_name
+  if object_name is None:
+      object_name = os.path.basename(file_name)
+
+  # Upload the file
+  s3_client = boto3.client('s3')
+  try:
+      # response = s3_client.upload_file(file_name, bucket, object_name)
+      response = s3_client.upload_fileobj(file_name, bucket, object_name)
+  except ClientError as e:
+      logging.error(e)
+      return False
+  return True
+

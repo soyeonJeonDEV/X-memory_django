@@ -1,1 +1,4 @@
 *.pyc
+config/mysettings.py
+output.sql
+album/S3UpDownLoader.py

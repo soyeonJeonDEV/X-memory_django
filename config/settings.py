@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 from pathlib import Path
+from .mysettings import MY_DATABASES
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -26,8 +27,8 @@ SECRET_KEY = 'django-insecure-$7w%@lq@7m5%w@03%o9^-#&ibl6)j$1dl)m)=&6f=*q5f_(0am
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1','0.0.0.0','localhost']
-
+#ALLOWED_HOSTS = ['127.0.0.1','0.0.0.0','localhost']
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -75,20 +76,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-
+MY_SECRET = {
+    "SECRET_KEY" : ""
+}
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'mysql_db',
-        'USER':'root',
-        'PASSWORD':'1234',
-        'HOST':'localhost',
-        'PORT':'3306'
-    }
-}
+DATABASES = MY_DATABASES
 
 LOGIN_REDIRECT_URL = 'album/'
 
