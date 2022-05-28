@@ -22,6 +22,10 @@ def index(request):
   # 조회
   user = get_user_model()
 
+  # print(request.user.id)
+  # print(request.user.username)
+
+        
   context = {}
   return render(request, 'album.html', context)
 
@@ -65,8 +69,8 @@ def upload(request):
         post.photo=request.FILES['photo']
         # print(post.photo)
         # print(type(post.photo))
-        
-        photo_object_key='public/test_folder/'+str(int(time.time()))+'.jpg'
+
+        photo_object_key='public/'+str(request.user.username)+'/'+str(post.photo)
         upload_file(post.photo,'cloud01-2',photo_object_key)
 
         s3url = 's3://cloud01-2/'+photo_object_key
@@ -116,4 +120,3 @@ def upload_file(file_name, bucket, object_name=None):
       logging.error(e)
       return False
   return True
-
