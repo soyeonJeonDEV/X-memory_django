@@ -67,18 +67,19 @@ def upload(request):
       # photo가 입력되었는지 확인하고 넣어줌
       if 'photo' in request.FILES:
         post.photo=request.FILES['photo']
-        # print(post.photo)
-        # print(type(post.photo))
-
+        
+        # s3업로드
         photo_object_key='public/'+str(request.user.username)+'/'+str(post.photo)
-        upload_file(post.photo,'cloud01-2',photo_object_key)
-
+        s3_upload_file(post.photo,'cloud01-2',photo_object_key)
+        
+        # s3링크저장
         s3url = 's3://cloud01-2/'+photo_object_key
         post.photo=s3url
 
       # author, create_date 지정
       post.author= request.user
       post.create_date=timezone.now()
+
       # 세이브
       post.save()
       print('post save made')
@@ -98,7 +99,7 @@ def upload(request):
 
 
 
-def upload_file(file_name, bucket, object_name=None):
+def s3_upload_file(file_name, bucket, object_name=None):
   """Upload a file to an S3 bucket
 
   :param file_name: File to upload
@@ -114,7 +115,6 @@ def upload_file(file_name, bucket, object_name=None):
   # Upload the file
   s3_client = boto3.client('s3')
   try:
-      # response = s3_client.upload_file(file_name, bucket, object_name)
       response = s3_client.upload_fileobj(file_name, bucket, object_name)
   except ClientError as e:
       logging.error(e)
