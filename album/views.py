@@ -12,7 +12,7 @@ import boto3
 from botocore.exceptions import ClientError
 import os
 import time
-
+import mimetypes
 
 @login_required(login_url='login')
 def index(request):
@@ -41,6 +41,8 @@ def index(request):
   # 안됨
   # 그럼.........
 
+#  검색해본결과 s3에서 다운로드 대신 인라인 로딩을 하려면 저장할때부터 mimetype을 지정해놓고 저장해야한다고 한다 그럼 지금이랑 다른건가??
+#mimetype 모듈 사용이 os.path가아니라 imagefieldfile이라 안된다고 한다. 파일 이름을 가져와서 마지막 확장자를 ContentType으로 넣었다 
 
         
   context = {'photos':photos}
@@ -116,7 +118,7 @@ def upload(request):
 
 
 
-def s3_upload_file(file_name, bucket, object_name=None):
+def s3_upload_file(file_obj, bucket, object_name=None):
   """Upload a file to an S3 bucket
 
   :param file_name: File to upload
@@ -126,13 +128,23 @@ def s3_upload_file(file_name, bucket, object_name=None):
   """
 
   # If S3 object_name was not specified, use file_name
+  # basename = os.path.basename(file_obj)
+  basename=str(file_obj)
   if object_name is None:
-      object_name = os.path.basename(file_name)
+      object_name = basename
+
+  print(f'basename : {basename}')
+
+  extension= str(basename).split('.')[-1]
+  print(f'extension : {extension}')    
 
   # Upload the file
   s3_client = boto3.client('s3')
   try:
-      response = s3_client.upload_fileobj(file_name, bucket, object_name)
+      response = s3_client.upload_fileobj(file_obj, bucket, object_name,{'ContentType':extension})
+      # print(f'ContentType: {mimetypes.guess_type(file_name)}')
+      # print(f'ContentType:{mimetypes.guess_extension(file_name)}')
+      # print(f'ContentType: {mimetypes.guess_type(file_name)[0]}')
   except ClientError as e:
       logging.error(e)
       return False

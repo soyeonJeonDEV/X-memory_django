@@ -3,6 +3,19 @@
 {% block content %}
 
 
+<button type="button" onclick="alert('Hello World!')">헬로월드</button>
+
+<a href={% url 'logout' %}><button type="button">로그아웃</button></a>
+
+<a href={% url 'upload' %}><button type="button">업로드-test중"</button></a>
+
+<input type="button" value="버튼4">
+
+<br>
+현재 로그인한 유저아이디 : {{user.id}}
+<br>
+유저이름 : {{user.username}}
+<br>
 <div class="container album1">
 
   {% for a_photo in photos %}
@@ -26,5 +39,5 @@
 </div>
 </div>
 {% endfor %}
-<img class="" src = "s3://cloud01-2/public/asdf/toa-heftiba-tuIedADlL_Q-unsplash.jpg"></div>
+<img class="" src = "https://cloud01-2.s3.us-east-2.amazonaws.com/public/asdf/kenta-kikuchi-1C55VIfJSuQ-unsplash.jpg?response-content-disposition=inline&X-Amz-Security-Token=IQoJb3JpZ2luX2VjECoaDmFwLW5vcnRoZWFzdC0yIkYwRAIgcJbjEV%2ByHwrFWbTK8XugjtelVNrkGyxibhql0Y9m2DgCICVqNoI1L76yDoXD%2Bxd%2BqV8oohTkG8o82lx1c8ogsi7mKvsCCCMQAhoMOTQwMTY4NDQ2ODY3Igw7vxgkemmMGqB4T%2B0q2AKPqpoMKs4OUdmQTG0Xm3VKjBuHYwzfGnLm783YnAHf2ovOkiFQuE%2FsUYrCV97YZjrUu4ugku6Z7MwEgRuctvFLw%2Bww1228kSf28sA9ZuAb9i2fOGNo7mD1FAINXFQSRw7aC%2BDwsbYWDAIX4FcXIBBSCqSz0zPDQORwmnBf4m6d1xJ6BpDdl8Mr63FFpqQOX5X8JHnwoE0w2o4STgZE626lAhVfEI7sClVTMwbDFyTh73hduXdl9iGP3a9olJJwSvgaqO%2BysmLMD16s4WbJMNJIZEO035EqWirxADTHvDyzRcllAGLiPwLJgxM9jTef0PVK3SkFGPueTEUIQdLMWBLfY6qo0oTcV%2F%2Blrg1hBbiGhJdLNoO3wKPlM32F49SHnddlIYNAH%2FyAtkBIf%2FBB3o4X2bELBTkwIkCu%2Bn6hsSOWiXMIC5Nk5N2rqmwiemQXdba2XgTRbhc2MTCP7dWUBjq0AnG4D%2BtyljMSdlUdwBnoMVP625h9AVtuXd6GHs9apqBapDXasFirrditK1aqLE4DZU0EojivWz8lr3elDk1lMuC8iW9dcO3qNi1L4f5uEOk2leYD9PWb1X6%2FpVJ9HDXAolpLDSDrqPfQ0AZmpHdH53aEruu5tSGyU4NX61BJLDXymWpynija9MLQdc9day%2BWFZqyvfzj%2BD2gbWd6CyddH5zv4R%2BF4FSylaNDQkmmhOoxdOC60m1wOI1%2FPS6iL92vHjDwYABavm8VjNrvjsXfW%2FZFy%2B9xg58Osu5qIdQJ839sWozBvaXUAYooWdL2Z1Z9EnxeN7kz7CyLwcwfg9BU3gtZlXEppJzthMR5HNVB53dpMQaPgplRnbC10Z84wU8S9YhGG5UIo6D4IKPZRooy3HABW1xT&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20220531T023741Z&X-Amz-SignedHeaders=host&X-Amz-Expires=300&X-Amz-Credential=ASIA5VZTIAOJWNAYOU3U%2F20220531%2Fus-east-2%2Fs3%2Faws4_request&X-Amz-Signature=3a7932b5671c44a025a3c3f53b15d21360a281669b43f09371f3b37f19ec5e26"></div>
 {% endblock content %}
