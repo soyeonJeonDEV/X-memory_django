@@ -6,8 +6,9 @@
 
 <a href={% url 'logout' %}><button type="button">로그아웃</button></a>
 
-<input type="button" value="업로드-test중">
-<input type="button" value="버튼3">
+<a href={% url 'upload' %}><button type="button">업로드-test중"</button></a>
+
+<input type="button" value="버튼4">
 
 <br>
 현재 로그인한 유저아이디 : {{user.id}}
@@ -78,9 +79,9 @@
                         <div class = 'big_feed'>
                           
                         {% if post.photo %}
-                        <a href="{% url 'dailyphoto:detail' id=post.id %}"><img class="row_feed" src = "/media/{{post.photo}}"></a>
+                        <a href="{% url 'dailyphoto:detail' id=photo.id %}"><img class="row_feed" src = "/media/{{post.photo}}"></a>
                         {% else %}
-                        <a href="{% url 'dailyphoto:detail' id=post.id %}"><img class="row_feed" src = "/static/images/camera2.png"></a>
+                        <a href="{% url 'dailyphoto:detail' id=photo.id %}"><img class="row_feed" src = "/static/images/camera2.png"></a>
                         {% endif%}
                                               
                         </div>

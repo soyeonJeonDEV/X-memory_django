@@ -20,3 +20,15 @@
   background-image: url("images/BackgroundImage.jpg");
   background-size: cover;
 }
+
+
+.album1{
+  background-color: aliceblue;
+  border-radius: 5%;
+
+}
+.album2{
+  background-color:azure;
+  border-radius: 5%;
+  
+}

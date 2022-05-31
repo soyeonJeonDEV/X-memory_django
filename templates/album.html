@@ -2,94 +2,29 @@
 
 {% block content %}
 
-<button type="button" onclick="alert('Hello World!')">헬로월드</button>
 
-<a href={% url 'logout' %}><button type="button">로그아웃</button></a>
+<div class="container album1">
 
-<a href={% url 'upload' %}><button type="button">업로드-test중"</button></a>
-
-<input type="button" value="버튼4">
-
-<br>
-현재 로그인한 유저아이디 : {{user.id}}
-<br>
-유저이름 : {{user.username}}
-<br>
-
-
-<div class="main_body">
-    <div class="sub_body">
-        <div style="display:flex; flex-direction: column; text-align: center; width:320px;">
-            <div class="profile_photo">
-                {% if person.profile.image%}
-                  <img class="profile_img" src = "{{person.profile.image.url}}">
-                {% else %}
-                  <img class = 'profile_img' src = "/static/images/camera.png">
-                {% endif %}
-            </div>
-            <div style = ' flex-direction: column; display: inline-block; padding-top : 30px;'>
-            {% if person.id == user.id %}
-            <a href="{% url 'dailyphoto:modify_profile' %}"><button id="button_write_feed" type="button" 
-                style="margin-left: 10px;font-size: 14px;width: 150px; height: 50px; border: 1px solid silver; background-color: transparent">
-                프로필변경</button></a>
-                {% endif%}
-
-            </div>
-
-            <div style="display: flex; flex-direction:column; margin: 40px 20px">
-                <div class="mb-3" style="display: flex; flex-direction: column; ">
-                    {% comment %} <div style="font-size: 35px; "> {{ person.profile.nickname }} </div> {% endcomment %}
-                    
-                </div>
-                <div class="mb-3" style="display: flex; flex-direction: column; " id="description">
-                {% comment %} <div class="text" style="font-size: 15px;"> {{person.profile.description}}</div> {% endcomment %}
-                </div>
-
-                <div class="mb-3"  style="display: flex; flex-direction: column;">
-                    {% comment %} <div style="font-size: 15px;"> {{person.email}}</div> {% endcomment %}
-                    </div>
-                    <div style = 'display: flex; flex-direction: column; '>
-                      <div>
-                        <div>
-                          {% comment %} 내가 보는 친구 : {{ person.followings.all|length }} / 나를 보는 친구 : {{ person.followers.all|length }} {% endcomment %}
-                        </div>
-  
-                        <div>
-                          {% comment %} {% if user != person %}
-                            <div>
-                              <form action="{% url 'dailyphoto:follow' person.pk%}" method='POST'>
-                                {% csrf_token %}
-                                {% if user in person.followers.all %}
-                                  <input type="submit" value='일기친구 취소'>
-                                {% else %}
-                                  <input type="submit" value='일기친구'>
-                                {% endif %}
-                              </form>
-                            </div>  
-                          {% endif %} {% endcomment %}
-                        </div>
-                      </div>
-                      
-            </div>
-            
-         </div>
-        <div class = 'feed_body'>
-            <div class = 'sub_feed_body'> 
-                {% for post in post_photo %}
-                        <div class = 'big_feed'>
-                          
-                        {% if post.photo %}
-                        <a href="{% url 'dailyphoto:detail' id=photo.id %}"><img class="row_feed" src = "/media/{{post.photo}}"></a>
-                        {% else %}
-                        <a href="{% url 'dailyphoto:detail' id=photo.id %}"><img class="row_feed" src = "/static/images/camera2.png"></a>
-                        {% endif%}
-                                              
-                        </div>
-                {%endfor%}
-            </div>
-        </div>
-    </div>
-</div>       
-         
+  {% for a_photo in photos %}
+<div class="row row-eq-height">
+  <div class ="col-4 album2">
+    {{a_photo}}
+    {{a_photo.url}}
+    <img class="profile_img" src = "{{a_photo}}"></div>
+  <div class ="col-4"></div>
+  <div class ="col-4 album2"></div>
+</div>
+<div class="row row-eq-height">
+  <div class ="col-4 album2">col-4</div>
+  <div class ="col-4">col-4</div>
+  <div class ="col-4 album2">col-4</div>
+</div>
+<div class="row row-eq-height">
+  <div class ="col-4 album2">col-4</div>
+  <div class ="col-4">col-4</div>
+  <div class ="col-4 album2">col-4</div>
+</div>
+</div>
+{% endfor %}
 
 {% endblock content %}
