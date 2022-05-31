@@ -23,15 +23,23 @@ def index(request):
   user = get_user_model()
 
   # mysql에서 s3 url 리스트 가져옴
-  photos= Photo.objects.all()
+
+  # photos= Photo.objects.all()
+  # print(photos)
+  # photos=Photo.objects.all().values('photo')
+  # print(photos)
+  # photos=Photo.objects.filter(author_id= request.user.id)
+  # print(photos)
+  # photos=Photo.objects.filter(author_id=request.user.id).values('photo')
+  # print(photos)
+  photos=Photo.objects.filter(author_id=request.user.id).values_list('photo')
   print(photos)
-  photos=Photo.objects.all().values('photo')
-  print(photos)
-  photos=Photo.objects.filter(author_id= request.user.id)
-  print(photos)
-  photos=Photo.objects.filter(author_id=request.user.id).values('photo')
-  print(photos)
-  # s3에서 
+
+
+  # s3에서 이미지 가져오기?
+  # 직링은 안되나?
+  # 안됨
+  # 그럼.........
 
 
         
