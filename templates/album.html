@@ -21,21 +21,7 @@
   {% for a_photo in photos %}
 <div class="row row-eq-height">
   <div class ="col-4 album2">
-    {{a_photo}}
-    {{a_photo.url}}
-    <img class="" src = "{{a_photo}}"></div>
-  <div class ="col-4"></div>
-  <div class ="col-4 album2"></div>
-</div>
-<div class="row row-eq-height">
-  <div class ="col-4 album2">col-4</div>
-  <div class ="col-4">col-4</div>
-  <div class ="col-4 album2">col-4</div>
-</div>
-<div class="row row-eq-height">
-  <div class ="col-4 album2">col-4</div>
-  <div class ="col-4">col-4</div>
-  <div class ="col-4 album2">col-4</div>
+    <img class="pic" src = "{{a_photo}}"></div>
 </div>
 </div>
 {% endfor %}

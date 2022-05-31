@@ -32,8 +32,10 @@ def index(request):
   # print(photos)
   # photos=Photo.objects.filter(author_id=request.user.id).values('photo')
   # print(photos)
-  photos=Photo.objects.filter(author_id=request.user.id).values_list('photo')
-  print(photos)
+  # photos= list(map(slice_by_1,list(photos)))
+  # print(photos)
+  photo_list=Photo.objects.filter(author_id=request.user.id).values_list('photo', flat=True)
+  # print(photo_list)
 
 
   # s3에서 이미지 가져오기?
@@ -43,7 +45,32 @@ def index(request):
 
 #  검색해본결과 s3에서 다운로드 대신 인라인 로딩을 하려면 저장할때부터 mimetype을 지정해놓고 저장해야한다고 한다 그럼 지금이랑 다른건가??
 #mimetype 모듈 사용이 os.path가아니라 imagefieldfile이라 안된다고 한다. 파일 이름을 가져와서 마지막 확장자를 ContentType으로 넣었다 
+  s3 = boto3.resource('s3')
+  bucket = s3.Bucket('cloud01-2')
+# Iterates through all the objects, doing the pagination for you. Each obj
+# is an ObjectSummary, so it doesn't contain the body. You'll need to call
+# get to get the whole body.
+  # for obj in bucket.objects.filter(author_id=request.user.id):
+  # for obj in bucket.objects.all():
+  #   key = obj.key
+  #   print(key)
+  #   # a = obj.get(photos[0])
+  #   # a=obj.key(photos[0])
+  #   # print(a)
+  #   # b = a['body']
+  #   # print(b)
 
+  #   body = obj.get()['Body'].read()
+  #   # print(body)
+  #   photos.append(body)
+  photos=[]  
+  for a in photo_list:
+    a=a.strip('s3://cloud01-2/')
+    url = create_presigned_url('cloud01-2', a)
+    print(url)
+    # if url is not None:
+    #   response = requests.get(url)
+    photos.append(url)
         
   context = {'photos':photos}
   return render(request, 'album.html', context)
@@ -130,22 +157,45 @@ def s3_upload_file(file_obj, bucket, object_name=None):
   # If S3 object_name was not specified, use file_name
   # basename = os.path.basename(file_obj)
   basename=str(file_obj)
+
   if object_name is None:
       object_name = basename
-
-  print(f'basename : {basename}')
-
+  
+  #확장자명 
   extension= str(basename).split('.')[-1]
-  print(f'extension : {extension}')    
 
   # Upload the file
   s3_client = boto3.client('s3')
   try:
       response = s3_client.upload_fileobj(file_obj, bucket, object_name,{'ContentType':extension})
-      # print(f'ContentType: {mimetypes.guess_type(file_name)}')
-      # print(f'ContentType:{mimetypes.guess_extension(file_name)}')
-      # print(f'ContentType: {mimetypes.guess_type(file_name)[0]}')
+      
   except ClientError as e:
       logging.error(e)
       return False
   return True
+
+
+
+# https://boto3.amazonaws.com/v1/documentation/api/latest/guide/s3-presigned-urls.html
+def create_presigned_url(bucket_name, object_name, expiration=3600):
+    """Generate a presigned URL to share an S3 object
+
+    :param bucket_name: string
+    :param object_name: string
+    :param expiration: Time in seconds for the presigned URL to remain valid
+    :return: Presigned URL as string. If error, returns None.
+    """
+
+    # Generate a presigned URL for the S3 object
+    s3_client = boto3.client('s3')
+    try:
+        response = s3_client.generate_presigned_url('get_object',
+                                                    Params={'Bucket': bucket_name,
+                                                            'Key': object_name},
+                                                    ExpiresIn=expiration)
+    except ClientError as e:
+        logging.error(e)
+        return None
+
+    # The response contains the presigned URL
+    return response
