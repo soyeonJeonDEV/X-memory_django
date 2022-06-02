@@ -1,7 +1,7 @@
 
 # Create your views here.
 from django.contrib.auth import authenticate, login
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render,get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.utils import timezone
@@ -13,6 +13,8 @@ from botocore.exceptions import ClientError
 import os
 import time
 import mimetypes
+# import models
+# import requests
 
 @login_required(login_url='login')
 def index(request):
@@ -110,6 +112,21 @@ def upload(request):
 
 
 
+#사진 삭제
+@login_required(login_url='common:login')
+def delete(request,post_id):
+  if request.method== "GET":
+    print('request method is get. - views.post_delete')
+    post = get_object_or_404(models.Photo, pk=post_id)
+    form = PhotoForm(request.POST)
+    if form.is_valid():
+      print('form is valid -delete')
+      post.delete()
+    else:
+      print('post delete - form is not valid')
+
+  return redirect('dailyphoto:profile', username = request.user.username)
+
 
 def s3_upload_file(file_obj, bucket, object_name=None):
   """Upload a file to an S3 bucket
@@ -119,7 +136,7 @@ def s3_upload_file(file_obj, bucket, object_name=None):
   :param object_name: S3 object name. If not specified then file_name is used
   :return: True if file was uploaded, else False
   """
-  
+
   # If S3 object_name was not specified, use file_name
   basename=str(file_obj)
 
