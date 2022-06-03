@@ -21,11 +21,15 @@ import mimetypes
 
 import io
 from PIL import Image
-import cv2
+#import cv2
 import numpy as np
 from base64 import b64decode
 # from .utils import *
 # from .Darknet import DarkNet
+
+from rest_framework.views import APIView
+from rest_framework.authtoken.models import Token
+from django.http import JsonResponse
 
 @login_required(login_url='login')
 def index(request):
@@ -61,6 +65,26 @@ def index(request):
   print (photos)      
   context = {'photos':photos}  
   return render(request, 'album.html', context)
+
+# # presigned 아닌 사진 리스트
+# @login_required(login_url='login')
+# def index(request):
+#   """
+#   album
+#   """
+#   # 조회
+#   user = get_user_model()
+#   photo_list=Photo.objects.filter(author_id=request.user.id).values_list('photo', flat=True)
+#   id_list=list(photo_list.values_list('id',flat=True))
+#   photos=[]
+#   count = 0
+#   for a in photo_list:
+#     if a is not None:
+#     #   response = requests.get(url)
+#       photos.append({'url':a,'id':id_list[count]})
+#       count +=1
+#   context = {'photos':photos}
+#   return render(request, 'album.html', context)
 
 
 def signup(request):
@@ -266,6 +290,17 @@ def create_presigned_url(bucket_name, object_name, expiration=3600):
 def test():
   pass
 
+# presigned 아닌 사진 상세페이지
+# def detail(request,photo_id):
+#   photo=Photo.objects.filter(id=photo_id)
+#   photo=photo.values('photo')
+#   print(photo)
+#   photo=list(photo)[0]['photo']
+#   print(photo)
+
+
+#   tags=['더미태그1','더미태그2','더미태그3']
+#   return render(request, 'detail.html', {'tags' : tags,'photo_id':photo_id,'photo':photo})
 
 def detail(request,photo_id):
   photo=Photo.objects.filter(id=photo_id)
@@ -283,11 +318,72 @@ def detail(request,photo_id):
     url=photo  
 
   tags=PhotoTag.objects.filter(photo_id=photo_id).values('tags')
-  print (tags)
+  # print (tags)
   # tags=['더미태그1','더미태그2','더미태그3']
-  tags=list(tags)[0]['tags']
+  if tags:
+    tags=list(tags)[0]['tags']
   print(tags)
   return render(request, 'detail.html', {'tags' : tags,'photo_id':photo_id,'photo':url})
 
+
+
+#app_login api
+class AppLoginView(APIView):
+    def post(self, request):
+
+        print(request.POST)
+        id = request.POST.get('userid', '')
+        pw = request.POST.get('userpw', '')
+
+        user = authenticate(username=id, password=pw)
+        token = Token.objects.get(user=user)
+
+        if user:
+            print("로그인 성공!")
+            return JsonResponse({'token':token.key, 'code': '200', 'msg': '로그인 성공입니다.'}, status=200)
+        else:
+            print("실패")
+            return JsonResponse({'token':'x','code': '404', 'msg': '로그인 실패입니다.'}, status=404)
+            
+#app_photo_uri_path save
+class UploadView(APIView):
+  def post(self,request,format=None):
+    form = PhotoForm(request.POST)
+    photo = request.POST.get('photo','')
+    print(request.POST)
+
+    if form.is_valid():
+      post = form.save(commit=False)  
+
+        # s3경로 
+      s3url = 'https://cloud01-2.s3.us-east-2.amazonaws.com/public/' +str(request.user.username)+'/' + photo
+      post.photo=s3url
+
+      post.author = request.user
+
+      # 세이브
+      post.save()
+      print('post save made')
+
+      return JsonResponse({'code': '200', 'msg': '성공입니다.'}, status=200)
+    else:
+      return JsonResponse({'code': '404', 'msg': '실패입니다.'}, status=404)
+
+class IndexView(APIView):
+  def get(self,request,format=None):
+    photos=Photo.objects.filter(author_id=request.user.id).values_list('photo', flat=True)
+    print(photos)    
+    context = {'photos':photos}
+    return render(request, 'album.html', context)
+
+class ProfileView(APIView):
+  def post(self,request,format=None):
+        # 사진 개수
+        count = Photo.objects.filter(author_id=request.user.id).values_list('photo', flat=True).count()
+        print(count)
+        if request.user:
+          return JsonResponse({'count':count, 'code': '200', 'msg': '성공입니다.'}, status=200)
+        else:
+          return JsonResponse({'code': '404', 'msg': '실패입니다.'}, status=404)
 
 
