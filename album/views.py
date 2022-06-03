@@ -274,11 +274,13 @@ def detail(request,photo_id):
   photo=list(photo)[0]['photo']
   # print(photo)
 
-  if (url[0]=='s') :
+  if (photo[0]=='s') :
     url=photo.strip('s3://cloud01-2/')
     # print(url)
     url = create_presigned_url('cloud01-2', url)
     print(url)
+  else:
+    url=photo  
 
   tags=PhotoTag.objects.filter(photo_id=photo_id)
   print (tags)
