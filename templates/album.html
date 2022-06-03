@@ -13,13 +13,13 @@
 
       <div class="row row-eq-height">
         {% for a_photo in photos %}
-        <div class="col-4 col-sm-4 album2">
+        <div class="col-4 col-sm-4 albums">
           <!-- <img src="{{a_photo}}"
             class="pic1 img-fluid ${3|rounded-top,rounded-right,rounded-bottom,rounded-left,rounded-circle,|}" alt=""> -->
 
             <img src="{{a_photo}}"
             class="pic1 img-fluid " alt="">
-          {{forloop.counter}}
+          <!-- {{forloop.counter}} -->
         </div>
         {% endfor %}
       </div>
