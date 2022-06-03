@@ -18,7 +18,10 @@
             class="pic1 img-fluid ${3|rounded-top,rounded-right,rounded-bottom,rounded-left,rounded-circle,|}" alt=""> -->
 
             <img src="{{a_photo}}"
-            class="pic1 img-fluid " alt="">
+            class="pic1 img-fluid " onclick="load_detail('{{a_photo}}')" alt="">
+
+            <!-- <img src="{{a_photo}}" class="pic1 img-fluid "  alt=""> -->
+
           <!-- {{forloop.counter}} -->
         </div>
         {% endfor %}
