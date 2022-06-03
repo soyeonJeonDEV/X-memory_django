@@ -14,6 +14,7 @@ urlpatterns = [
   path('signup/', views.signup, name = 'signup'),
   path('album/',views.index,name='album'),
   path('upload/',views.upload,name='upload'),
+  path('detail/<int:photo_id>',views.detail,name='detail'),
   path('test/',views.test, name='test')  ,
 ]
 
