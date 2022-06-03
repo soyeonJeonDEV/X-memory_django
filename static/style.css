@@ -25,6 +25,7 @@
 
 .row{
   background: none;
+/* background-color: white; */
 }
 
 .albums{
@@ -34,7 +35,7 @@
   max-height: 35vh;
   min-height: 35vh; */
   /* height:var(width); */
-  background-color: currentColor;
+  /* background-color: currentColor; */
   grid-auto-rows: 1fr;
 }
 
