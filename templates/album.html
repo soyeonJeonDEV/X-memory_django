@@ -1,13 +1,9 @@
 {% extends 'base.html' %} {% block content %}
 
 <div class="wrap">
-  <div class="header">
-    <img src="static/images/logo.png" alt="" />
-    <div class="button_x">
-    <a href={% url 'logout' %} >로그아웃</button></a></div>
-  </div>
-  <div class="container container-fluid">
-    <div class="wall">
+  <div class="wall">
+    <div class="container container-fluid">
+
       {% comment %} 테스트디브
       <div class="row row-eq-height">
         <div class="col-4 album2">
@@ -18,14 +14,15 @@
       <div class="row row-eq-height">
         {% for a_photo in photos %}
         <div class="col-4 col-sm-4 album2">
-          <img src="{{a_photo}}" class="pic1 img-fluid ${3|rounded-top,rounded-right,rounded-bottom,rounded-left,rounded-circle,|}" alt="">
-          {% comment %} <img class="pic1" src="" /> {% endcomment %}
-        {{forloop.counter}}
+          <!-- <img src="{{a_photo}}"
+            class="pic1 img-fluid ${3|rounded-top,rounded-right,rounded-bottom,rounded-left,rounded-circle,|}" alt=""> -->
+
+            <img src="{{a_photo}}"
+            class="pic1  ${3|rounded-top,rounded-right,rounded-bottom,rounded-left,rounded-circle,|}" alt="">
+          {{forloop.counter}}
         </div>
-        {% comment %} {% ifequal forloop.counter 3 %}
+        {% endfor %}
       </div>
-      <div class="row row-eq-height">{%endifequal%}  {% endcomment %}
-        {% endfor %}</div>
     </div>
   </div>
 </div>
