@@ -282,7 +282,9 @@ def detail(request,photo_id):
   else:
     url=photo  
 
-  tags=PhotoTag.objects.filter(photo_id=photo_id)
+  tags=PhotoTag.objects.filter(photo_id=photo_id).values('tags')
   print (tags)
-  tags=['더미태그1','더미태그2','더미태그3']
+  # tags=['더미태그1','더미태그2','더미태그3']
+  tags=list(tags)[0]['tags']
+  print(tags)
   return render(request, 'detail.html', {'tags' : tags,'photo_id':photo_id,'photo':url})
