@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 from .forms import UserForm, PhotoForm
-from .models import Photo
+from .models import Photo, PhotoTag
 import logging
 import boto3
 from botocore.exceptions import ClientError
@@ -45,8 +45,13 @@ def index(request):
   count=0  
   # id=[]
   for a in url_list:
-    a=a.strip('s3://cloud01-2/')
-    url = create_presigned_url('cloud01-2', a)
+    if (a[0]=='s') :
+      url=a.strip('s3://cloud01-2/')
+      # print(url)
+      url = create_presigned_url('cloud01-2', url)
+      # print(url)
+    else:
+      url=a
     print(url)
     if url is not None:
     #   response = requests.get(url)
@@ -104,7 +109,8 @@ def upload(request):
         s3_upload_file(post.photo,'cloud01-2',photo_object_key)
         
         # s3링크저장
-        s3url = 's3://cloud01-2/'+photo_object_key
+        # s3url = 's3://cloud01-2/'+photo_object_key
+        s3url=create_url('cloud01-2',photo_object_key)
         post.photo=s3url
 
       # author, create_date 지정
@@ -172,6 +178,11 @@ def s3_upload_file(file_obj, bucket, object_name=None):
       logging.error(e)
       return False
   return True
+
+
+# url 생성 함수
+def create_url(bucket_name,object_key):
+  return f'https://{bucket_name}.s3.us-east-2.amazonaws.com/{object_key}'
 
 
 # 프리사인드 url 생성 함수 
@@ -259,14 +270,17 @@ def test():
 def detail(request,photo_id):
   photo=Photo.objects.filter(id=photo_id)
   photo=photo.values('photo')
-  print(photo)
+  # print(photo)
   photo=list(photo)[0]['photo']
-  print(photo)
+  # print(photo)
 
+  if (url[0]=='s') :
+    url=photo.strip('s3://cloud01-2/')
+    # print(url)
+    url = create_presigned_url('cloud01-2', url)
+    print(url)
 
-  url=photo.strip('s3://cloud01-2/')
-  print(url)
-  url = create_presigned_url('cloud01-2', url)
-  print(url)
+  tags=PhotoTag.objects.filter(photo_id=photo_id)
+  print (tags)
   tags=['더미태그1','더미태그2','더미태그3']
   return render(request, 'detail.html', {'tags' : tags,'photo_id':photo_id,'photo':url})
