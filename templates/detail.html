@@ -1,9 +1,13 @@
 {% extends 'base.html' %}
-{{photo_id}}
-{{photo_id.photo}}
+{% block content%}
+디테일페이지
+<!-- {{photo}}
+{{photo_id}} -->
+<div class="signup_modal">
+    <img src="{{photo}}" alt="">
+</div>
 {%for tag in tags%}
 {{tag}}
-{%endfor%}
-<div class="signup_modal">
-    <img src="" alt="">
-</div>
+{%endfor%}  
+
+{% endblock %}

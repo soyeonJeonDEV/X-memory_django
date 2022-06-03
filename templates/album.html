@@ -1,4 +1,5 @@
-{% extends 'base.html' %} {% block content %}
+{% extends 'base.html' %}
+{% block content %}
 
 <div class="wrap">
   <div class="wall">
@@ -10,20 +11,16 @@
           <img class="pic1" src="static/monika-grabkowska-dtq_NLadQ08-unsplash.jpg" />
         </div>
       </div> {% endcomment %}
-
       <div class="row row-eq-height">
         {% for a_photo in photos %}
         <div class="col-4 col-sm-4 albums">
-          <!-- <img src="{{a_photo}}"
-            class="pic1 img-fluid ${3|rounded-top,rounded-right,rounded-bottom,rounded-left,rounded-circle,|}" alt=""> -->
+            <img src="{{a_photo.url}}"
+            class="pic1 img-fluid " onclick="load_detail(this.id)" id= '{{a_photo.id}}' alt="">
+            <!-- {{a_photo}} -->
+            <script>  
+              console.log("{{a_photo.id}}") 
+            </script>
 
-            <img src="{{a_photo}}"
-            class="pic1 img-fluid " onclick="load_detail('{{a_photo.id}}')" alt="">
-            {{a_photo.id}}
-
-            <!-- <img src="{{a_photo}}" class="pic1 img-fluid "  alt=""> -->
-
-          <!-- {{forloop.counter}} -->
         </div>
         {% endfor %}
       </div>

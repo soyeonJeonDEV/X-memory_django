@@ -18,11 +18,7 @@ class UserForm(UserCreationForm):
 class PhotoForm(forms.ModelForm):
   class Meta:
     model=Photo
-    fields=['title','photo','content','tags']
-    widgets = { 'title': forms.TextInput(attrs={'class': 'form-control'}), 
-    'content': forms.Textarea(attrs={'class': 'form-control', 'rows': 10}),}
+    fields=['photo']
     labels = {
-    'title': '제목',
     'photo':'사진',
-    'content': '내용'
     }

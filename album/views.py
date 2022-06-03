@@ -24,8 +24,8 @@ from PIL import Image
 import cv2
 import numpy as np
 from base64 import b64decode
-from .utils import *
-from .Darknet import DarkNet
+# from .utils import *
+# from .Darknet import DarkNet
 
 @login_required(login_url='login')
 def index(request):
@@ -36,19 +36,25 @@ def index(request):
   user = get_user_model()
 
   # mysql에서 s3 url 리스트 가져옴
-  photo_list=Photo.objects.filter(author_id=request.user.id).values_list('photo', flat=True)
+  photo_list=Photo.objects.filter(author_id=request.user.id)
+  url_list= photo_list.values_list('photo', flat=True)
+  id_list=list(photo_list.values_list('id',flat=True))
 
   #url 리스트 생성 
-  photos=[]  
-  for a in photo_list:
+  photos=[]
+  count=0  
+  # id=[]
+  for a in url_list:
     a=a.strip('s3://cloud01-2/')
     url = create_presigned_url('cloud01-2', a)
     print(url)
     if url is not None:
     #   response = requests.get(url)
-      photos.append(url)
-        
-  context = {'photos':photos}
+      photos.append({'url':url,'id':id_list[count]})
+      count +=1
+
+  print (photos)      
+  context = {'photos':photos}  
   return render(request, 'album.html', context)
 
 
@@ -85,9 +91,9 @@ def upload(request):
     if form.is_valid():
       post = form.save(commit=False)  
 
-      # title이 입력되지 않으면 현재날짜를 title로 넣어줌
-      if post.title == None:
-        post.title=timezone.localdate()
+      # # title이 입력되지 않으면 현재날짜를 title로 넣어줌
+      # if post.title == None:
+      #   post.title=timezone.localdate()
 
       # photo가 입력되었는지 확인하고 넣어줌
       if 'photo' in request.FILES:
@@ -103,7 +109,7 @@ def upload(request):
 
       # author, create_date 지정
       post.author= request.user
-      post.create_date=timezone.now()
+      # post.create_date=timezone.now()
 
       # 세이브
       post.save()
@@ -128,7 +134,7 @@ def upload(request):
 def delete(request,post_id):
   if request.method== "GET":
     print('request method is get. - views.post_delete')
-    post = get_object_or_404(models.Photo, pk=post_id)
+    post = get_object_or_404(Photo, pk=post_id)
     form = PhotoForm(request.POST)
     if form.is_valid():
       print('form is valid -delete')
@@ -193,65 +199,74 @@ def create_presigned_url(bucket_name, object_name, expiration=3600):
 
 
 
-@csrf_exempt
-def object_detection_api(api_request):
-    json_object = {'success': False}
+# @csrf_exempt
+# def object_detection_api(api_request):
+#     json_object = {'success': False}
 
-    if api_request.method == "POST":
+#     if api_request.method == "POST":
 
-        if api_request.POST.get("image64", None) is not None:
-            base64_data = api_request.POST.get("image64", None).split(',', 1)[1]
-            data = b64decode(base64_data)
-            data = np.array(Image.open(io.BytesIO(data)))
-            result, detection_time = detection(data)
+#         if api_request.POST.get("image64", None) is not None:
+#             base64_data = api_request.POST.get("image64", None).split(',', 1)[1]
+#             data = b64decode(base64_data)
+#             data = np.array(Image.open(io.BytesIO(data)))
+#             result, detection_time = detection(data)
 
-        elif api_request.FILES.get("image", None) is not None:
-            image_api_request = api_request.FILES["image"]
-            image_bytes = image_api_request.read()
-            image = Image.open(io.BytesIO(image_bytes))
-            result, detection_time = detection(image, web=False)
+#         elif api_request.FILES.get("image", None) is not None:
+#             image_api_request = api_request.FILES["image"]
+#             image_bytes = image_api_request.read()
+#             image = Image.open(io.BytesIO(image_bytes))
+#             result, detection_time = detection(image, web=False)
 
-    if result:
-        json_object['success'] = True
-    json_object['time'] = str(round(detection_time))+" seconds"
-    json_object['objects'] = result
-    print(json_object)
-    return JsonResponse(json_object)
-
-
-def detect_request(api_request):
-    # return render(api_request, 'index.html')
-    return render(api_request, 'test.html')
+#     if result:
+#         json_object['success'] = True
+#     json_object['time'] = str(round(detection_time))+" seconds"
+#     json_object['objects'] = result
+#     print(json_object)
+#     return JsonResponse(json_object)
 
 
-def detection(original_image, web=True):
-    cfg_file = './yolov3-tiny-custom.cfg'
-    weight_file = './yolov3-tiny-custom_final.weights'
-    names = './coco.names'
+# def detect_request(api_request):
+#     # return render(api_request, 'index.html')
+#     return render(api_request, 'test.html')
 
-    m = DarkNet(cfg_file)
-    m.load_weights(weight_file)
-    class_names = load_coco_names(names)
 
-    resized_image = cv2.resize(np.float32(original_image), (m.width, m.height))
-    nms_thresh = 0.018
-    iou_thresh = 0.2
+# def detection(original_image, web=True):
+#     cfg_file = './yolov3-tiny-custom.cfg'
+#     weight_file = './yolov3-tiny-custom_final.weights'
+#     names = './coco.names'
 
-    boxes, detection_time = detect_objects(m, resized_image, iou_thresh, nms_thresh)
-    objects = label_objects(boxes, class_names)
+#     m = DarkNet(cfg_file)
+#     m.load_weights(weight_file)
+#     class_names = load_coco_names(names)
 
-    if web:
-        plot_object_boxes(original_image, boxes, class_names)
+#     resized_image = cv2.resize(np.float32(original_image), (m.width, m.height))
+#     nms_thresh = 0.018
+#     iou_thresh = 0.2
 
-    return objects, detection_time
+#     boxes, detection_time = detect_objects(m, resized_image, iou_thresh, nms_thresh)
+#     objects = label_objects(boxes, class_names)
+
+#     if web:
+#         plot_object_boxes(original_image, boxes, class_names)
+
+#     return objects, detection_time
 
 
 def test():
-  detect_objects
+  pass
 
 
 def detail(request,photo_id):
+  photo=Photo.objects.filter(id=photo_id)
+  photo=photo.values('photo')
+  print(photo)
+  photo=list(photo)[0]['photo']
+  print(photo)
 
 
+  url=photo.strip('s3://cloud01-2/')
+  print(url)
+  url = create_presigned_url('cloud01-2', url)
+  print(url)
   tags=['더미태그1','더미태그2','더미태그3']
-  return render(request, 'detail.html', {'tags' : tags,'photo_id':photo_id})
+  return render(request, 'detail.html', {'tags' : tags,'photo_id':photo_id,'photo':url})
