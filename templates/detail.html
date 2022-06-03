@@ -1,13 +1,17 @@
 {% extends 'base.html' %}
 {% block content%}
-디테일페이지
+<!-- 디테일페이지 -->
 <!-- {{photo}}
 {{photo_id}} -->
-<div class="signup_modal">
-    <img src="{{photo}}" alt="">
+<div class="signup_modal detail_page">
+    <img class="pic1" src="{{photo}}" alt="">
 </div>
+태그:
 {%for tag in tags%}
 {{tag}}
 {%endfor%}  
 
+<br>
+<input type="text" placeholder="추가할 태그를 입력하세요">
+<a href=""><button onclick="">태그추가</button></a>
 {% endblock %}

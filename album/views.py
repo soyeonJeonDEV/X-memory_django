@@ -288,3 +288,6 @@ def detail(request,photo_id):
   tags=list(tags)[0]['tags']
   print(tags)
   return render(request, 'detail.html', {'tags' : tags,'photo_id':photo_id,'photo':url})
+
+
+

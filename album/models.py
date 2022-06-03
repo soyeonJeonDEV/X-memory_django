@@ -11,12 +11,12 @@ class Photo(models.Model):
 
 # 별점필드, 리뷰 필드
 class PhotoTag(models.Model):
-    tags = models.CharField(max_length=100, default="",blank=True)
+    tags = models.CharField(max_length=100, default="",null=True,blank=True)
     create_date = models.DateField()
-    latitude  = models.CharField(max_length=100, default="",blank=True)
-    longitude  = models.CharField(max_length=100, default="",blank=True)
-    starScore = models.CharField(max_length=100, default="",blank=True)
-    review = models.CharField(max_length=100, default="",blank=True)
+    latitude  = models.CharField(max_length=100, default="",null=True,blank=True)
+    longitude  = models.CharField(max_length=100, default="",null=True,blank=True)
+    starScore = models.CharField(max_length=100, default="",null=True,blank=True)
+    review = models.CharField(max_length=100, default="",null=True,blank=True)
     photo = models.ForeignKey(Photo, null=False, on_delete=models.CASCADE, related_name='photo_id')
 
 
