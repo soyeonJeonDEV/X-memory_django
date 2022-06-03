@@ -15,8 +15,8 @@ urlpatterns = [
   path('album/',views.index,name='album'),
   path('upload/',views.upload,name='upload'),
   path('detail/<int:photo_id>',views.detail,name='detail'),
-  path('test/',views.test, name='test'),
-  # app api 
+  path('test/',views.test, name='test')  ,
+# app api 
   path('app_login/', views.AppLoginView.as_view(), name='AppLogin'),
   path('app_upload/', views.UploadView.as_view(), name="AppUpload"),
   path('app_index/',views.IndexView.as_view(), name='AppIndex'),
