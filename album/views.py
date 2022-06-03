@@ -21,7 +21,7 @@ import mimetypes
 
 import io
 from PIL import Image
-import cv2
+#import cv2
 import numpy as np
 from base64 import b64decode
 # from .utils import *
@@ -65,6 +65,26 @@ def index(request):
   print (photos)      
   context = {'photos':photos}  
   return render(request, 'album.html', context)
+
+# # presigned 아닌 사진 리스트
+# @login_required(login_url='login')
+# def index(request):
+#   """
+#   album
+#   """
+#   # 조회
+#   user = get_user_model()
+#   photo_list=Photo.objects.filter(author_id=request.user.id).values_list('photo', flat=True)
+#   id_list=list(photo_list.values_list('id',flat=True))
+#   photos=[]
+#   count = 0
+#   for a in photo_list:
+#     if a is not None:
+#     #   response = requests.get(url)
+#       photos.append({'url':a,'id':id_list[count]})
+#       count +=1
+#   context = {'photos':photos}
+#   return render(request, 'album.html', context)
 
 
 def signup(request):
@@ -270,6 +290,17 @@ def create_presigned_url(bucket_name, object_name, expiration=3600):
 def test():
   pass
 
+# presigned 아닌 사진 상세페이지
+# def detail(request,photo_id):
+#   photo=Photo.objects.filter(id=photo_id)
+#   photo=photo.values('photo')
+#   print(photo)
+#   photo=list(photo)[0]['photo']
+#   print(photo)
+
+
+#   tags=['더미태그1','더미태그2','더미태그3']
+#   return render(request, 'detail.html', {'tags' : tags,'photo_id':photo_id,'photo':photo})
 
 def detail(request,photo_id):
   photo=Photo.objects.filter(id=photo_id)
@@ -292,7 +323,6 @@ def detail(request,photo_id):
   tags=list(tags)[0]['tags']
   print(tags)
   return render(request, 'detail.html', {'tags' : tags,'photo_id':photo_id,'photo':url})
-
 
 #app_login api
 class AppLoginView(APIView):
