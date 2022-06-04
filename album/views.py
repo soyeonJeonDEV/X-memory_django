@@ -67,6 +67,7 @@ from django.http import JsonResponse
 #   context = {'photos':photos}  
 #   return render(request, 'album.html', context)
 
+
 # presigned 아닌 사진 리스트
 @login_required(login_url='login')
 def index(request):
@@ -248,12 +249,12 @@ def detail(request,photo_id):
   else:
     url=photo  
 
-  tags=PhotoTag.objects.filter(photo_id=photo_id).values('tags')
+  tags=PhotoTag.objects.filter(photo_id=photo_id).values_list('tags',flat=True)
   # print (tags)
   # tags=['더미태그1','더미태그2','더미태그3']
   if tags:
-    tags=list(tags)[0]['tags']
-  print(tags)
+    tags=list(tags)
+    print(f'tags{tags}')
   return render(request, 'detail.html', {'tags' : tags,'photo_id':photo_id,'photo':url})
 
 def search_by_tag(request,tags):
@@ -276,7 +277,7 @@ def add_tag(request):
       print(request.POST['tags'])
       tags.tags=request.POST['tags']
       tags.create_date=timezone.now()
-      tags.imgurl=tags.photo.photo
+      # tags.imgurl=tags.photo.photo
       tags.save()
     else:
       print(form.errors.as_data()) 

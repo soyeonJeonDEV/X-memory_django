@@ -25,26 +25,14 @@
 
 .row{
   background: none;
-/* background-color: white; */
 }
 
 .albums{
-  /* background-color:azure; */
-  /* border-radius: 5%; */
-  /* height: 35vh;
-  max-height: 35vh;
-  min-height: 35vh; */
-  /* height:var(width); */
-  /* background-color: currentColor; */
   grid-auto-rows: 1fr;
 }
 
 .pic1{
   width: 100%;
-  
-  /* height: 30vh;
-  max-height: 30vh;
-  min-height: 30vh; */
   height: 100%;
   max-height: 100%;
   min-height: 100%;
@@ -52,11 +40,18 @@
   max-width: 100%;
   border-radius: 5%;
   object-fit: cover;
-  /* object-fit: contain; */
-	/* position: absolute; */
-  /* margin : 10px; */
 }
 
+.pic_detail{
+  width: 100%;
+  height: 80vh;
+  /* max-height: 100%;
+  min-height: 100%;
+  min-width: 100%;
+  max-width: 100%; */
+  border-radius: 5%;
+  object-fit: cover;
+}
 /*
 
 

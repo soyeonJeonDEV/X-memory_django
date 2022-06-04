@@ -4,15 +4,17 @@
 <!-- {{photo}}
 {{photo_id}} -->
 <div class="signup_modal detail_page">
-    <img class="pic1" src="{{photo}}" alt="">
-</div>
-태그:
-{%for tag in tags%}
-{{tag}}
-<button class="tag" id="{{tag}}">{{tag}}</button>
-{%endfor%}  
+    <img class="pic_detail" src="{{photo}}" alt="">
+    
+    <div style=" flex-direction: row;" id='tags_div'>
+    태그:
+    {%for tag in tags%}
+    <button class="tag" id="{{tag}}">{{tag}}</button>
+    {%endfor%}  
+    </div>
 
-<br>
-<input id="tagInput" type="text" placeholder="추가할 태그를 입력하세요">
-<button onclick="tag_adder()">태그추가</button>
-{% endblock %}
+    <br>
+    <input id="tagInput" type="text" placeholder="추가할 태그를 입력하세요">
+    <button onclick="tag_adder()">태그추가</button>
+    {% endblock %}
+</div>

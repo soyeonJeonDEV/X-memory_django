@@ -9,10 +9,6 @@ function tag_adder() {
       let csrftoken =null;
   try {
     csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-    // alert(csrftoken )
-    // console.log($("[name=csrfmiddlewaretoken]"))
-    // let csrf_token = $("[name=csrfmiddlewaretoken]").val();
-    // console.log(csrf_token);
   } catch {
     console.log("csrf실패");
   }
@@ -30,10 +26,7 @@ function tag_adder() {
     let url = window.location.href;
     console.log(url);
     photo_id = url.split("/");
-    // console.log(photo_id);
-    photo_id = photo_id[photo_id.length - 1];
-    // console.log(photo_id);
-    photo_id = parseInt(photo_id);
+    photo_id = parseInt(photo_id[photo_id.length - 1]);
     console.log(photo_id);
   } catch {
     console.log("photo 실패");
@@ -42,14 +35,13 @@ function tag_adder() {
   $.ajax({
     type: "POST",
     url: "add_tag/",
+    // async:false,
     dataType: "json",
     data: {
       photo: photo_id,
       tags: tag,
       csrfmiddlewaretoken:csrftoken
-      // csrfmiddlewaretoken: csrf_token,
     },
-    // headers: { "X-CSRFToken": csrftoken },
     success: function (response) {
       console.log(response);
       alert("성공");
@@ -66,44 +58,18 @@ function tag_adder() {
       console.log("complete");
     },
   });
-  // alert("멈춰2");
-  // })
-  // }
+  // location.replace(location.href);
+  // location.reload(true)
+  // history.go(0);
+  // location.href = location.href;
+  // $("#tags_div").load(location.href);
+  // $("#tags_div").load(window.document.href);
+  // window.document.href=window.document.href
+  // 출처: https://offbyone.tistory.com/235 [쉬고 싶은 개발자:티스토리]
+  // 출처: https://7942yongdae.tistory.com/53 [프로그래머 YD:티스토리]
+  
+//   setTimeout(function () {
+//     location.reload()
+//     // alert('page is loaded and 1 minute has passed');
+// }, 100);
 }
-
-// function tag_adder(){
-//   alert('멈춰');
-//     console.log('function tag_adder 실행')
-//     buttons= document.getElementsByClassName("tag");
-//     console.log(buttons)
-//     for(i=1;i<buttons.length;i++){
-//       let a_button=buttons[i]
-//       console.log(a_button)
-//       a_button.addEventListener("click", function(e){
-//         $.ajax({
-//           type:"post",
-//           url:"add_tag/",
-//           dataType:"json",
-//           data:{
-//               photo:photo,
-//               tags:tag,
-//               csrfmiddlewaretoken: csrf_token,
-
-//           },
-//           headers: { "X-CSRFToken": "{{ csrf_token }}" },
-//           success: function (response) {
-//             console.log(response);
-//             alert('멈춰');
-//             console.log('success');
-//           },
-//           error: function () {
-//             console.log("error");
-//           },
-//           complete: function () {
-//             console.log('complete')
-//           },
-//         });
-
-//       })
-//     }
-// }
