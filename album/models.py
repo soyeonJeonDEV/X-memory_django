@@ -18,6 +18,8 @@ class PhotoTag(models.Model):
     starScore = models.CharField(max_length=100, default="",null=True,blank=True)
     review = models.CharField(max_length=100, default="",null=True,blank=True)
     photo = models.ForeignKey(Photo, null=False, on_delete=models.CASCADE, related_name='photo_id')
+    imgurl = models.ImageField(max_length=100,blank=True,null=True)
+
 
 
 # 분석결과 테이블

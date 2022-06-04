@@ -15,7 +15,9 @@ urlpatterns = [
   path('album/',views.index,name='album'),
   path('upload/',views.upload,name='upload'),
   path('detail/<int:photo_id>',views.detail,name='detail'),
-  path('test/',views.test, name='test')  ,
+  # path('test/',views.test, name='test')  ,
+#태그 
+  path('detail/add_tag/',views.add_tag,name='add_tag'),
 # app api 
   path('app_login/', views.AppLoginView.as_view(), name='AppLogin'),
   path('app_upload/', views.UploadView.as_view(), name="AppUpload"),

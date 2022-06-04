@@ -9,9 +9,10 @@
 태그:
 {%for tag in tags%}
 {{tag}}
+<button class="tag" id="{{tag}}">{{tag}}</button>
 {%endfor%}  
 
 <br>
-<input type="text" placeholder="추가할 태그를 입력하세요">
-<a href=""><button onclick="">태그추가</button></a>
+<input id="tagInput" type="text" placeholder="추가할 태그를 입력하세요">
+<button onclick="tag_adder()">태그추가</button>
 {% endblock %}

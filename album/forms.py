@@ -2,7 +2,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
-from .models import Photo
+from .models import Photo, PhotoTag
 
 
 class UserForm(UserCreationForm):
@@ -22,3 +22,8 @@ class PhotoForm(forms.ModelForm):
     labels = {
     'photo':'사진',
     }
+
+class TagForm(forms.ModelForm):
+  class Meta:
+    model=PhotoTag
+    fields=['photo','tags']
