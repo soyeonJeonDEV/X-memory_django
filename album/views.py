@@ -78,7 +78,9 @@ def upload(request):
       # photo가 입력되었는지 확인하고 넣어줌
       if 'photo' in request.FILES:
         photo=request.FILES['photo']
-        
+        photo_read=photo.read()
+        photo.seek(0)
+        # print(photo_read)
         # s3업로드
         photo_object_key='public/'+str(request.user.username)+'/'+str(photo)
         s3_upload_file(photo,'cloud01-2',photo_object_key)
@@ -110,11 +112,20 @@ def upload(request):
         # p_nparray=request.FILES['photo'].read()
         # p_nparray = cv2.imread(str(request.FILES['photo']))  #이미지 가져오기
         
-        p_nparray = cv2.imread(request.FILES['photo'])  #이미지 가져오기
-        print(p_nparray)
-        p_nparray=np.uint8(p_nparray)
-        print(p_nparray)
-        img=cv2.imdecode(p_nparray)
+        # p_nparray=np.array(photo.read())//I/O operation on closed file.
+        # p_nparray=np.array(photo)//I/O operation on closed file.
+        # print(type(photo_read))
+        # p_nparray=np.array(str(photo_read))
+
+        # print(p_nparray)
+        # p_nparray(p_nparray
+        # print(p_nparray)
+        # p_nparray=cv2.imdecode(np.frombuffer(photo_read, np.uint8), -1)
+
+        # # p_nparray=photo_read.astype('uint8')
+        # print(p_nparray)
+        img = cv2.imdecode(np.frombuffer(photo_read, np.uint8), -1)
+        # img=cv2.imdecode(p_nparray,-1)
         img = cv2.resize(img, None, fx=0.4, fy=0.4)
         height, width, channels = img.shape
 
