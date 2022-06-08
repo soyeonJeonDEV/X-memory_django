@@ -1,3 +1,4 @@
+console.log('js파일 로드')
 function load_detail(photo_id) {
   url = "detail/" + photo_id;
   window = location.href = url;

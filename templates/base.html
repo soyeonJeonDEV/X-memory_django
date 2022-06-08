@@ -31,6 +31,7 @@
   <body>
     {% csrf_token %}
     {% block upload_js %}
+    <script src="{% static 'js.js' %}"></script>
     {% comment %} <!-- 먼저 로딩되어야 작동하는 js 파일 -->
     <script src="{% static 'upper.js' %}"></script> {% endcomment %}
     {% endblock %} {% include 'nav.html' %} {% block content %}{% endblock %} {% block script %}

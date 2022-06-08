@@ -18,6 +18,7 @@ urlpatterns = [
   # path('test/',views.test, name='test')  ,
 #태그 
   path('detail/add_tag/',views.add_tag,name='add_tag'),
+  path('detect_tag/',views.detect_tag,name='detect_tag'),
 # app api 
   path('app_login/', views.AppLoginView.as_view(), name='AppLogin'),
   path('app_upload/', views.UploadView.as_view(), name="AppUpload"),
