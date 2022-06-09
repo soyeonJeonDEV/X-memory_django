@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Analysis</title>
+
+</head>
+<body>
+
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<!--username 표시-->
+<h3>
+<!--달 선택할 수 있는 버튼
+기본은 현재 month로?-->
+    {{user.username}}님의 {{month}}월 기록이에요
+    <br>
+    <br>
+</h3>
+
+
+<!--<h3>전체 테이블</h3>-->
+<!--<table>-->
+<!--    <thead>-->
+<!--    <tr>-->
+<!--        <td><B>ID</B></td>-->
+<!--        <td><B>tags</B></td>-->
+<!--        <td><B>create_date</B></td>-->
+<!--        <td><B>latitude</B></td>-->
+<!--        <td><B>longitude</B></td>-->
+<!--        <td><B>photo_id</B></td>-->
+<!--    </tr>-->
+<!--    </thead>-->
+<!--    {% for tag in tags %}-->
+<!--    <tr>-->
+<!--        <td>{{tag.id}}</td>-->
+<!--        <td>{{tag.tags}}</td>-->
+<!--        <td>{{tag.create_date}}</td>-->
+<!--        <td>{{tag.latitude}}</td>-->
+<!--        <td>{{tag.longitude}}</td>-->
+<!--        <td>{{tag.photo_id}}</td>-->
+<!--    </tr>-->
+<!--    {% endfor %}-->
+<!--</table>-->
+<!--<br>-->
+
+<h4>태그 순위 Top3</h4>
+{% for tag in tag_rank3 %}
+    {{tag}}
+    <br>
+{% endfor %}
+<br>
+
+<h4>#{{rank1_tagname}}(Top1) 연관 태그</h4>
+{% for tag in rank1_related_tags_top2 %}
+    {{tag}}
+    <br>
+{% endfor %}
+<br>
+
+<h4>#{{rank2_tagname}}(Top2) 연관 태그</h4>
+{% for tag in rank2_related_tags_top2 %}
+    {{tag}}
+    <br>
+{% endfor %}
+<br>
+
+<h4>#{{rank3_tagname}}(Top3) 연관 태그</h4>
+{% for tag in rank3_related_tags_top2 %}
+    {{tag}}
+    <br>
+{% endfor %}
+<br>
+
+<h4>요일별 태그 Top1</h4>
+<!--일 {{sunday_tag}}<br>-->
+<!--월 {{monday_tag}}<br>{{monday_tagname}}<br>{{monday_tagnum}}<br>-->
+<!--화 {{tuesday_tag}}<br>-->
+<!--수 {{wednesday_tag}}<br>-->
+<!--목 {{thursday_tag}}<br>-->
+<!--금 {{friday_tag}}<br>-->
+<!--토 {{saturday_tag}}<br>-->
+<!--<br>-->
+
+<!--요일별 많은 태그-->
+<div class="container">
+  <img src="{% static 'images\weekday_graph.png' %}" style="width: 70vw; min-width: 140px;" alt="">
+</div>
+
+<!--&lt;!&ndash;많이 간 장소 구하기&ndash;&gt;-->
+<!--<div id='map'>-->
+<!--        {{map|safe}}-->
+<!--    </div>-->
+
+<h4>어떤 종류의 #디저트를 많이 먹었을까?(분석방법보완필요)</h4>
+<!--{{dessert_tags_10}}-->
+결과 보류
+<br>
+
+<h4>혼자서 어떤 활동을 하는지?</h4>
+{% for tag in alone_tag10 %}
+    {{tag}}
+    <br>
+{% endfor %}
+<br>
+
+<h4>함께 어떤 활동을 하는지?</h4>
+{% for tag in together_tag10 %}
+    {{tag}}
+    <br>
+{% endfor %}
+<br>
+
+<link rel="stylesheet" href="{% static 'analysis.css' %}">
+    <div class="calendar">
+        <div class="calendar_header">
+            <div class="ym-wrapper">
+                <span class="year"></span>년
+                <span class="month"></span>월
+            </div>
+            <div class="calendar_nav">
+                <button class="nav-btn go-prev" onclick="prevMonth()">&lt;</button>
+                <button class="nav-btn go-today" onclick="goToday()">Today</button>
+                <button class="nav-btn go-next" onclick="nextMonth()">&gt;</button>
+            </div>
+        </div>
+        <div class="calendar_main">
+            <div class="days">
+                <div class="day">일</div>
+                <div class="day">월</div>
+                <div class="day">화</div>
+                <div class="day">수</div>
+                <div class="day">목</div>
+                <div class="day">금</div>
+                <div class="day">토</div>
+            </div>
+            <div class="dates"></div>
+        </div>
+    </div>
+<script src="{% static 'calender.js' %}"></script>
+{% endblock %}
+
+
+</body>
+</html>

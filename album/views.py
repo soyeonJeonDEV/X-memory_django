@@ -25,6 +25,10 @@ from django.http import JsonResponse
 
 from album import forms
 
+import pandas as pd
+import pymysql
+import googlemaps
+
 
 # presigned 아닌 사진 리스트
 @login_required(login_url='login')
@@ -337,7 +341,7 @@ def yolo(img_buffer):
     #cv2.waitKey(0)
     #cv2.destroyAllWindows()
 
-    print('태그: '+label) #해시태그 작성
+    print('태그: '+labels)
 
   return labels
 
@@ -448,6 +452,96 @@ def detect_tag(request):
     print('사물 검출 if문 빠져나옴 - request method is not post')
 
   return HttpResponse()
+
+
+
+##태그테이블에서 위경도를 받아와서 위치를 찾는 함수
+def search_place(tag_table):
+  gmaps= googlemaps.Client(key='AIzaSyDlTe2iwy53wvvt8WNwJ15fgzLGNmAQpf8')
+  photo=tag_table.drop_duplicates(['photo_id'])
+  place = photo[['longitude','latitude']]
+  place= place.fillna(0)
+  __list__=[]
+  for row in place.itertuples(index=False, name=None):
+    if row == (0,0):
+      __list__.append(0)
+    else:
+      try: 
+        geo_location=gmaps.reverse_geocode(row, language='ko')
+        __list__.append(pd.DataFrame(geo_location)['formatted_address'][0])
+      except:
+        __list__.append(0)
+    photo = photo.copy()
+    photo['place']= __list__
+    tag_table=pd.merge(tag_table,photo[['photo_id','place']], how='left', left_on='photo_id', right_on='photo_id')
+    return tag_table
+
+
+
+@login_required(login_url='login')
+def analysis(request):
+
+# ==========================================================================
+# 여기서부터는 디테일 함수 안에 들어가면 될 것 같아요
+# 분석 페이지가 아니라 디테일 페이지 들어갔을 때 위치정보 저장받을 수 있도록
+
+#페이지 접속하면 위치 정보 찾아줌
+  user = get_user_model()
+  user = request.user.id
+  photo_id_list=list(Photo.objects.filter(author_id=request.user.id).values_list('id', flat=True))
+  photo_id=','.join(map(str, photo_id_list))
+  analyzed_photo_list = list(AnalysisResult.objects.filter(user_id=user).values_list('photo_id',flat=True))
+  N_anaylazed_photos=list(set(photo_id_list)-set(analyzed_photo_list))
+  N_anaylazed_photo=','.join(map(str, N_anaylazed_photos))
+  if N_anaylazed_photo:
+    tag_table=get_table(user, N_anaylazed_photo, 'phototag')
+
+    #이미 위치정보가 저장된 사진에 대해서는 위치 찾는 함수 작동X ->DB에 위치정보가 계속 저장되는 것을 막음
+
+    if tag_table.empty == False:
+      tag_table['user_id'] = user
+      tag_table=search_place(tag_table) 
+
+ 
+  # 분석한 내용 db로 보내기 
+      lst=[]
+      tag_table= tag_table.drop_duplicates(['photo_id'], keep='last')
+      for row in tag_table[['photo_id','place','user_id']].itertuples(index=False, name=None):
+        lst.append(row)
+      tuple(lst)
+
+      conn = pymysql.connect(host='18.219.244.45', user='python', password='python',db='mysql_db', charset='utf8')
+      curs = conn.cursor(pymysql.cursors.DictCursor)
+      sql = """insert into album_analysisresult(photo_id,location,user_id) 
+      values (%s, %s, %s)"""
+      curs.executemany(sql, lst)
+      conn.commit()
+
+      conn.close()
+  return render(request, 'analysis.html') #,{'map' : maps}
+
+# 디테일 함수 안으로 넣어주세요(디테일 페이지 들어가면 작동되도록)
+# ==============================================================================
+
+#photo_id 참조하여 DB에서 정보 가져오는 함수 
+"""
+  user = get_user_model()
+  user = user.id
+  photo_id_list=list(Photo.objects.filter(author_id=request.user).values_list('id', flat=True))
+  photo_id=','.join(map(str, photo_id_list))
+"""
+#함수 쓸 때 위에 있어야 하는 문장 사용:get_table(user,photo_id, 가져오고자 하는 테이블명)
+# DBtable: 'analysisresult', 'photo', 'phototag
+def get_table(user,photo_id,DBtable):
+  # MySQL Connection 연결하고 테이블에서 데이터 가져옴
+  conn = pymysql.connect(host='18.219.244.45', user='python', password='python',db='mysql_db', charset='utf8')
+  curs = conn.cursor(pymysql.cursors.DictCursor)
+  sql = 'select * from album_' + DBtable + ' where photo_id in (' + photo_id +')'
+
+  curs.execute(sql)
+  rows = curs.fetchall()
+  table = pd.DataFrame(rows)
+  return table
 
 
 #app_login api

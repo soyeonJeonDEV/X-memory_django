@@ -5,6 +5,8 @@ from django.contrib.auth import views as auth_views
 from django.conf import settings
 from django.conf.urls.static import static
 from . import views
+import analysis.views
+
 urlpatterns = [
   path('',views.index,name='index'),
   path('login',
@@ -19,6 +21,9 @@ urlpatterns = [
 #태그 
   path('detail/add_tag/',views.add_tag,name='add_tag'),
   path('detect_tag/',views.detect_tag,name='detect_tag'),
+# 분석 페이지
+  path('analysis/', views.analysis, name='analysis'),
+  path('analysis/analysisPlace',analysis.views.analysisPlace,name='analysisPlace'),
 # app api 
   path('app_login/', views.AppLoginView.as_view(), name='AppLogin'),
   path('app_upload/', views.UploadView.as_view(), name="AppUpload"),

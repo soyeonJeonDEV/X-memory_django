@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'album',
     'bootstrap4',
+    'analysis',
     'rest_framework',
     'rest_framework.authtoken',
 ]
