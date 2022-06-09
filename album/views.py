@@ -23,6 +23,9 @@ from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
 from django.http import JsonResponse
 
+from album import forms
+
+
 # presigned 아닌 사진 리스트
 @login_required(login_url='login')
 def index(request):
@@ -90,67 +93,11 @@ def upload(request):
         s3url=create_url('cloud01-2',photo_object_key)
         post.photo=s3url
 
-        # Load Yolo
-        net = cv2.dnn.readNet("album\yolov3-tiny-custom_final.weights", "album\yolov3-tiny-custom.cfg")
-        classes = []
-        with open("album\coco.names", "r") as f:
-            classes = [line.strip() for line in f.readlines()]
-        layer_names = net.getLayerNames()
-        output_layers = [layer_names[i-1] for i in net.getUnconnectedOutLayers()]
-        #output_layers = [layer_names[i[0] - 1] for i in net.getUnconnectedOutLayers()]
-        colors = np.random.uniform(0, 255, size=(len(classes), 3))
-
-        # Loading image
-        img = cv2.imdecode(np.frombuffer(photo_read, np.uint8), -1)
-        img = cv2.resize(img, None, fx=0.4, fy=0.4)
-        height, width, channels = img.shape
-
-        # Detecting objects
-        blob = cv2.dnn.blobFromImage(img, 0.00392, (416, 416), (0, 0, 0), True, crop=False)
-
-        net.setInput(blob)
-        outs = net.forward(output_layers)
-
-        class_ids = []
-        confidences = []
-        boxes = []
-        for out in outs:
-          for detection in out:
-              scores = detection[5:]
-              class_id = np.argmax(scores)
-              confidence = scores[class_id]
-              if confidence > 0.5:
-            # Object detected
-                  center_x = int(detection[0] * width)
-                  center_y = int(detection[1] * height)
-                  w = int(detection[2] * width)
-                  h = int(detection[3] * height)
-
-            # Rectangle coordinates
-                  x = int(center_x - w / 2)
-                  y = int(center_y - h / 2)
-
-                  boxes.append([x, y, w, h])
-                  confidences.append(float(confidence))
-                  class_ids.append(class_id)
-
-          indexes = cv2.dnn.NMSBoxes(boxes, confidences, 0.5, 0.4)
-          print(indexes) 
-
-          font = cv2.FONT_HERSHEY_PLAIN
-          for i in range(len(boxes)):
-            if i in indexes:
-              x, y, w, h = boxes[i]
-              label = str(classes[class_ids[i]])
-              #color = colors[class_ids[i]]
-              #cv2.rectangle(img, (x, y), (x + w, y + h), color, 2)
-              #cv2.putText(img, label, (x, y + 30), font, 3, color, 3)
-
-          #cv2.imshow("Image", img)
-          #cv2.waitKey(0)
-          #cv2.destroyAllWindows()
-
-          print('#'+label) #해시태그 작성
+        # 태그 자동 삽입
+        try:
+          yolo(photo_read)
+        except:
+          print('yolo 태그 검출 실패')
 
       # author, create_date 지정
       post.author= request.user
@@ -247,13 +194,29 @@ def create_presigned_url(bucket_name, object_name, expiration=3600):
     # The response contains the presigned URL
     return response
 
+def s3_get(bucket,key):
+  
+  s3_client = boto3.client('s3')
+  try:
+    print(key)
+    response = s3_client.get_object(Bucket=bucket, Key=key)
+    print(f'response = {response}')
+    content=response['Body'].read()
+    # print(f'content = {content}')
+    return content
+      
+  except ClientError as e:
+      logging.error(e)
+      return False
+  return True
+
 
 def detail(request,photo_id):
   photo=Photo.objects.filter(id=photo_id)
   photo=photo.values('photo')
   # print(photo)
   photo=list(photo)[0]['photo']
-  # print(photo)
+  print(photo)
 
   if (photo[0]=='s') :
     url=photo.strip('s3://cloud01-2/')
@@ -264,15 +227,119 @@ def detail(request,photo_id):
     url=photo  
 
   tags=PhotoTag.objects.filter(photo_id=photo_id).values_list('tags',flat=True)
-  # print (tags)
-  # tags=['더미태그1','더미태그2','더미태그3']
+
+  # 태그가 존재하는가 
   if tags:
     tags=list(tags)
     print(f'tags{tags}')
+  
+  # 태그가 없을 경우 자동검출 
+  else:
+    # tags=리스트 스트링
+    # tags= yolo(photo.read())
+    key ='pu'+ url.strip('https://cloud01-2.s3.us-east-2.amazonaws.com') #앞에 두글자 짤리는 이유가 뭔지 모르겠다 
+    pic= s3_get('cloud01-2',key)
+    # print(pic)
+    tags= yolo(pic)
+    print(tags)
+
+    # 태그 저장 
+    for a_tag in tags:
+      print(a_tag)
+      # tagForm= TagForm()
+      # print(tagForm)
+      # # form.save( commit=False)
+      # tagForm.tags=a_tag
+      # tagForm.create_date=timezone.now()
+      # print(tagForm.create_date)
+      # tagForm.photo=Photo.objects.get(id=int(photo_id))
+      # print(tagForm.photo)
+      # # form.save()
+      # print(tagForm)
+      # for field in tagForm:
+      #   print("Field Error:", field.name,  field.errors)
+
+      tagForm= TagForm({'tags':a_tag,'photo':Photo.objects.get(id=int(photo_id)),'create_date':timezone.now()})
+      print(tagForm)
+      if tagForm.is_valid():
+        tagForm.save()
+
+      else:
+        print('tagform is not valid')
+        print(tagForm.errors)
+
+
   return render(request, 'detail.html', {'tags' : tags,'photo_id':photo_id,'photo':url})
 
 def search_by_tag(request,tags):
   pass
+
+def yolo(img_buffer):
+  # Load Yolo
+  net = cv2.dnn.readNet("album\yolov3-tiny-custom_final.weights", "album\yolov3-tiny-custom.cfg")
+  classes = []
+  with open("album\coco.names", "r") as f:
+      classes = [line.strip() for line in f.readlines()]
+  layer_names = net.getLayerNames()
+  output_layers = [layer_names[i-1] for i in net.getUnconnectedOutLayers()]
+  #output_layers = [layer_names[i[0] - 1] for i in net.getUnconnectedOutLayers()]
+  colors = np.random.uniform(0, 255, size=(len(classes), 3))
+
+  # Loading image
+  img = cv2.imdecode(np.frombuffer(img_buffer, np.uint8), -1)
+  img = cv2.resize(img, None, fx=0.4, fy=0.4)
+  height, width, channels = img.shape
+
+  # Detecting objects
+  blob = cv2.dnn.blobFromImage(img, 0.00392, (416, 416), (0, 0, 0), True, crop=False)
+
+  net.setInput(blob)
+  outs = net.forward(output_layers)
+
+  class_ids = []
+  confidences = []
+  boxes = []
+  for out in outs:
+    for detection in out:
+        scores = detection[5:]
+        class_id = np.argmax(scores)
+        confidence = scores[class_id]
+        if confidence > 0.5:
+      # Object detected
+            center_x = int(detection[0] * width)
+            center_y = int(detection[1] * height)
+            w = int(detection[2] * width)
+            h = int(detection[3] * height)
+
+      # Rectangle coordinates
+            x = int(center_x - w / 2)
+            y = int(center_y - h / 2)
+
+            boxes.append([x, y, w, h])
+            confidences.append(float(confidence))
+            class_ids.append(class_id)
+
+    indexes = cv2.dnn.NMSBoxes(boxes, confidences, 0.5, 0.4)
+    print(indexes) 
+
+    font = cv2.FONT_HERSHEY_PLAIN
+    labels=[]
+    for i in range(len(boxes)):
+      if i in indexes:
+        x, y, w, h = boxes[i]
+        label = str(classes[class_ids[i]])
+        labels.append(label)
+        #color = colors[class_ids[i]]
+        #cv2.rectangle(img, (x, y), (x + w, y + h), color, 2)
+        #cv2.putText(img, label, (x, y + 30), font, 3, color, 3)
+
+    #cv2.imshow("Image", img)
+    #cv2.waitKey(0)
+    #cv2.destroyAllWindows()
+
+    print('태그: '+label) #해시태그 작성
+
+  return labels
 
 @login_required(login_url='login')
 def add_tag(request):

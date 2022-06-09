@@ -26,4 +26,4 @@ class PhotoForm(forms.ModelForm):
 class TagForm(forms.ModelForm):
   class Meta:
     model=PhotoTag
-    fields=['photo','tags']
+    fields=['photo','tags','create_date','latitude','longitude','review','starScore','imgurl']
