@@ -93,19 +93,32 @@ def upload(request):
         s3url=create_url('cloud01-2',photo_object_key)
         post.photo=s3url
 
+        # author, create_date 지정
+        post.author= request.user
+        # post.create_date=timezone.now()
+
+        # 세이브
+        post.save()
+        print('post save made')
+
         # 태그 자동 삽입
-        try:
-          yolo(photo_read)
-        except:
-          print('yolo 태그 검출 실패')
+        # try:
+        taglist= yolo(photo_read)
+        # print(taglist)
+        photo_object = Photo.objects.filter(photo=s3url)
+        photo_object = photo_object[len(photo_object)-1]
+        print(photo_object)
+        for a_tag in taglist:
+          tagForm = TagForm({'photo':photo_object,'tags':a_tag,'create_date':timezone.now()})
+          # print(tagForm)
+          if tagForm.is_valid():
+            tagForm.save()
+          else:
+            print('tagform is not valid')
+            print(tagForm.errors)
 
-      # author, create_date 지정
-      post.author= request.user
-      # post.create_date=timezone.now()
-
-      # 세이브
-      post.save()
-      print('post save made')
+        # except:
+          # print('yolo 태그 검출 실패')
 
       return redirect('index')
 
@@ -246,19 +259,6 @@ def detail(request,photo_id):
     # 태그 저장 
     for a_tag in tags:
       print(a_tag)
-      # tagForm= TagForm()
-      # print(tagForm)
-      # # form.save( commit=False)
-      # tagForm.tags=a_tag
-      # tagForm.create_date=timezone.now()
-      # print(tagForm.create_date)
-      # tagForm.photo=Photo.objects.get(id=int(photo_id))
-      # print(tagForm.photo)
-      # # form.save()
-      # print(tagForm)
-      # for field in tagForm:
-      #   print("Field Error:", field.name,  field.errors)
-
       tagForm= TagForm({'tags':a_tag,'photo':Photo.objects.get(id=int(photo_id)),'create_date':timezone.now()})
       print(tagForm)
       if tagForm.is_valid():
