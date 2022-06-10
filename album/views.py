@@ -277,8 +277,17 @@ def detail(request,photo_id):
 
   return render(request, 'detail.html', {'tags' : tags,'photo_id':photo_id,'photo':url})
 
-def search_by_tag(request,tags):
-  pass
+def search_by_tag(request,tag):
+  print(tag)
+  print(request.body)
+
+  # photo_list = []
+
+  photo_result= PhotoTag.objects.filter(tags=tag).values_list('photo_id',flat=True)
+  print(photo_result)
+
+  return render (request,'search.html',{'photo_result' : photo_result})
+
 
 def yolo(img_buffer):
   # Load Yolo
