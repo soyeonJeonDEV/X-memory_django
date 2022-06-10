@@ -1,10 +1,23 @@
 {% extends 'base.html' %}
 {% block content%}
-서치페이지
 
-{% for photo in photo_list %}
-{{photo}}
-<img class="pic_detail" src="{{photo}}" alt="">
+<div><h4>[ {{tag}} ](으)로 검색한 결과...</h4> </div>    
 
-{% endfor %}
+
+<div class="container container-fluid">
+    <div class="row row-eq-height">
+      {% for photo in photo_list %}
+      <div class="col-4 col-sm-4 albums">
+          <img src="{{photo}}"
+          class="pic1 img-fluid " onclick="load_detail(this.id)" id= '{{a_photo.id}}' alt="">
+          <!-- {{a_photo}} -->
+          <script>  
+            console.log("{{a_photo.id}}") 
+          </script>
+
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
 {% endblock%}

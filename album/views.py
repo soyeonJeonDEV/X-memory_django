@@ -296,7 +296,7 @@ def search_by_tag(request,tag):
 
   print(photo_list)
 
-  return render (request,'search.html',{'photo_list' : photo_list})
+  return render (request,'search.html',{'tag':tag,'photo_list' : photo_list})
 
 
 def yolo(img_buffer):
