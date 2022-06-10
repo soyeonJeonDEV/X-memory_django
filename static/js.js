@@ -47,8 +47,8 @@ function tag_adder() {
       console.log(response);
       // alert("성공");
       
-  // location.reload(true)
-    $("#tags_div").load(location.href);
+  location.reload(true)
+    // $("#tags_div").load(location.href);
       console.log("통신 success");
     },
     error: function () {

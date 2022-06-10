@@ -1,8 +1,10 @@
 {% extends 'base.html' %}
+{% block content%}
+서치페이지
 
-
-{% for photo in photo_result %}
-
+{% for photo in photo_list %}
+{{photo}}
 <img class="pic_detail" src="{{photo}}" alt="">
 
 {% endfor %}
+{% endblock%}

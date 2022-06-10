@@ -281,12 +281,22 @@ def search_by_tag(request,tag):
   print(tag)
   print(request.body)
 
-  # photo_list = []
+  photo_list = []
 
   photo_result= PhotoTag.objects.filter(tags=tag).values_list('photo_id',flat=True)
   print(photo_result)
+  for a_photo_id in photo_result:
+    print(a_photo_id)
+    # photo_list.append(Photo.objects.get(id=a_photo_id)) #쿼리가 나옴 
+    # photo_list.append(Photo.objects.get(id=a_photo_id)['photo']) # 오류
+    # photo_list.append(Photo.objects.get(id=a_photo_id).values('photo')) photo 어트리뷰트가 없다
+    # photo_list.append(Photo.objects.get(id=a_photo_id).photo) #괜찮은거같은데 왜지... <>이렇게 감싸있는게 문젠가 
+    photo_list.append(str(Photo.objects.get(id=a_photo_id).photo))
 
-  return render (request,'search.html',{'photo_result' : photo_result})
+
+  print(photo_list)
+
+  return render (request,'search.html',{'photo_list' : photo_list})
 
 
 def yolo(img_buffer):
