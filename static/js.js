@@ -45,17 +45,20 @@ function tag_adder() {
     },
     success: function (response) {
       console.log(response);
-      alert("성공");
-      console.log("success");
+      // alert("성공");
+      
+  // location.reload(true)
+    $("#tags_div").load(location.href);
+      console.log("통신 success");
     },
     error: function () {
       console.log(response);
-      alert('에러');
+      // alert('에러');
       console.log("error");
     },
     complete: function () {
       console.log(response);
-      alert('완료')
+      // alert('완료')
       console.log("complete");
     },
   });

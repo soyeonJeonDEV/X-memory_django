@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 from .forms import UserForm, PhotoForm, TagForm
-from .models import Photo, PhotoTag
+from .models import Photo, PhotoTag,AnalysisResult
 import logging
 import boto3
 from botocore.exceptions import ClientError
@@ -273,6 +273,8 @@ def detail(request,photo_id):
         print(tagForm.errors)
 
 
+  # analysis(request)
+
   return render(request, 'detail.html', {'tags' : tags,'photo_id':photo_id,'photo':url})
 
 def search_by_tag(request,tags):
@@ -341,36 +343,42 @@ def yolo(img_buffer):
     #cv2.waitKey(0)
     #cv2.destroyAllWindows()
 
-    print('태그: '+labels)
+    print('태그: '+str(labels))
 
   return labels
 
 @login_required(login_url='login')
 def add_tag(request):
   print('add_tag 실행')
-  print(request)
-  print(request.POST)
-  print(request.body)
+  # print(request)
+  # print(request.POST)
+  # print(request.body)
   if request.method=="POST":
     form = TagForm(request.POST)
     if form.is_valid():
+      print('form is valid')
       tags=form.save(commit=False)
-      print(request.POST['photo'])
+      # print(request.POST['photo'])
       tags.photo=Photo.objects.get(id=int(request.POST['photo']))
       print(tags.photo)
-      print(tags.photo.photo)
-      print(request.POST['tags'])
+      # print(tags.photo.photo)
+      # print(request.POST['tags'])
       tags.tags=request.POST['tags']
+      print(tags.tags)
+      print(tags)
       tags.create_date=timezone.now()
+      print(tags.create_date)
       # tags.imgurl=tags.photo.photo
       tags.save()
+      
+      return JsonResponse({'code': '200', 'msg': '태그 전송 성공'})
     else:
       print(form.errors.as_data()) 
       print('form is not valid')
   else:
     print('add_tag if문 빠져나옴 - request method is not post')
 
-  return HttpResponse({'code': '200', 'msg': '태그 전송 성공'})
+  return JsonResponse({'code': '500', 'msg': '태그 전송 실패'})
 
 
 @login_required(login_url='login')
@@ -478,7 +486,7 @@ def search_place(tag_table):
 
 
 
-@login_required(login_url='login')
+# @login_required(login_url='login')
 def analysis(request):
 
 # ==========================================================================
@@ -517,11 +525,12 @@ def analysis(request):
       curs.executemany(sql, lst)
       conn.commit()
 
-      conn.close()
-  return render(request, 'analysis.html') #,{'map' : maps}
-
 # 디테일 함수 안으로 넣어주세요(디테일 페이지 들어가면 작동되도록)
 # ==============================================================================
+
+      conn.close()
+  # return render(request, 'analysis.html') #,{'map' : maps}
+    return {'map':lst}
 
 #photo_id 참조하여 DB에서 정보 가져오는 함수 
 """
