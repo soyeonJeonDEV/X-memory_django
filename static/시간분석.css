@@ -1,0 +1,143 @@
+/*시간분석.css*/
+
+*{
+    margin: auto;
+    font-family: 'Nanum Myeongjo', serif; /*폰트*/
+}
+
+body{
+    /*전체 배경*/
+    background:url(https://mblogthumb-phinf.pstatic.net/20120629_279/libido83_1340957741380xqEzT_JPEG/bg-graph_paper.jpg?type=w2);
+    /*background-size:cover; 이거 하면 사진이 너무 확대되어보임*/
+}
+
+#wrap{
+    width:80%;
+    background-color:white;
+    border:1px solid;
+    margin-top:5%;
+    margin-bottom:5%;
+    padding-left:5%;
+    padding-right:5%;
+}
+
+/*뒤로가기*/
+#back_btn {
+    width:5%;
+    height:5%;
+    background-color:white;
+    border: solid 1px gray;
+}
+
+#back_btn:hover {
+    background-color:silver;
+}
+
+#back_img {
+    margin:0 auto;
+    align:center;
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/*연 월 선택 드롭다운박스*/
+.year_month {
+    margin:1%;
+    width:8%;
+    height:4%;
+    font-size:medium;
+}
+
+/*분석결과 확인버튼*/
+#result_btn {
+    border-radius:10%;
+    background-color:white;
+    width:12%;
+    height:4%;
+    font-size:medium;
+    text-align:center;
+}
+
+#result_btn:hover {
+    color:white;
+    border:silver;
+    background-color:skyblue;
+    box-shadow: 0 10px 10px 0 rgba(0,0,0,0.24), 0 10px 10px 0 rgba(0,0,0,0.10);
+}
+
+/*시간별 테이블*/
+#time_tb {
+    width:100%;
+    border:1px solid;
+
+}
+
+/*시간별 버튼*/
+.time_btn {
+    border-radius:10%;
+    background-color:white;
+    width:12%;
+    height:70%;
+    font-size:medium;
+    text-align:center;
+}
+
+.time_btn:hover {
+    color:white;
+    border:silver;
+    background-color:skyblue;
+    box-shadow: 0 10px 10px 0 rgba(0,0,0,0.24), 0 10px 10px 0 rgba(0,0,0,0.10);
+}
+
+/*시간별 그래프*/
+.timegraph {
+    padding-right:5%;
+    width:100%;
+    height:100%;
+    /*text-align:left;*/
+}
+
+/*시간별 그래프 이미지*/
+.graph_img {
+    align:center;
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/*요일 테이블*/
+#week_tb {
+    margin-top:10%;
+    margin-bottom:10%;
+    width:100%;
+    border:1px solid;
+}
+
+/*요일별 버튼*/
+.week_btn {
+    border-radius:10%;
+    background-color:white;
+    width:10%;
+    height:4%;
+    font-size:medium;
+    text-align:center;
+
+}
+
+.week_btn:hover {
+    color:white;
+    border:silver;
+    background-color:skyblue;
+    box-shadow: 0 10px 10px 0 rgba(0,0,0,0.24), 0 10px 10px 0 rgba(0,0,0,0.10);
+}
+
+/*요일별 그래프 이미지*/
+.week_img {
+    align:center;
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+

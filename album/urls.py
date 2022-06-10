@@ -26,6 +26,8 @@ urlpatterns = [
 # 분석 페이지
   path('analysis/', views.analysis, name='analysis'),
   path('analysis/analysisPlace',analysis.views.analysisPlace,name='analysisPlace'),
+  path('analysis/analysisTime',analysis.views.analysisTime,name='analysisTime'),     
+
 # app api 
   path('app_login/', views.AppLoginView.as_view(), name='AppLogin'),
   path('app_upload/', views.UploadView.as_view(), name="AppUpload"),

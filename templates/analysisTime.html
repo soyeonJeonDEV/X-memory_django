@@ -1,0 +1,345 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Time Analysis</title>
+
+
+    <!--장고용 서식-->
+    <link rel="stylesheet" type="text/css" href="{%static '시간분석.css'%}">
+    <link rel="stylesheet" href="{%static 'bootstrap.min.css'%}">
+    <link rel="stylesheet" href="{%static 'bootstrap.min.js'%}">
+
+    <!--폰트-->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Gamja+Flower&family=Nanum+Myeongjo:wght@700&display=swap" rel="stylesheet">
+
+
+
+</head>
+<body>
+
+    <div id="wrap">
+        <br><br>
+        <br><br>
+
+        <!--뒤로가기 버튼-->
+        <button onclick="history.back()" id="back_btn"><img src="{% static 'images\back.png' %}" id="back_img"></button>
+        <br><br>
+
+        <!--나타낼 제목-->
+        <h1>{{user.username}}님의</h1>
+        <br>
+        <h4>시간별 분석</h4>
+        <br>
+
+        <!--연도버튼-->
+        <select name="year" class="year_month">
+            <option value="2022" selected>2022</option> <!--초기선택-->
+            <option value="2021">2021</option>
+            <option value="2020">2020</option>
+            <option value="2019">2019</option>
+            <option value="2018">2018</option>
+        </select>년
+
+        <!--월버튼-->
+        <select name="month" class="year_month">
+            <option value="01">01</option>
+            <option value="02">02</option>
+            <option value="03">03</option>
+            <option value="04">04</option>
+            <option value="05">05</option>
+            <option value="06" selected>06</option> <!--초기선택-->
+            <option value="07">07</option>
+            <option value="08">08</option>
+            <option value="09">09</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+        </select>월
+
+        <!--확인버튼-->
+        <input type="button" id="result_btn" style="margin-left:2%;" value="분석결과 확인">
+        <br>
+        <br>
+        <br>
+        <br>
+
+
+        <!--시간대 그래프 나타내기-->
+        <div id="time_div">
+            <table id="time_tb">
+                <caption><h3>시간대별 분석</h3></caption>
+                <tr ><td style="text-align:center; padding:3%;">
+                    <input type="button" id="dawn_btn" class="time_btn" value="새벽">
+                    <input type="button" id="morning_btn" class="time_btn" value="아침">
+                    <input type="button" id="lunch_btn" class="time_btn" value="점심">
+                </td></tr>
+                <tr style="text-align:center;"><td>
+                    <input type="button" id="evening_btn" class="time_btn" value="저녁">
+                    <input type="button" id="night_btn" class="time_btn" value="밤">
+                </td></tr>
+                <tr><td>
+                    <div class="timegraph">
+                      <img src="{% static 'images\graphtime_새벽.png' %}" class="graph_img" id="dawn_img" alt="">
+                    </div>
+
+                    <div class="timegraph">
+                      <img src="{% static 'images\graphtime_아침.png' %}" class="graph_img" id="morning_img" alt="">
+                    </div>
+
+                    <div class="timegraph">
+                      <img src="{% static 'images\graphtime_점심.png' %}" class="graph_img" id="lunch_img" alt="">
+                    </div>
+
+                    <div class="timegraph">
+                      <img src="{% static 'images\graphtime_저녁.png' %}" class="graph_img" id="evening_img" alt="">
+                    </div>
+
+                    <div class="timegraph">
+                      <img src="{% static 'images\graphtime_밤.png' %}" class="graph_img" id="night_img" alt="">
+                    </div>
+                </td></tr>
+            </table>
+        </div>
+
+
+        <!--요일별 태그 그래프로 나타내기-->
+        <div id="week_div">
+            <table id="week_tb">
+                <caption><h3>요일별 분석</h3></caption>
+                <tr ><td style="text-align:center; padding:3%;">
+                    <input type="button" id="week_top_btn" class="week_btn" value="요일별 인기">
+                    <input type="button" id="mon_btn" class="week_btn" value="월요일">
+                    <input type="button" id="tue_btn" class="week_btn" value="화요일">
+                    <input type="button" id="wed_btn" class="week_btn" value="수요일">
+                </td></tr>
+                <tr ><td style="text-align:center; padding:3%;">
+                    <input type="button" id="thur_btn" class="week_btn" value="목요일">
+                    <input type="button" id="fri_btn" class="week_btn" value="금요일">
+                    <input type="button" id="sat_btn" class="week_btn" value="토요일">
+                    <input type="button" id="sun_btn" class="week_btn" value="일요일">
+                </td></tr>
+                <tr><td>
+                    <!--요일별 Top1 태그 그래프 나타내기-->
+                    <div class="weekdaygraph_top1">
+                      <img src="{% static 'images\graphweekday.png' %}" class="week_img" id="week_top_img" alt="">
+                    </div>
+
+                    <!--요일(월~일) Top5 태그 그래프 나타내기-->
+                    <div class="weekdaygraph_yoil">
+                      <img src="{% static 'images\graph_월요일.png' %}" class="week_img" id="mon_img" alt="">
+                    </div>
+
+                    <div class="weekdaygraph_yoil">
+                      <img src="{% static 'images\graph_화요일.png' %}" class="week_img" id="tue_img" alt="">
+                    </div>
+
+                    <div class="weekdaygraph_yoil">
+                      <img src="{% static 'images\graph_수요일.png' %}" class="week_img" id="wed_img" alt="">
+                    </div>
+
+                    <div class="weekdaygraph_yoil">
+                      <img src="{% static 'images\graph_목요일.png' %}" class="week_img" id="thur_img" alt="">
+                    </div>
+
+                    <div class="weekdaygraph_yoil">
+                      <img src="{% static 'images\graph_금요일.png' %}" class="week_img" id="fri_img" alt="">
+                    </div>
+
+                    <div class="weekdaygraph_yoil">
+                      <img src="{% static 'images\graph_토요일.png' %}" class="week_img" id="sat_img" alt="">
+                    </div>
+
+                    <div class="weekdaygraph_yoil">
+                      <img src="{% static 'images\graph_일요일.png' %}" class="week_img" id="sun_img" alt="">
+                    </div>
+                </td></tr>
+            </table>
+        </div>
+
+    </div>
+
+
+</body>
+
+
+<script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+
+<script>
+    /*시간별 분석에서 버튼 눌렀을 때 분석 이미지 표시*/
+    $(document).ready(function(){
+            /*웹페이지 열었을 때*/
+            $("#dawn_img").hide();
+            $("#morning_img").hide();
+            $("#lunch_img").show(); /*초기 선택*/
+            $("#evening_img").hide();
+            $("#night_img").hide();
+
+
+            /*새벽 버튼 클릭했을 때 새벽 보여줌*/      /*******************새벽이랑 아침은 사진이 없어서 안뜹니당*****************/
+            $("#dawn_btn").click(function(){
+                $("#dawn_img").show();
+                $("#morning_img").hide();
+                $("#lunch_img").hide();
+                $("#evening_img").hide();
+                $("#night_img").hide();
+            });
+
+            /*아침 버튼 클릭했을 때 아침 보여줌*/
+            $("#morning_btn").click(function(){
+                $("#dawn_img").hide();
+                $("#morning_img").show();
+                $("#lunch_img").hide();
+                $("#evening_img").hide();
+                $("#night_img").hide();
+            });
+
+            /*점심 버튼 클릭했을 때 점심 보여줌*/
+            $("#lunch_btn").click(function(){
+                $("#dawn_img").hide();
+                $("#morning_img").hide();
+                $("#lunch_img").show();
+                $("#evening_img").hide();
+                $("#night_img").hide();
+            });
+
+            /*저녁 버튼 클릭했을 때 저녁 보여줌*/
+            $("#evening_btn").click(function(){
+                $("#dawn_img").hide();
+                $("#morning_img").hide();
+                $("#lunch_img").hide();
+                $("#evening_img").show();
+                $("#night_img").hide();
+            });
+
+            /*밤 버튼 클릭했을 때 밤 보여줌*/
+            $("#night_btn").click(function(){
+                $("#dawn_img").hide();
+                $("#morning_img").hide();
+                $("#lunch_img").hide();
+                $("#evening_img").hide();
+                $("#night_img").show();
+            });
+        });
+
+
+/*요일별 분석에서 버튼 눌렀을 때 분석 이미지 표시*/
+    $(document).ready(function(){
+            /*웹페이지 열었을 때*/
+            $("#week_top_img").show(); /*초기 선택*/
+            $("#mon_img").hide();
+            $("#tue_img").hide();
+            $("#wed_img").hide();
+            $("#thur_img").hide();
+            $("#fri_img").hide();
+            $("#sat_img").hide();
+            $("#sun_img").hide();
+
+
+            /*요일별 인기 태그*/
+            $("#week_top_btn").click(function(){
+                $("#week_top_img").show();
+                $("#mon_img").hide();
+                $("#tue_img").hide();
+                $("#wed_img").hide();
+                $("#thur_img").hide();
+                $("#fri_img").hide();
+                $("#sat_img").hide();
+                $("#sun_img").hide();
+            });
+
+            /*월요일*/
+            $("#mon_btn").click(function(){
+                $("#week_top_img").hide();
+                $("#mon_img").show();
+                $("#tue_img").hide();
+                $("#wed_img").hide();
+                $("#thur_img").hide();
+                $("#fri_img").hide();
+                $("#sat_img").hide();
+                $("#sun_img").hide();
+            });
+
+            /*화요일*/
+            $("#tue_btn").click(function(){
+                $("#week_top_img").hide();
+                $("#mon_img").hide();
+                $("#tue_img").show();
+                $("#wed_img").hide();
+                $("#thur_img").hide();
+                $("#fri_img").hide();
+                $("#sat_img").hide();
+                $("#sun_img").hide();
+            });
+
+            /*수요일*/
+            $("#wed_btn").click(function(){
+                $("#week_top_img").hide();
+                $("#mon_img").hide();
+                $("#tue_img").hide();
+                $("#wed_img").show();
+                $("#thur_img").hide();
+                $("#fri_img").hide();
+                $("#sat_img").hide();
+                $("#sun_img").hide();
+            });
+
+            /*목요일*/
+            $("#thur_btn").click(function(){
+                $("#week_top_img").hide();
+                $("#mon_img").hide();
+                $("#tue_img").hide();
+                $("#wed_img").hide();
+                $("#thur_img").show();
+                $("#fri_img").hide();
+                $("#sat_img").hide();
+                $("#sun_img").hide();
+            });
+
+            /*금요일*/
+            $("#fri_btn").click(function(){
+                $("#week_top_img").hide();
+                $("#mon_img").hide();
+                $("#tue_img").hide();
+                $("#wed_img").hide();
+                $("#thur_img").hide();
+                $("#fri_img").show();
+                $("#sat_img").hide();
+                $("#sun_img").hide();
+            });
+
+            /*토요일*/
+            $("#sat_btn").click(function(){
+                $("#week_top_img").hide();
+                $("#mon_img").hide();
+                $("#tue_img").hide();
+                $("#wed_img").hide();
+                $("#thur_img").hide();
+                $("#fri_img").hide();
+                $("#sat_img").show();
+                $("#sun_img").hide();
+            });
+
+            /*일요일*/
+            $("#sun_btn").click(function(){
+                $("#week_top_img").hide();
+                $("#mon_img").hide();
+                $("#tue_img").hide();
+                $("#wed_img").hide();
+                $("#thur_img").hide();
+                $("#fri_img").hide();
+                $("#sat_img").hide();
+                $("#sun_img").show();
+            });
+
+        });
+
+
+
+</script>
+
+
+</html>

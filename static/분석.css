@@ -1,0 +1,143 @@
+/*분석.css*/
+
+*{
+    margin: auto;
+    font-family: 'Nanum Myeongjo', serif; /*폰트*/
+}
+
+body{
+    /*전체 배경*/
+    background: white;
+        /* url(https://mblogthumb-phinf.pstatic.net/20120629_279/libido83_1340957741380xqEzT_JPEG/bg-graph_paper.jpg?type=w2); */
+    background-size:cover;
+}
+
+#wrap{
+    width:80%;
+    background-color:white;
+    border:1px solid;
+    margin-top:5%;
+    margin-bottom:5%;
+    padding-left:5%;
+    padding-right:5%;
+}
+
+
+/*연 월 선택 드롭다운박스*/
+.year_month {
+    /*margin:10px;
+    width:120px;
+    height:30px;*/
+    margin:1%;
+    width:8%;
+    height:4%;
+    font-size:medium;
+}
+
+/*분석결과 확인버튼*/
+#result_btn {
+    border-radius:10%;
+    background-color:white;
+    width:12%;
+    height:4%;
+    font-size:medium;
+    text-align:center;
+}
+
+#result_btn:hover {
+    color:white;
+    border:silver;
+    background-color:skyblue;
+    box-shadow: 0 10px 10px 0 rgba(0,0,0,0.24), 0 10px 10px 0 rgba(0,0,0,0.10);
+}
+
+/*태그랭킹*/
+#ranking {
+    padding:10%;
+    text-align:center;
+}
+
+/*최상위 태그*/
+#rank_best {
+    border:1px solid;
+    border-radius:20%;
+    width:80%;
+    height:80%;
+}
+
+#rank1_img {
+    margin:auto;
+    width:100%;
+    height:100%;
+}
+
+/*1,2,3등 태그*/
+.rank123 {
+    border:1px solid;
+    border-radius:20%;
+    width:30%;
+    height:30%;
+    display: inline-block;
+    font-size:medium;
+    text-align:left;
+}
+
+.rank_table {
+    text-align:left;
+    margin:20%;
+}
+
+/*디테일 박스*/
+#go_to_detail{
+    text-align:center;
+}
+
+/* 버튼 스타일 */
+button,
+button::after {
+  -webkit-transition: all 0.3s;
+    -moz-transition: all 0.3s;
+  -o-transition: all 0.3s;
+	transition: all 0.3s;
+}
+
+button {
+  background: none;
+  border: 2px solid;
+  border-radius: 30%;
+  display: inline-block;
+  font-weight: bold;
+  position: relative;
+  text-transform: uppercase;
+}
+
+button::before,
+button::after {
+  position: absolute;
+  z-index: -1;
+}
+
+/*디테일 버튼*/
+.detail_btn {
+    margin:5%;
+    border-radius:30%;
+    background-color:white;
+    width:30%;
+    height:20%;
+    font-size:large;
+}
+
+.detail_btn:hover {
+    background-color:skyblue;
+    color:white;
+    box-shadow: 0 10px 10px 0 rgba(0,0,0,0.24), 0 10px 10px 0 rgba(0,0,0,0.10);
+}
+
+
+
+
+
+
+
+
+
