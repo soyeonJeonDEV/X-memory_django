@@ -1,3 +1,4 @@
+from django import forms
 from django.db import models
 from django.conf import settings
 # Create your models here.
@@ -27,6 +28,9 @@ class PhotoTag(models.Model):
 # 유저테이블 연결
 class AnalysisResult(models.Model):
     photo = models.ForeignKey(PhotoTag, null=False, on_delete=models.CASCADE)
-    location = models.CharField(max_length=100, default="",blank=True)
-    field3 = models.CharField(max_length=100, default="",blank=True)
+    location = models.CharField(max_length=100, default="", null=True,blank=True)
+    field3 = models.CharField(max_length=100, default="",null=True,blank=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE, related_name='user_id')
+
+class searchForm(forms.Form):
+    tag=forms.CharField()

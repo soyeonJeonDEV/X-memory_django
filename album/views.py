@@ -11,7 +11,7 @@ from .models import Photo, PhotoTag,AnalysisResult
 import logging
 import boto3
 from botocore.exceptions import ClientError
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt 
 
 import io
 # from PIL import Image
@@ -30,6 +30,8 @@ import pymysql
 import googlemaps
 
 
+gmaps= googlemaps.Client(key='AIzaSyDlTe2iwy53wvvt8WNwJ15fgzLGNmAQpf8')
+  
 # presigned 아닌 사진 리스트
 @login_required(login_url='login')
 def index(request):
@@ -277,7 +279,9 @@ def detail(request,photo_id):
 
   return render(request, 'detail.html', {'tags' : tags,'photo_id':photo_id,'photo':url})
 
-def search_by_tag(request,tag):
+@csrf_exempt
+def search_by_tag(request):
+  tag=request.GET['tag']
   print(tag)
   print(request.body)
 
@@ -484,23 +488,27 @@ def detect_tag(request):
 
 ##태그테이블에서 위경도를 받아와서 위치를 찾는 함수
 def search_place(tag_table):
-  gmaps= googlemaps.Client(key='AIzaSyDlTe2iwy53wvvt8WNwJ15fgzLGNmAQpf8')
   photo=tag_table.drop_duplicates(['photo_id'])
   place = photo[['longitude','latitude']]
-  place= place.fillna(0)
-  __list__=[]
-  for row in place.itertuples(index=False, name=None):
-    if row == (0,0):
-      __list__.append(0)
-    else:
-      try: 
-        geo_location=gmaps.reverse_geocode(row, language='ko')
-        __list__.append(pd.DataFrame(geo_location)['formatted_address'][0])
-      except:
+  print(place)
+  if place.empty == False:
+    place= place.fillna(0)
+    __list__=[]
+    for row in place.itertuples(index=False, name=None):
+      if row == (0,0):
         __list__.append(0)
-    photo = photo.copy()
-    photo['place']= __list__
-    tag_table=pd.merge(tag_table,photo[['photo_id','place']], how='left', left_on='photo_id', right_on='photo_id')
+      else:
+        try: 
+          geo_location=gmaps.reverse_geocode(row, language='ko')
+          __list__.append(pd.DataFrame(geo_location)['formatted_address'][0])
+        except:
+          __list__.append(0)
+      print(__list__)
+      photo = photo.copy()
+      print(photo)
+      photo['place']= __list__
+      tag_table=pd.merge(tag_table,photo[['photo_id','place']], how='left', left_on='photo_id', right_on='photo_id')
+      print(tag_table)
     return tag_table
 
 
@@ -539,8 +547,7 @@ def analysis(request):
 
       conn = pymysql.connect(host='18.219.244.45', user='python', password='python',db='mysql_db', charset='utf8')
       curs = conn.cursor(pymysql.cursors.DictCursor)
-      sql = """insert into album_analysisresult(photo_id,location,user_id) 
-      values (%s, %s, %s)"""
+      sql = """insert into album_analysisresult(photo_id,location,user_id) values (%s, %s, %s)"""
       curs.executemany(sql, lst)
       conn.commit()
 
@@ -548,8 +555,8 @@ def analysis(request):
 # ==============================================================================
 
       conn.close()
-  # return render(request, 'analysis.html') #,{'map' : maps}
-    return {'map':lst}
+  return render(request, 'analysis.html', {}) #,{'map' : maps}
+    # return {'map':lst}
 
 #photo_id 참조하여 DB에서 정보 가져오는 함수 
 """

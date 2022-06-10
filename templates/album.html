@@ -1,16 +1,16 @@
 {% extends 'base.html' %}
 {% block content %}
 
+    <form method="get" class="post-form" action="search/">
+      {% csrf_token %}
+      <input type="text" value="{{ form.tag.value|default_if_none:'' }}" 
+      class="form-control" name="tag">
+      <button type="submit" class="btn btn-light">태그로 검색</button>
+    </form>
+
 <div class="wrap">
   <div class="wall">
     <div class="container container-fluid">
-
-      {% comment %} 테스트디브
-      <div class="row row-eq-height">
-        <div class="col-4 album2">
-          <img class="pic1" src="static/monika-grabkowska-dtq_NLadQ08-unsplash.jpg" />
-        </div>
-      </div> {% endcomment %}
       <div class="row row-eq-height">
         {% for a_photo in photos %}
         <div class="col-4 col-sm-4 albums">
@@ -25,6 +25,8 @@
         {% endfor %}
       </div>
     </div>
+
+
   </div>
 </div>
 {% endblock content %}
