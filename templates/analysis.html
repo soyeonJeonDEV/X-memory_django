@@ -6,9 +6,6 @@
     <meta charset="UTF-8">
     <title>Analysis</title>
 
-    <!--장고에 넣을때는 아래 한 줄만 빼기-->
-    <link rel="stylesheet" type="text/css" href="../../../../static/분석.css">
-
     <!--장고용 서식-->
     <link rel="stylesheet" type="text/css" href="{%static '분석.css'%}">
     <link rel="stylesheet" href="{%static 'bootstrap.min.css'%}">
@@ -105,8 +102,8 @@
         <div id="go_to_detail">
             
 <!-- <a href={% url 'analysis' %}><button type="button">분석</button></a> -->
-            <a href={% url 'analysisPlace' %}><button type="button" class="detail_btn">분석</button></a>
-            <a href={% url 'analysisTime' %}><button type="button" class="detail_btn">분석</button></a>
+            <a href={% url 'analysisPlace' %}><button type="button" class="detail_btn">장소 분석</button></a>
+            <a href={% url 'analysisTime' %}><button type="button" class="detail_btn">시간 분석</button></a>
             
         </div>
 
