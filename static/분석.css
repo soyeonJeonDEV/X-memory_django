@@ -7,8 +7,7 @@
 
 body{
     /*전체 배경*/
-    background: 00BFF;
-        /* url(https://mblogthumb-phinf.pstatic.net/20120629_279/libido83_1340957741380xqEzT_JPEG/bg-graph_paper.jpg?type=w2); */
+    background: url(https://mblogthumb-phinf.pstatic.net/20120629_279/libido83_1340957741380xqEzT_JPEG/bg-graph_paper.jpg?type=w2); */
     background-size:cover;
 }
 

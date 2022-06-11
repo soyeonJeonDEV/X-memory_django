@@ -621,6 +621,8 @@ def analysis(request):
     try:
         date = request.GET['date']
 
+    except: #기본 페이지(현재 날짜)
+
         user = get_user_model()
         user = request.user.id
         photo_id_list = list(Photo.objects.filter(author_id=user).values_list('id', flat=True))
@@ -629,14 +631,13 @@ def analysis(request):
         tag_table = get_table(user, photo_id, 'phototag')
 
         if tag_table.empty == False:
-            # 태그테이블에 데이터 존재하면 사용자 요청 받은 날짜인지 비교
-            year = date.year
-            month = date.month
+            year = datetime.datetime.now().year
+            month = datetime.datetime.now().month
+
             tag_table['create_date'] = pd.to_datetime(tag_table['create_date'])
             tag_table['year'] = tag_table['create_date'].dt.year
             tag_table['month'] = tag_table['create_date'].dt.month
             tag_table = tag_table[(tag_table['year'] == year) & (tag_table['month'] == month)]  # 연도,월 일치하는 데이터만 가져옴
-
             # tag_table은 사용자가 요청한 연/월에 맞는 사용자의 phototag
             # 태그 Top3에 대한 태그명, 태그 개수 구하기 ###########
             ## new tag list
@@ -662,7 +663,7 @@ def analysis(request):
                 related_photo1 = tag_table[tag_table['tags'] == rank1_tagname]['photo_id']
                 ## 태그 rank1에 대한 연관 태그
                 related_tags1 = tag_table[(tag_table['photo_id'].isin(related_photo1))&(tag_table['tags'].ne(rank1_tagname))&
-                                          (tag_table['tags'].ne(rank2_tagname))&(tag_table['tags'].ne(rank3_tagname))]['tags'] #수정
+                                            (tag_table['tags'].ne(rank2_tagname))&(tag_table['tags'].ne(rank3_tagname))]['tags'] #수정
                 related_tags1_top2 = collections.Counter(related_tags1).most_common(2)  # 가장 많은 top2만
                 ## 태그 rank1에 대한 연관 태그 2개 각각 변수로 저장
                 rank1_related_tagname = [list(row)[0] for row in related_tags1_top2]
@@ -673,7 +674,7 @@ def analysis(request):
                 related_photo2 = tag_table[tag_table['tags'] == rank2_tagname]['photo_id']
                 ## 태그 rank2에 대한 연관 태그
                 related_tags2 = tag_table[(tag_table['photo_id'].isin(related_photo2))&(tag_table['tags'].ne(rank1_tagname))&
-                                          (tag_table['tags'].ne(rank2_tagname))&(tag_table['tags'].ne(rank3_tagname))]['tags'] #수정
+                                            (tag_table['tags'].ne(rank2_tagname))&(tag_table['tags'].ne(rank3_tagname))]['tags'] #수정
                 related_tags2_top2 = collections.Counter(related_tags2).most_common(2)  # 가장 많은 top2만
                 ## 태그 rank2에 대한 연관 태그 2개 각각 변수로 저장
                 rank2_related_tagname = [list(row)[0] for row in related_tags2_top2]
@@ -684,7 +685,7 @@ def analysis(request):
                 related_photo3 = tag_table[tag_table['tags'] == rank3_tagname]['photo_id']
                 ## 태그 rank3에 대한 연관 태그
                 related_tags3 = tag_table[(tag_table['photo_id'].isin(related_photo3))&(tag_table['tags'].ne(rank1_tagname))&
-                                          (tag_table['tags'].ne(rank2_tagname))&(tag_table['tags'].ne(rank3_tagname))]['tags'] # 수정
+                                            (tag_table['tags'].ne(rank2_tagname))&(tag_table['tags'].ne(rank3_tagname))]['tags'] # 수정
                 related_tags3_top2 = collections.Counter(related_tags3).most_common(2)  # 가장 많은 top2만
                 ## 태그 rank3에 대한 연관 태그 2개 각각 변수로 저장
                 rank3_related_tagname = [list(row)[0] for row in related_tags3_top2]
@@ -694,7 +695,7 @@ def analysis(request):
 
                 # rank1 태그의 사진 가져오기 # 수정
                 photo1 = Photo.objects.filter(id__in=related_photo1).first()
-                photourl = photo1.thumbnail
+                photourl = photo1.photo
 
 
 
@@ -747,126 +748,109 @@ def analysis(request):
                 'related_tagname3_2': 0,
                 'photourl': 0
             }
+        return render(request, 'analysis.html', content)
+#===========================================================================
+ #사용자 요청 받은 날짜 페이지
+    user = get_user_model()
+    user = request.user.id
+    photo_id_list = list(Photo.objects.filter(author_id=user).values_list('id', flat=True))
+    photo_id = ','.join(map(str, photo_id_list))
+    # MySQL Connection 연결하고 테이블에서 데이터 가져옴
+    tag_table = get_table(user, photo_id, 'phototag')
 
-    except:
-        # default: 이번달 데이터 분석
-        # MySQL Connection 연결하고 테이블에서 데이터 가져옴
-        user = get_user_model()
-        user = request.user.id
-        photo_id_list = list(Photo.objects.filter(author_id=user).values_list('id', flat=True))
-        photo_id = ','.join(map(str, photo_id_list))
-        tag_table = get_table(user, photo_id, 'phototag')
+    year, month = date.split('-')
+    year = int(year); month = int(month)
 
-        # 현재 연월일에 해당하는 데이터를 가져옴
-        year = datetime.datetime.now().year
-        month = datetime.datetime.now().month
+    if tag_table.empty == False:
+        # 태그테이블에 데이터 존재하면 사용자 요청 받은 날짜인지 비교
+        tag_table['create_date'] = pd.to_datetime(tag_table['create_date'])
+        tag_table['year'] = tag_table['create_date'].dt.year
+        tag_table['month'] = tag_table['create_date'].dt.month
 
+        tag_table = tag_table[(tag_table['year'] == year) & (tag_table['month'] == month)]  # 연도,월 일치하는 데이터만 가져옴
+
+        # tag_table은 사용자가 요청한 연/월에 맞는 사용자의 phototag
+        # 태그 Top3에 대한 태그명, 태그 개수 구하기 ###########
+        ## new tag list
         if tag_table.empty == False:
-            tag_table['create_date'] = pd.to_datetime(tag_table['create_date'])
-            tag_table['year'] = tag_table['create_date'].dt.year
-            tag_table['month'] = tag_table['create_date'].dt.month
-            tag_table = tag_table[(tag_table['year'] == year) & (tag_table['month'] == month)]  # 연도,월 일치하는 데이터만 가져옴
-            # 위의 tag테이블에는 사용자가 요청한 연/월에 맞는 사용자의 phototag 테이블이 들어가 있습니다
-            # 태그 Top3에 대한 태그명, 태그 개수 구하기 함수 ###########
-            ## new tag list
-            if tag_table.empty == False:
-                tags_lst = tag_table['tags']
+            tags_lst = tag_table['tags']
 
-                ## Tag top 3
-                rank3 = collections.Counter(tags_lst).most_common(3)
+            ## Tag top 3
+            rank3 = collections.Counter(tags_lst).most_common(3)
+            ## tag name (rank1~3)
+            rank3_name = [list(row)[0] for row in rank3]
+            rank1_tagname = rank3_name[0]
+            rank2_tagname = rank3_name[1]
+            rank3_tagname = rank3_name[2]
 
-                ## tag name (rank1~3)
-                rank3_name = [list(row)[0] for row in rank3]
-                rank1_tagname = rank3_name[0]
-                rank2_tagname = rank3_name[1]
-                rank3_tagname = rank3_name[2]
+            ## tag frequency (rank1~3)
+            rank3_freq = [list(row)[1] for row in rank3]
+            rank1_tagfreq = rank3_freq[0]
+            rank2_tagfreq = rank3_freq[1]
+            rank3_tagfreq = rank3_freq[2]
 
-                ## tag frequency (rank1~3)
-                rank3_freq = [list(row)[1] for row in rank3]
-                rank1_tagfreq = rank3_freq[0]
-                rank2_tagfreq = rank3_freq[1]
-                rank3_tagfreq = rank3_freq[2]
+            # 태그 top3에 대해 각각 2개의 연관태그 생성 ###########
+            ## 태그 rank1를 가진 사진 id
+            related_photo1 = tag_table[tag_table['tags'] == rank1_tagname]['photo_id']
+            ## 태그 rank1에 대한 연관 태그
+            related_tags1 = tag_table[(tag_table['photo_id'].isin(related_photo1))&(tag_table['tags'].ne(rank1_tagname))&
+                                        (tag_table['tags'].ne(rank2_tagname))&(tag_table['tags'].ne(rank3_tagname))]['tags'] #수정
+            related_tags1_top2 = collections.Counter(related_tags1).most_common(2)  # 가장 많은 top2만
+            ## 태그 rank1에 대한 연관 태그 2개 각각 변수로 저장
+            rank1_related_tagname = [list(row)[0] for row in related_tags1_top2]
+            related_tagname1_1 = rank1_related_tagname[0]
+            related_tagname1_2 = rank1_related_tagname[1]
 
-                # 태그 top3에 대해 각각 2개의 연관태그 생성하는 함수 ###########
-                ## 태그 rank1를 가진 사진 id
-                related_photo1 = tag_table[tag_table['tags'] == rank1_tagname]['photo_id']
-                ## 태그 rank1에 대한 연관 태그
-                related_tags1 = tag_table[(tag_table['photo_id'].isin(related_photo1))&(tag_table['tags'].ne(rank1_tagname))&
-                                          (tag_table['tags'].ne(rank2_tagname))&(tag_table['tags'].ne(rank3_tagname))]['tags'] #수정
-                related_tags1_top2 = collections.Counter(related_tags1).most_common(2)  # 가장 많은 top2만
-                ## 태그 rank1에 대한 연관 태그 2개 각각 변수로 저장
-                rank1_related_tagname = [list(row)[0] for row in related_tags1_top2]
-                related_tagname1_1 = rank1_related_tagname[0]
-                related_tagname1_2 = rank1_related_tagname[1]
+            ## 태그 rank2를 가진 사진 id
+            related_photo2 = tag_table[tag_table['tags'] == rank2_tagname]['photo_id']
+            ## 태그 rank2에 대한 연관 태그
+            related_tags2 = tag_table[(tag_table['photo_id'].isin(related_photo2))&(tag_table['tags'].ne(rank1_tagname))&
+                                        (tag_table['tags'].ne(rank2_tagname))&(tag_table['tags'].ne(rank3_tagname))]['tags'] #수정
+            related_tags2_top2 = collections.Counter(related_tags2).most_common(2)  # 가장 많은 top2만
+            ## 태그 rank2에 대한 연관 태그 2개 각각 변수로 저장
+            rank2_related_tagname = [list(row)[0] for row in related_tags2_top2]
+            related_tagname2_1 = rank2_related_tagname[0]
+            related_tagname2_2 = rank2_related_tagname[1]
 
-                ## 태그 rank2를 가진 사진 id
-                related_photo2 = tag_table[tag_table['tags'] == rank2_tagname]['photo_id']
-                ## 태그 rank2에 대한 연관 태그
-                related_tags2 = tag_table[(tag_table['photo_id'].isin(related_photo2))&(tag_table['tags'].ne(rank1_tagname))&
-                                          (tag_table['tags'].ne(rank2_tagname))&(tag_table['tags'].ne(rank3_tagname))]['tags'] # 수정
-                related_tags2_top2 = collections.Counter(related_tags2).most_common(2)  # 가장 많은 top2만
-                ## 태그 rank2에 대한 연관 태그 2개 각각 변수로 저장
-                rank2_related_tagname = [list(row)[0] for row in related_tags2_top2]
-                related_tagname2_1 = rank2_related_tagname[0]
-                related_tagname2_2 = rank2_related_tagname[1]
+            ## 태그 rank3를 가진 사진 id
+            related_photo3 = tag_table[tag_table['tags'] == rank3_tagname]['photo_id']
+            ## 태그 rank3에 대한 연관 태그
+            related_tags3 = tag_table[(tag_table['photo_id'].isin(related_photo3))&(tag_table['tags'].ne(rank1_tagname))&
+                                        (tag_table['tags'].ne(rank2_tagname))&(tag_table['tags'].ne(rank3_tagname))]['tags'] # 수정
+            related_tags3_top2 = collections.Counter(related_tags3).most_common(2)  # 가장 많은 top2만
+            ## 태그 rank3에 대한 연관 태그 2개 각각 변수로 저장
+            rank3_related_tagname = [list(row)[0] for row in related_tags3_top2]
+            related_tagname3_1 = rank3_related_tagname[0]
+            related_tagname3_2 = rank3_related_tagname[1]
 
-                ## 태그 rank3를 가진 사진 id
-                related_photo3 = tag_table[tag_table['tags'] == rank3_tagname]['photo_id']
-                ## 태그 rank3에 대한 연관 태그
-                related_tags3 = tag_table[(tag_table['photo_id'].isin(related_photo3))&(tag_table['tags'].ne(rank1_tagname))
-                                          &(tag_table['tags'].ne(rank2_tagname))&(tag_table['tags'].ne(rank3_tagname))]['tags'] # 수정
-                related_tags3_top2 = collections.Counter(related_tags3).most_common(2)  # 가장 많은 top2만
-                ## 태그 rank3에 대한 연관 태그 2개 각각 변수로 저장
-                rank3_related_tagname = [list(row)[0] for row in related_tags3_top2]
-                related_tagname3_1 = rank3_related_tagname[0]
-                related_tagname3_2 = rank3_related_tagname[1]
 
-                # rank1 태그의 사진 가져오기 # 수정
-                photo1 = Photo.objects.filter(id__in=related_photo1).first()
-                photourl = photo1.photo
-
-                content = {
-                    'rank1_tagname': rank1_tagname,  # 태그명
-                    'rank2_tagname': rank2_tagname,
-                    'rank3_tagname': rank3_tagname,
-                    'rank1_tagfreq': rank1_tagfreq,  # 태그 빈도
-                    'rank2_tagfreq': rank2_tagfreq,
-                    'rank3_tagfreq': rank3_tagfreq,
-                    'related_tagname1_1': related_tagname1_1,  # 연관 태그명
-                    'related_tagname1_2': related_tagname1_2,
-                    'related_tagname2_1': related_tagname2_1,
-                    'related_tagname2_2': related_tagname2_2,
-                    'related_tagname3_1': related_tagname3_1,
-                    'related_tagname3_2': related_tagname3_2,
-                    'photourl':photourl
-                }
-
-            else:
-                content = {
-                    'rank1_tagname': 0,
-                    'rank2_tagname': 0,
-                    'rank3_tagname': 0,
-                    'rank1_tagfreq': 0,
-                    'rank2_tagfreq': 0,
-                    'rank3_tagfreq': 0,
-                    'related_tagname1_1': 0,
-                    'related_tagname1_2': 0,
-                    'related_tagname2_1': 0,
-                    'related_tagname2_2': 0,
-                    'related_tagname3_1': 0,
-                    'related_tagname3_2': 0,
-                    'photourl': 0
-                }
-
+            # rank1 태그의 사진 가져오기 # 수정
+            photo1 = Photo.objects.filter(id__in=related_photo1).first()
+            photourl = photo1.photo
+            content = {
+                'rank1_tagname': rank1_tagname,  # 태그명
+                'rank2_tagname': rank2_tagname,
+                'rank3_tagname': rank3_tagname,
+                'rank1_tagfreq': rank1_tagfreq,  # 태그 빈도
+                'rank2_tagfreq': rank2_tagfreq,
+                'rank3_tagfreq': rank3_tagfreq,
+                'related_tagname1_1': related_tagname1_1,  # 연관 태그명
+                'related_tagname1_2': related_tagname1_2,
+                'related_tagname2_1': related_tagname2_1,
+                'related_tagname2_2': related_tagname2_2,
+                'related_tagname3_1': related_tagname3_1,
+                'related_tagname3_2': related_tagname3_2,
+                'photourl': photourl
+            }
         else:
             content = {
-                'rank1_tagname': 0,  # 태그명
+                'rank1_tagname': '사진이 없습니다',  # 태그명
                 'rank2_tagname': 0,
                 'rank3_tagname': 0,
                 'rank1_tagfreq': 0,  # 태그 빈도
                 'rank2_tagfreq': 0,
                 'rank3_tagfreq': 0,
-                'related_tagname1_1': 0,  # 연관 태그명
+                'related_tagname1_1': 2,  # 연관 태그명
                 'related_tagname1_2': 0,
                 'related_tagname2_1': 0,
                 'related_tagname2_2': 0,
@@ -875,14 +859,29 @@ def analysis(request):
                 'photourl': 0
             }
 
-    # ==========================================================================
-    # 분석 페이지가 아니라 디테일 페이지 들어갔을 때 위치정보 저장받을 수 있도록 수정하기
+    else:
+        # pass #리턴할 값이 없으면 오류가 나므로 리턴값을 넣어주세요(현재는 페이지만 띄워줘서 pass했습니다)
+        content = {
+            'rank1_tagname': '사진이 없습니다',  # 태그명
+            'rank2_tagname': 0,
+            'rank3_tagname': 0,
+            'rank1_tagfreq': 0,  # 태그 빈도
+            'rank2_tagfreq': 0,
+            'rank3_tagfreq': 0,
+            'related_tagname1_1': 0,  # 연관 태그명
+            'related_tagname1_2': 0,
+            'related_tagname2_1': 0,
+            'related_tagname2_2': 0,
+            'related_tagname3_1': 0,
+            'related_tagname3_2': 0,
+            'photourl': 0
+        }
+
+    
+    #==========================================================================
+    #분석 페이지가 아니라 디테일 페이지 들어갔을 때 위치정보 저장받을 수 있도록 수정하기
 
     # 페이지 접속하면 위치 정보 찾아줌
-    user = get_user_model()
-    user = request.user.id
-    photo_id_list = list(Photo.objects.filter(author_id=request.user.id).values_list('id', flat=True))
-    photo_id = ','.join(map(str, photo_id_list))
     analyzed_photo_list = list(Analysis.objects.filter(user_id=user).values_list('photo_id', flat=True))
     N_anaylazed_photos = list(set(photo_id_list) - set(analyzed_photo_list))
     N_anaylazed_photo = ','.join(map(str, N_anaylazed_photos))
@@ -914,7 +913,7 @@ def analysis(request):
     # 디테일 함수 안으로 넣어주세요(디테일 페이지 들어가면 작동되도록)
     # ==============================================================================
 
-    return render(request, 'analysis.html', content)  # ,{'map' : maps}
+    return render(request, 'analysis.html', content )  # ,{'map' : maps}
 
 
 # photo_id 참조하여 DB에서 정보 가져오는 함수

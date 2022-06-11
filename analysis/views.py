@@ -49,6 +49,9 @@ import seaborn as sns
 from datetime import date
 
 
+
+
+
 #위치 가져오기 위해 api접근
 gmaps = googlemaps.Client(key='AIzaSyDlTe2iwy53wvvt8WNwJ15fgzLGNmAQpf8')
 
@@ -248,6 +251,7 @@ def timezone_tag(df):
 # 요일별 분석 함수 (수정 후) ##################################
 import collections
 from matplotlib import font_manager, rc
+import platform
 
 def weekday_tag(tag_table): # 일~토 인기 태그 top1개씩 한 그래프에
     df = tag_table.copy()
@@ -311,14 +315,6 @@ def weekday_tag(tag_table): # 일~토 인기 태그 top1개씩 한 그래프에
             plt.clf()
             #이미지 저장 경로 수정 필요(db에 user.id와 같이 업로드)
 
-@csrf_exempt
-def analysis(request):
-  try:
-    date=request.GET['date']
-    print(date) 
-  except:
-    print('date=null')
-
 # 디테일 페이지1 #############################################
 @csrf_exempt
 def analysisTime(request):
@@ -334,28 +330,36 @@ def analysisTime(request):
         
         if tag_table.empty == False:
             #태그테이블에 데이터 존재하면 사용자 요청 받은 날짜인지 비교
-            year = date.year
-            month = date.month
+            year, month = date.split('-')
+            year = int(year); month = int(month)
             tag_table['create_date']=pd.to_datetime(tag_table['create_date'])
             tag_table['year'] = tag_table['create_date'].dt.year
             tag_table['month'] = tag_table['create_date'].dt.month
             tag_table=tag_table[(tag_table['year'] == year)&(tag_table['month'] == month)] #연도,월 일치하는 데이터만 가져옴
 
-            weektag = weekday_tag(tag_table)
+            if tag_table.empty == False:
+                weektag = weekday_tag(tag_table)
 
-            timetag = time_tag(tag_table)
-            timezonetag = timezone_tag(timetag)
-            content={
-            'timezonetag':timezonetag,
-            'weektag':weektag
-            }
+                timetag = time_tag(tag_table)
+                timezonetag = timezone_tag(timetag)
+                
+                content={
+                'timezonetag':timezonetag,
+                'weektag':weektag
+                }
+            else:
+                content = {
+                    'timezonetag' : 0,
+                    'weektag': 0
+                }
 
         else: #태그테이블 비어있을 때 오류 나지 않게 처리
             weektag=0
             timezonetag=0
+
             content={
-            'timezonetag':timezonetag,
-            'weektag':weektag
+                'timezonetag':timezonetag,
+                'weektag':weektag
             }
     except: # default: 이번달 데이터 분석        
         # MySQL Connection 연결하고 테이블에서 데이터 가져옴
@@ -375,15 +379,19 @@ def analysisTime(request):
             tag_table['year'] = tag_table['create_date'].dt.year
             tag_table['month'] = tag_table['create_date'].dt.month
             tag_table=tag_table[(tag_table['year'] == year)&(tag_table['month'] == month)] #연도,월 일치하는 데이터만 가져옴
-   
-            weektag = weekday_tag(tag_table)
-
-            timetag = time_tag(tag_table)
-            timezonetag = timezone_tag(timetag)
-            content={
-            'timezonetag':timezonetag,
-            'weektag':weektag
-            }
+            if tag_table.empty == False:
+                weektag = weekday_tag(tag_table)
+                timetag = time_tag(tag_table)
+                timezonetag = timezone_tag(timetag)
+                content={
+                'timezonetag':timezonetag,
+                'weektag':weektag
+                }
+            else:
+                content = {
+                    'timezonetag':0,
+                    'weektag':0
+                }
 
         else: #태그테이블 비어있을 때 오류 나지 않게 처리
             weektag=0
