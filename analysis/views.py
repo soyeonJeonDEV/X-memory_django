@@ -49,14 +49,12 @@ import seaborn as sns
 from datetime import date
 
 
-
-
-
 #위치 가져오기 위해 api접근
 gmaps = googlemaps.Client(key='AIzaSyDlTe2iwy53wvvt8WNwJ15fgzLGNmAQpf8')
 
 
 # 장소 분석 페이지 관련 함수
+
 
 # 사진 많이 찍은 위치를 지도에 표시하는 함수
 # 수정 고려사항: popup을 클릭하면 해당 위치에서 찍은 사진들 출력되게 연동? 
@@ -66,11 +64,12 @@ def myplace(tag_table):
         place_list = tag_table['location'].str.split()
         tag_table['city'] = place_list.str.get(1)
         tag_table['locality'] = place_list.str.get(2)
-        placeTaken_photo = tag_table.drop_duplicates(['photo_id'])['locality'].value_counts()[0:3]
+        placeTaken_photo = tag_table.drop_duplicates(['photo_id'])['locality'].value_counts()
         placeTaken_photo = pd.DataFrame(placeTaken_photo)
+
         # 같은 날 찍은 사진도 카운팅됨
         placeTaken_photo['index'] = placeTaken_photo.index
-        placeTaken_photo
+        placeTaken_photo #사진 찍은
         places = list(placeTaken_photo.index)
         i = 0
         lat = []  # 위도
@@ -83,38 +82,64 @@ def myplace(tag_table):
                 lng.append(geo_location['location']['lng'])
 
             except:
-                pass
+                lat.append('no')
+                lng.append('no')
+
         # 데이터프레임만들어 출력하기
         df = pd.DataFrame({'위도': lat, '경도': lng}, index=places)
-        placeTaken_photo = pd.concat([df, placeTaken_photo], axis=1)
+        placeTaken_photo = pd.concat([df, placeTaken_photo], axis=1) 
+        drop_row_idx = placeTaken_photo[placeTaken_photo['위도']=='no'].index
+        placeTaken_photo = placeTaken_photo.drop(drop_row_idx)
+
         placeTaken_photo = placeTaken_photo.rename(columns={'locality': 'num'})
-        placeTaken_photo
         coords = placeTaken_photo[['위도', '경도']]
         coords = list(zip(coords['위도'], coords['경도']))
 
+        #지도는 그냥 한국 지도 띄워줌
         m = folium.Map(
             location=(35.95, 128.25),
-            zoom_start=7
+            zoom_start=8
         )
-        for i in range(3):
+        for i in range(len(placeTaken_photo)):
             fav_place_photo = tag_table[tag_table['locality'] == places[i]]['photo_id'].value_counts().index[0]
-            # 나중에 가져올 values를 thumnail로 바꾸는 것 고려
             fav_place_photo_img = str(
-                list(Photo.objects.filter(id=fav_place_photo).values_list('thumbnail', flat=True))[0])
-
-            myPhoto = '<img src= ' + fav_place_photo_img + '>'
+                list(Photo.objects.filter(id=fav_place_photo).values_list('photo', flat=True))[0])
+            #내 사진 링크(그 지역의 태그 제일 많이 붙은 이미지 하나만 가져옴)
+            myPhoto = '<img src= ' + fav_place_photo_img + ' width="150" height="200">'
 
             iframe = folium.IFrame(myPhoto, width=130, height=130)
-            popup = folium.Popup(iframe, max_width=300)
+            # popup = folium.Popup(iframe, max_width=300)
 
+            placename = str(placeTaken_photo.index[i])
+            place_photo_num = placeTaken_photo['num'][i]
+            place_tags = list(PhotoTag.objects.filter(photo_id=fav_place_photo).values_list('tags', flat=True))
+            place_tags=collections.Counter(place_tags).most_common(1)
+            placetag, num = str(place_tags).split(',')
+            placetag = placetag[2:]; num = num[:-2]
+
+            html = '<h1>' + placename  + '</h1><br><p>' + placename + ' 에서 ' + str(place_photo_num) + '''개의 사진을 찍었어요! <br>
+            가장 많이 사용하신 태그는 <br>'''+ placetag  +"입니다</p>" + myPhoto  
+            
+            if place_photo_num < 5:
+                size = place_photo_num * 10
+                opacity = place_photo_num / 20 #사진 많아지면 수치 수정 
+            else:
+                size = 50
+                opacity = place_photo_num/20 #사진 많아지면 수치 수정
+                if opacity > 1:
+                    opacity == 1        
+            #마커
             folium.Marker(coords[i],
-                          popup=popup,
-                          tootip=str(placeTaken_photo['num'][i]) + '개의 사진을 찍었어요!').add_to(m)
+                        popup=html,
+                        icon=folium.Icon(color='lightgray', icon='picture')
+                        ).add_to(m)
+
         maps = m._repr_html_()
+
     else: #default로 한국 지도 띄워줌 
         m = folium.Map(
             location=(35.95, 128.25),
-            zoom_start=7
+            zoom_start=8
         )
         maps = m._repr_html_()
 
