@@ -28,6 +28,8 @@ class TagForm(forms.ModelForm):
     model=PhotoTag
     fields=['photo','tags','create_date','latitude','longitude','review','starScore','imgurl']
 
+class searchForm(forms.Form):
+    tag=forms.CharField()
 
 class monthForm(forms.Form):
   date=forms.DateField()
