@@ -31,6 +31,8 @@ import googlemaps
 
 import datetime
 from datetime import date
+import collections
+
 
 gmaps= googlemaps.Client(key='AIzaSyDlTe2iwy53wvvt8WNwJ15fgzLGNmAQpf8')
 
@@ -515,7 +517,7 @@ def analysis(request):
       tag_table=tag_table[(tag_table['year'] == year)&(tag_table['month'] == month)] #연도,월 일치하는 데이터만 가져옴
       
       # tag_table은 사용자가 요청한 연/월에 맞는 사용자의 phototag
-      # 태그 Top3에 대한 태그명, 태그 개수 구하기 함수 ###########
+      # 태그 Top3에 대한 태그명, 태그 개수 구하기 ###########
       ## new tag list
       tags_lst = tag_table['tags']
 
@@ -533,7 +535,7 @@ def analysis(request):
       rank2_tagfreq = rank3_freq[1]
       rank3_tagfreq = rank3_freq[2]
 
-      # 태그 top3에 대해 각각 2개의 연관태그 생성하는 함수 ###########
+      # 태그 top3에 대해 각각 2개의 연관태그 생성 ###########
       ## 태그 rank1를 가진 사진 id
       related_photo1 = tag_table[tag_table['tags'] == rank1_tagname]['photo_id']
       ## 태그 rank1에 대한 연관 태그
@@ -614,11 +616,8 @@ def analysis(request):
       tag_table['year'] = tag_table['create_date'].dt.year
       tag_table['month'] = tag_table['create_date'].dt.month
       tag_table=tag_table[(tag_table['year'] == year)&(tag_table['month'] == month)] #연도,월 일치하는 데이터만 가져옴
-      ################### 여기 메인페이지 들어갈 내용 작성해주세요######################### (함수구동 등)
       # 위의 tag테이블에는 사용자가 요청한 연/월에 맞는 사용자의 phototag 테이블이 들어가 있습니다
-      ################################################################################################
-
-    # 태그 Top3에 대한 태그명, 태그 개수 구하기 함수 ###########
+      # 태그 Top3에 대한 태그명, 태그 개수 구하기 함수 ###########
       ## new tag list
       tags_lst = tag_table['tags']
 
@@ -701,8 +700,7 @@ def analysis(request):
 
 
 # ==========================================================================
-# 여기서부터는 디테일 함수 안에 들어가면 될 것 같아요
-# 분석 페이지가 아니라 디테일 페이지 들어갔을 때 위치정보 저장받을 수 있도록
+# 분석 페이지가 아니라 디테일 페이지 들어갔을 때 위치정보 저장받을 수 있도록 수정하기
 
 #페이지 접속하면 위치 정보 찾아줌
   user = get_user_model()
@@ -740,8 +738,7 @@ def analysis(request):
 # 디테일 함수 안으로 넣어주세요(디테일 페이지 들어가면 작동되도록)
 # ==============================================================================
 
-      #conn.close()
-  return render(request, 'analysis.html') #,{'map' : maps}
+  return render(request, 'analysis.html', content) #,{'map' : maps}
 
 
 #photo_id 참조하여 DB에서 정보 가져오는 함수 
