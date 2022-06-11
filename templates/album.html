@@ -1,13 +1,6 @@
-{% extends 'base.html' %} {% block content %} {% comment %}
-<div class="inputbox">
-  <div class="form-group">
-    <input class="form-field" type="text" placeholder="inseart tag here..." />
-    <button>태그로 검색</button>
-  </div>
-</div>
-{% endcomment %}
+{% extends 'base.html' %} {% block content %}
 
-<form method="get" class="post-form" action="search/">
+<form method="get" class="post-form" action={{index}}"/search/">
   {% comment %} {% csrf_token %} {% endcomment %}
   <div class="inputbox">
     <div class="form-group">

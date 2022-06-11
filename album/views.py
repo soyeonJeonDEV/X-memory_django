@@ -292,9 +292,9 @@ def search_by_tag(request):
   for a_photo_id in photo_result:
     print(a_photo_id)
     found_photo=Photo.objects.get(id=a_photo_id)
-    print(request.user)
-    print(found_photo.author)
-    print(found_photo.id)
+    # print(request.user)
+    # print(found_photo.author)
+    # print(found_photo.id)
     if found_photo.author == request.user:
       photo_list.append(str(found_photo.photo))
 
