@@ -269,13 +269,21 @@ def weekday_tag(tag_table): # 일~토 인기 태그 top1개씩 한 그래프에
         # 일~토 top1 태그 추출해 그래프 생성
         commontags_lst = []
         for i in range(7):
-            commontags_lst.append(collections.Counter(weekdaytag_df[weekdaytag_df['weekday'] == i]['tags']).most_common(5))
-
+            num = len(collections.Counter(weekdaytag_df[weekdaytag_df['weekday'] == i]['tags']))
+            if num > 5:
+                commontags_lst.append(collections.Counter(weekdaytag_df[weekdaytag_df['weekday'] == i]['tags']).most_common(5))
+            elif num > 1: 
+                commontags_lst.append(collections.Counter(weekdaytag_df[weekdaytag_df['weekday'] == i]['tags']).most_common(num))
+                print(commontags_lst.append(collections.Counter(weekdaytag_df[weekdaytag_df['weekday'] == i]['tags']).most_common(num)))
+            elif num == 0:
+                commontags_lst.append([tuple(['없음',1])])
+        
         mostcommon_byweekday = []
         for j in range(7):
             mostcommon_byweekday.append(commontags_lst[j][0])
+            print(commontags_lst[j][0])
         mostcommon_byweekday = pd.DataFrame(mostcommon_byweekday)
-
+        print( mostcommon_byweekday)
         plt.rc('font', family='nanumgothic')
         plt.figure(figsize=(7, 5))
         plt.bar(mostcommon_byweekday.index, mostcommon_byweekday[1], color=sns.color_palette('Set2'))
@@ -320,47 +328,6 @@ def weekday_tag(tag_table): # 일~토 인기 태그 top1개씩 한 그래프에
 def analysisTime(request):
     try: #사용자 요청 받은 날짜 데이터로 분석     
         date=request.GET['date'] #2002-07 형태
-      
-        user = get_user_model()
-        user = request.user.id
-        photo_id_list=list(Photo.objects.filter(author_id=user).values_list('id', flat=True))
-        photo_id=','.join(map(str, photo_id_list))
-        # MySQL Connection 연결하고 테이블에서 데이터 가져옴
-        tag_table = get_table(user,photo_id,'phototag')
-        
-        if tag_table.empty == False:
-            #태그테이블에 데이터 존재하면 사용자 요청 받은 날짜인지 비교
-            year, month = date.split('-')
-            year = int(year); month = int(month)
-            tag_table['create_date']=pd.to_datetime(tag_table['create_date'])
-            tag_table['year'] = tag_table['create_date'].dt.year
-            tag_table['month'] = tag_table['create_date'].dt.month
-            tag_table=tag_table[(tag_table['year'] == year)&(tag_table['month'] == month)] #연도,월 일치하는 데이터만 가져옴
-
-            if tag_table.empty == False:
-                weektag = weekday_tag(tag_table)
-
-                timetag = time_tag(tag_table)
-                timezonetag = timezone_tag(timetag)
-                
-                content={
-                'timezonetag':timezonetag,
-                'weektag':weektag
-                }
-            else:
-                content = {
-                    'timezonetag' : 0,
-                    'weektag': 0
-                }
-
-        else: #태그테이블 비어있을 때 오류 나지 않게 처리
-            weektag=0
-            timezonetag=0
-
-            content={
-                'timezonetag':timezonetag,
-                'weektag':weektag
-            }
     except: # default: 이번달 데이터 분석        
         # MySQL Connection 연결하고 테이블에서 데이터 가져옴
         user = get_user_model()
@@ -400,6 +367,48 @@ def analysisTime(request):
             'timezonetag':timezonetag,
             'weektag':weektag
             }
+            return render(request,'analysisTime.html', content)
+
+    user = get_user_model()
+    user = request.user.id
+    photo_id_list=list(Photo.objects.filter(author_id=user).values_list('id', flat=True))
+    photo_id=','.join(map(str, photo_id_list))
+    # MySQL Connection 연결하고 테이블에서 데이터 가져옴
+    tag_table = get_table(user,photo_id,'phototag')
+    
+    if tag_table.empty == False:
+        #태그테이블에 데이터 존재하면 사용자 요청 받은 날짜인지 비교
+        year, month = date.split('-')
+        year = int(year); month = int(month)
+        tag_table['create_date']=pd.to_datetime(tag_table['create_date'])
+        tag_table['year'] = tag_table['create_date'].dt.year
+        tag_table['month'] = tag_table['create_date'].dt.month
+        tag_table=tag_table[(tag_table['year'] == year)&(tag_table['month'] == month)] #연도,월 일치하는 데이터만 가져옴
+
+        if tag_table.empty == False:
+            weektag = weekday_tag(tag_table)
+
+            timetag = time_tag(tag_table)
+            timezonetag = timezone_tag(timetag)
+            
+            content={
+            'timezonetag':timezonetag,
+            'weektag':weektag
+            }
+        else:
+            content = {
+                'timezonetag' : 0,
+                'weektag': 0
+            }
+
+    else: #태그테이블 비어있을 때 오류 나지 않게 처리
+        weektag=0
+        timezonetag=0
+
+        content={
+            'timezonetag':timezonetag,
+            'weektag':weektag
+        }
     return render(request,'analysisTime.html', content)
 
 #DB에서 정보를 받아옴
