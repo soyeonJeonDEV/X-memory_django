@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 from requests import request
-from .forms import UserForm, PhotoForm
+from .forms import UserForm, PhotoForm,TagForm
 from .models import Photo, PhotoTag, Analysis, AnalysisResult
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
@@ -25,7 +25,7 @@ import mimetypes
 # import jsonresponse
 import io
 from PIL import Image
-#import cv2
+import cv2
 import numpy as np
 from base64 import b64decode
 # from .utils import *
@@ -50,9 +50,6 @@ import seaborn as sns
 
 
 #위치 가져오기 위해 api접근
-gmaps= googlemaps.Client(key='AIzaSyDlTe2iwy53wvvt8WNwJ15fgzLGNmAQpf8')
-
-
 gmaps= googlemaps.Client(key='AIzaSyDlTe2iwy53wvvt8WNwJ15fgzLGNmAQpf8')
   
 # presigned 아닌 사진 리스트
@@ -303,7 +300,29 @@ def detail(request, photo_id):
 
 
 def search_by_tag(request, tags):
-    pass
+  tag=request.GET['tag']
+  print(tag)
+  print(request.body)
+
+  photo_list = []
+
+  photo_result= PhotoTag.objects.filter(tags=tag).values_list('photo_id',flat=True)
+  print(photo_result)
+  for a_photo_id in photo_result:
+    print(a_photo_id)
+    found_photo=Photo.objects.get(id=a_photo_id)
+    # print(request.user)
+    # print(found_photo.author)
+    # print(found_photo.id)
+    if found_photo.author == request.user:
+      photo_list.append(str(found_photo.photo))
+
+
+  print(photo_list)
+
+  return render (request,'search.html',{'tag':tag,'photo_list' : photo_list})
+
+
 
 def s3_get(bucket,key):
   
@@ -466,32 +485,6 @@ def yolo(img_buffer):
 
 @login_required(login_url='login')
 def add_tag(request):
-    print('add_tag 실행')
-    # print(request)
-    # print(request.POST)
-    # print(request.body)
-    if request.method == "POST":
-        form = TagForm(request.POST)
-        if form.is_valid():
-            print('form is valid')
-            tags = form.save(commit=False)
-            # print(request.POST['photo'])
-            tags.photo = Photo.objects.get(id=int(request.POST['photo']))
-            print(tags.photo)
-            # print(tags.photo.photo)
-            # print(request.POST['tags'])
-            tags.tags = request.POST['tags']
-            print(tags.tags)
-            print(tags)
-            tags.create_date = timezone.now()
-            print(tags.create_date)
-            # tags.imgurl=tags.photo.photo
-            tags.save()
-
-            return JsonResponse({'code': '200', 'msg': '태그 전송 성공'})
-        else:
-            print(form.errors.as_data())
-            print('form is not valid')
   print('add_tag 실행')
   # print(request)
   print(request.POST)
