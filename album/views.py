@@ -23,7 +23,6 @@ import mimetypes
 # import models
 # import requests
 # import jsonresponse
-
 import io
 from PIL import Image
 #import cv2
@@ -54,6 +53,8 @@ import seaborn as sns
 gmaps= googlemaps.Client(key='AIzaSyDlTe2iwy53wvvt8WNwJ15fgzLGNmAQpf8')
 
 
+gmaps= googlemaps.Client(key='AIzaSyDlTe2iwy53wvvt8WNwJ15fgzLGNmAQpf8')
+  
 # presigned 아닌 사진 리스트
 @login_required(login_url='login')
 def index(request):
@@ -218,7 +219,7 @@ def create_presigned_url(bucket_name, object_name, expiration=3600):
 
     :param bucket_name: string
     :param object_name: string
-    :param expiration: Time in seconds for the presigned URL to remain valid
+    :param expiration: Time in seconds for the pres valid
     :return: Presigned URL as string. If error, returns None.
     """
 
@@ -303,6 +304,96 @@ def detail(request, photo_id):
 
 def search_by_tag(request, tags):
     pass
+
+def s3_get(bucket,key):
+  
+  s3_client = boto3.client('s3')
+  try:
+    print(key)
+    response = s3_client.get_object(Bucket=bucket, Key=key)
+    print(f'response = {response}')
+    content=response['Body'].read()
+    # print(f'content = {content}')
+    return content
+      
+  except ClientError as e:
+      logging.error(e)
+      return False
+  return True
+
+
+def detail(request,photo_id):
+  photo=Photo.objects.filter(id=photo_id)
+  photo=photo.values('photo')
+  # print(photo)
+  photo=list(photo)[0]['photo']
+  print(photo)
+
+  if (photo[0]=='s') :
+    url=photo.strip('s3://cloud01-2/')
+    # print(url)
+    url = create_presigned_url('cloud01-2', url)
+    print(url)
+  else:
+    url=photo  
+
+  tags=PhotoTag.objects.filter(photo_id=photo_id).values_list('tags',flat=True)
+
+  # 태그가 존재하는가 
+  if tags:
+    tags=list(tags)
+    print(f'tags{tags}')
+  
+  # 태그가 없을 경우 자동검출 
+  else:
+    # tags=리스트 스트링
+    # tags= yolo(photo.read())
+    key ='pu'+ url.strip('https://cloud01-2.s3.us-east-2.amazonaws.com') #앞에 두글자 짤리는 이유가 뭔지 모르겠다 
+    pic= s3_get('cloud01-2',key)
+    # print(pic)
+    tags= yolo(pic)
+    print(tags)
+
+    # 태그 저장 
+    for a_tag in tags:
+      print(a_tag)
+      tagForm= TagForm({'tags':a_tag,'photo':Photo.objects.get(id=int(photo_id)),'create_date':timezone.now()})
+      print(tagForm)
+      if tagForm.is_valid():
+        tagForm.save()
+
+      else:
+        print('tagform is not valid')
+        print(tagForm.errors)
+
+
+  # analysis(request)
+
+  return render(request, 'detail.html', {'tags' : tags,'photo_id':photo_id,'photo':url})
+
+@csrf_exempt
+def search_by_tag(request):
+  tag=request.GET['tag']
+  print(tag)
+  print(request.body)
+
+  photo_list = []
+
+  photo_result= PhotoTag.objects.filter(tags=tag).values_list('photo_id',flat=True)
+  print(photo_result)
+  for a_photo_id in photo_result:
+    print(a_photo_id)
+    found_photo=Photo.objects.get(id=a_photo_id)
+    # print(request.user)
+    # print(found_photo.author)
+    # print(found_photo.id)
+    if found_photo.author == request.user:
+      photo_list.append(str(found_photo.photo))
+
+
+  print(photo_list)
+
+  return render (request,'search.html',{'tag':tag,'photo_list' : photo_list})
 
 
 def yolo(img_buffer):
@@ -401,6 +492,27 @@ def add_tag(request):
         else:
             print(form.errors.as_data())
             print('form is not valid')
+  print('add_tag 실행')
+  # print(request)
+  print(request.POST)
+  # print(request.body)
+  if request.method=="POST":
+    form = TagForm(request.POST)
+    if form.is_valid():
+      print('form is valid')
+      tagform=form.save(commit=False)
+      # print(request.POST['photo'])
+      tagform.photo=Photo.objects.get(id=int(request.POST['photo']))
+      print(tagform.photo)
+      # print(request.POST['tags'])
+      tagform.tags=request.POST['tags']
+      # print(tags.tags)
+      # print(tags)
+      tagform.create_date=timezone.now()
+      print(tagform.create_date)
+      tagform.save()
+      
+      return JsonResponse({'code': '200', 'msg': '태그 전송 성공'})
     else:
         print('add_tag if문 빠져나옴 - request method is not post')
 
@@ -795,15 +907,14 @@ def analysis(request):
     return render(request, 'analysis.html', content)  # ,{'map' : maps}
 
 
-# photo_id 참조하여 DB에서 정보 가져오는 함수
+
+#photo_id 참조하여 DB에서 정보 가져오는 함수 
 """
   user = get_user_model()
   user = user.id
   photo_id_list=list(Photo.objects.filter(author_id=request.user).values_list('id', flat=True))
   photo_id=','.join(map(str, photo_id_list))
 """
-
-
 # 함수 쓸 때 위에 있어야 하는 문장 사용:get_table(user,photo_id, 가져오고자 하는 테이블명)
 # DBtable: 'analysis', 'photo', 'phototag
 def get_table(user, photo_id, DBtable):

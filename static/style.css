@@ -1,4 +1,30 @@
-*{box-sizing: border-box;}
+*{box-sizing: border-box;
+  font-family: 'Mukta Malar', Arial ,'Jua', sans-serif;}
+
+body{
+  font-family: 'Mukta Malar';
+}
+
+:root {
+
+  --input-color: rgb(248,136,126);
+  --input-border:rgb(251,192,188);
+  --input-background:rgb(250,248,245);
+  --input-placeholder:rgb(251,192,188);
+
+  --input-border-focus:rgb(243,214,210);
+/* // rgb(255,225,225); */
+  --group-color: var(--input-color);
+  --group-border: var(--input-border);
+  --group-background: rgb(251,192,188);
+
+  --group-color-focus: #fff;
+  --group-border-focus: rgb(95,185,190);
+  /* // --group-border-focus: var(--input-border-focus); */
+  --group-background-focus:rgb(95,185,190);
+  --white:#FFF;
+
+}
 
 
 /* 회원가입 */
@@ -50,186 +76,75 @@
   min-width: 100%;
   max-width: 100%; */
   border-radius: 5%;
-  object-fit: cover;
+  object-fit:contain;
 }
 /*
 
 
-
-
  * Row with equal height columns
-
-
-
 
  * --------------------------------------------------
 
-
-
-
  */
 
-
-
-
  .row-eq-height {
-
   display: -webkit-box;
-
   display: -webkit-flex;
-
   display: -ms-flexbox;
-
   display:         flex;
-
 }
-
-
-
-
-
 
 /*
  * Styles copied from the Grid example to make grid rows & columns visible.
  */
 
-
 .container {
 
-  padding-right: 15px;
-
-
-
-
-  padding-left: 15px;
-
-
-
+  padding-right: 8px;
+  padding-left: 8px;
 
 }
-
-
-
-
-
-
-
-
 
 h4 {
-
   margin-top: 25px;
-
-
 }
-
-
-
 
 .row {
-
-
-
-
-  margin-bottom: 20px;
-
-
-
+  margin-bottom: 5px;
 
 }
-
-
-
 
 .row .row {
-
-
-
-
-  margin-top: 10px;
-
-
-
-
+  margin-top: 5px;
   margin-bottom: 0;
 
-
-
-
 }
-
-
 
 
 [class*="col-"] {
 
-  padding-top: 15px;
-
-  padding-bottom: 15px;
-
-
-  /* background-color: #eee; */
-
-  /* background-color: rgba(86,61,124,.15); */
-
-  /* border: 1px solid #ddd; */
-
-  /* border: 1px solid rgba(86,61,124,.2); */
-
-
-
+  padding-top: 8px;
+  padding-bottom: 8px;
 
 }
 
 
+/* Callout styles copied from Bootstrap's main docs.
 
-
-
-
-
-
-
-/*
-
-
-
-
- * Callout styles copied from Bootstrap's main docs.
-
-
-
-
- */
-
-
-
-
-/* Common styles for all types */
-
-
-
+Common styles for all types */
 
 .bs-callout {
-
-
-
 
   padding: 20px;
 
   margin: 20px 0;
-
-
 
   border-left: 3px solid #eee;
 
 
 }
 
-
-
-
 .bs-callout h4 {
-
 
   margin-top: 0;
 
@@ -237,42 +152,25 @@ h4 {
 
 }
 
-
-
-
 .bs-callout p:last-child {
   margin-bottom: 0;
 }
-
-
-
 
 .bs-callout code {
 
   background-color: #fff;
 
-
-
   border-radius: 3px;
 
 }
 
-
-
-
 /* Variations */
-
-
-
-
 .bs-callout-danger {
 
   background-color: #fdf7f7;
   border-color: #d9534f;
 
 }
-
-
 
 
 .bs-callout-danger h4 {
@@ -282,32 +180,18 @@ h4 {
 
 }
 
-
-
-
 .bs-callout-warning {
 
   background-color: #fcf8f2;
-
-
   border-color: #f0ad4e;
 
-
-
-
 }
-
-
-
 
 .bs-callout-warning h4 {
 
   color: #f0ad4e;
 
-
 }
-
-
 
 
 .bs-callout-info {
@@ -318,8 +202,6 @@ h4 {
 
 
 }
-
-
 
 
 .bs-callout-info h4 {
@@ -343,62 +225,117 @@ h4 {
   height: 100vh;
 }
 
-/* a{
-  display: inline-block;
-  height: 50px;
-  line-height: 50px;
-  width: 350px;
-  position: relative;
-  
-  text-decoration: none;
-  text-align: center;
-  font-size: 18px;
-  color: white;
-  border-radius: 4px;
-  
-  transition: background-image 150ms ease; */
-  
-/* &:after, &:before {
-  content: "";
-  position: absolute;
-  height: 100%;
+
+
+
+/* 검색 css */
+.form-field {
+  display: block;
   width: 100%;
-  background-image: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
-  border-radius: 4px;
-  left: 0;
-  z-index: -1;
-  transition: opacity 200ms ease;
+  padding: 8px 16px;
+  line-height: 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  font-family: inherit;
+  border-radius: 6px/6px;
+  -webkit-appearance: none;
+  color: var(--input-color);
+  border: 1px solid var(--input-border);
+  background: var(--input-background);
+  transition: border 0.3s ease;
 }
-
-&:before {
-  background-image: linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%);
-  opacity: 0;
+.form-field::placeholder {
+  color: var(--input-placeholder);
 }
-
-&:active {
-  &:before {
-    opacity: 1;
-  }
-  &:after {
-    opacity: 0;
-  } */
-/* } */
-/* }
-
-
-h2 {
-  font-size: 55px;
-  text-transform: uppercase;
+.form-field:focus {
+  outline: none;
+  border-color: var(--group-border-focus);
+}
+.form-group {
+  position: relative;
+  display: flex;
+  /* width: 100%; */
+}
+.form-group > span, .form-group .form-field {
+  white-space: nowrap;
+  display: block;
+}
+.form-group > span:not(:first-child):not(:last-child), .form-group .form-field:not(:first-child):not(:last-child) {
+  border-radius: 0;
+}
+.form-group > span:first-child, .form-group .form-field:first-child {
+  border-radius: 6px 0 0 6px;
+}
+.form-group > span:last-child, .form-group .form-field:last-child {
+  border-radius: 0 6px 6px 0;
+}
+.form-group > span:not(:first-child), .form-group .form-field:not(:first-child) {
+  margin-left: -1px;
+}
+.form-group .form-field {
+  position: relative;
+  z-index: 1;
+  flex: 1 1 auto;
+  width: 1%;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+.form-group > button {
   text-align: center;
-  letter-spacing: 4px;
-  margin: 0;
-  margin-bottom: 30px;  
-  
-  background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  padding: 8px 12px;
+  font-size: 1rem;
+  line-height: 1.4rem;
+  color: var(--group-color-focus);
+  background: var(--group-background);
+  border: 1px solid var(--group-border);
+  transition: background 0.3s ease, border 0.3s ease, color 0.3s ease;
+}
+.form-group:focus-within > button {
+  color: var(--group-color-focus);
+  background: var(--group-background-focus);
+  border-color: var(--group-border-focus);
+}
+/* // Center */
+.inputbox {
+  /* box-sizing: inherit; */
+  /* box-sizing: border-box; */
+  -webkit-font-smoothing: antialiased;
+  /* min-height: 100vh; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  /* background: #f5f9ff; */
+}
+.inputbox:before, .inputbox:after {
+  box-sizing: inherit;
+}
+.inputbox .form-group {
+  max-width:60vw;
+  /* max-width: 360px; */
+}
+.inputbox .form-group:not(:last-child) {
+  margin-bottom: 32px;
 }
 
-@media only screen and (max-width: 700px) {
-  h2 {font-size: 20px;}
-} */
+.tagbutton{
+  margin-top: 0.5rem;
+  border-radius: 8px/6px;
+  text-align: center;
+  padding: 4px 6px;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  color: var(--group-color-focus);
+  background: var(--group-background);
+  border: 1px solid var(--group-border);
+  transition: background 0.3s ease, border 0.3s ease, color 0.3s ease;
+
+}
+.tagbutton:focus{
+
+  color: var(--group-color-focus);
+  background: var(--group-background-focus);
+  border-color: var(--group-border-focus);
+
+}
+

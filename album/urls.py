@@ -21,6 +21,8 @@ urlpatterns = [
 #태그 
   path('detail/add_tag/',views.add_tag,name='add_tag'),
   path('detect_tag/',views.detect_tag,name='detect_tag'),
+# 검색 페이지,
+  path('search/',views.search_by_tag,name='search_by_tag'),
 # 분석 페이지
   path('analysis/', views.analysis, name='analysis'),
   path('analysis/analysisPlace',analysis.views.analysisPlace,name='analysisPlace'),
