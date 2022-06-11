@@ -586,6 +586,13 @@ def analysis(request):
                 related_tagname3_1 = rank3_related_tagname[0]
                 related_tagname3_2 = rank3_related_tagname[1]
 
+
+                # rank1 태그의 사진 가져오기 # 수정
+                photo1 = Photo.objects.filter(id__in=related_photo1).first()
+                photourl = photo1.thumbnail
+
+
+
                 content = {
                     'rank1_tagname': rank1_tagname,  # 태그명
                     'rank2_tagname': rank2_tagname,
@@ -598,7 +605,8 @@ def analysis(request):
                     'related_tagname2_1': related_tagname2_1,
                     'related_tagname2_2': related_tagname2_2,
                     'related_tagname3_1': related_tagname3_1,
-                    'related_tagname3_2': related_tagname3_2
+                    'related_tagname3_2': related_tagname3_2,
+                    'photourl': photourl
                 }
             else:
                 content = {
@@ -613,7 +621,8 @@ def analysis(request):
                     'related_tagname2_1': 0,
                     'related_tagname2_2': 0,
                     'related_tagname3_1': 0,
-                    'related_tagname3_2': 0
+                    'related_tagname3_2': 0,
+                    'photourl': 0
                 }
 
         else:
@@ -630,7 +639,8 @@ def analysis(request):
                 'related_tagname2_1': 0,
                 'related_tagname2_2': 0,
                 'related_tagname3_1': 0,
-                'related_tagname3_2': 0
+                'related_tagname3_2': 0,
+                'photourl': 0
             }
 
     except:
@@ -706,6 +716,10 @@ def analysis(request):
                 related_tagname3_1 = rank3_related_tagname[0]
                 related_tagname3_2 = rank3_related_tagname[1]
 
+                # rank1 태그의 사진 가져오기 # 수정
+                photo1 = Photo.objects.filter(id__in=related_photo1).first()
+                photourl = photo1.photo
+
                 content = {
                     'rank1_tagname': rank1_tagname,  # 태그명
                     'rank2_tagname': rank2_tagname,
@@ -718,7 +732,8 @@ def analysis(request):
                     'related_tagname2_1': related_tagname2_1,
                     'related_tagname2_2': related_tagname2_2,
                     'related_tagname3_1': related_tagname3_1,
-                    'related_tagname3_2': related_tagname3_2
+                    'related_tagname3_2': related_tagname3_2,
+                    'photourl':photourl
                 }
 
             else:
@@ -734,7 +749,8 @@ def analysis(request):
                     'related_tagname2_1': 0,
                     'related_tagname2_2': 0,
                     'related_tagname3_1': 0,
-                    'related_tagname3_2': 0
+                    'related_tagname3_2': 0,
+                    'photourl': 0
                 }
 
         else:
@@ -750,7 +766,8 @@ def analysis(request):
                 'related_tagname2_1': 0,
                 'related_tagname2_2': 0,
                 'related_tagname3_1': 0,
-                'related_tagname3_2': 0
+                'related_tagname3_2': 0,
+                'photourl': 0
             }
 
     # ==========================================================================
