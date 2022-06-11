@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <title>Analysis</title>
 
+
     <!--장고용 서식-->
     <link rel="stylesheet" type="text/css" href="{%static '분석.css'%}">
     <link rel="stylesheet" href="{%static 'bootstrap.min.css'%}">
@@ -23,36 +24,22 @@
 
     <div id="wrap">
         <br><br>
+
+        <!--뒤로가기 버튼-->
+        <button onclick="history.back()" id="back_btn"><img src="{% static 'images\back.png' %}" id="back_img"></button>
+        <br><br>
+
         <h1>{{user.username}} 님의</h1><br>
         <br>
 
-        <!--연도버튼-->
-        <select name="year" class="year_month">
-            <option value="2022" selected>2022</option> <!--초기선택-->
-            <option value="2021">2021</option>
-            <option value="2020">2020</option>
-            <option value="2019">2019</option>
-            <option value="2018">2018</option>
-        </select>년
+        <div><form method="get" class="post-form" action=''>
+            {% csrf_token %}
+            <!-- 날짜 받아오는 폼 -->
+            <input type="month" name = 'date' value="{{form.date.value|default_if_none:''}}">
+            <!--확인버튼-->
+            <input type="submit" id="result_btn" style="margin-left:10px;" value="분석결과 확인">
+        </form></div>
 
-        <!--월버튼-->
-        <select name="month" class="year_month">
-            <option value="01">01</option>
-            <option value="02">02</option>
-            <option value="03">03</option>
-            <option value="04">04</option>
-            <option value="05">05</option>
-            <option value="06" selected>06</option> <!--초기선택-->
-            <option value="07">07</option>
-            <option value="08">08</option>
-            <option value="09">09</option>
-            <option value="10">10</option>
-            <option value="11">11</option>
-            <option value="12">12</option>
-        </select>월
-
-        <!--확인버튼-->
-        <input type="button" id="result_btn" style="margin-left:10px;" value="분석결과 확인">
         <br>
         <br>
 
@@ -61,8 +48,9 @@
             <!--1위 태그-->
             <div id="rank_best">
                 <table>
-                    <tr><td style="padding:10%;"><h2>#최다태그</h2></td></tr>
-                    <tr><td><img src="커피.jpeg" id="rank1_img"></td></tr>
+                    <tr><td style="padding:10%;"><h2>#{{rank1_tagname}}</h2></td></tr>
+                    <tr><td></td>{{firstrank1photo}}</tr>
+                    <tr><td><img src="{{firstrank1photo}}" id="rank1_img"></td></tr>
                 </table>
             </div>
             <br>
@@ -71,26 +59,26 @@
 
                 <div id="rank1" class="rank123">
                     <table class="rank_table">
-                        <tr><td>날짜</td></tr>
-                        <tr><td><h3>태그명</h3></td></tr>
-                        <tr><td>#연관태그1</td></tr>
-                        <tr><td>#연관태그2</td></tr>
+                        <tr><td>{{rank1_tagfreq}}</td></tr>
+                        <tr><td><h3>#{{rank1_tagname}}</h3></td></tr>
+                        <tr><td>#{{related_tagname1_1}}</td></tr>
+                        <tr><td>#{{related_tagname1_2}}</td></tr>
                     </table>
                 </div>
                 <div id="rank2" class="rank123">
                     <table class="rank_table">
-                        <tr><td>날짜</td></tr>
-                        <tr><td><h3>태그명</h3></td></tr>
-                        <tr><td>#연관태그1</td></tr>
-                        <tr><td>#연관태그2</td></tr>
+                        <tr><td>{{rank2_tagfreq}}</td></tr>
+                        <tr><td><h3>#{{rank2_tagname}}</h3></td></tr>
+                        <tr><td>#{{related_tagname2_1}}</td></tr>
+                        <tr><td>#{{related_tagname2_2}}</td></tr>
                     </table>
                 </div>
                 <div id="rank3" class="rank123">
                     <table class="rank_table">
-                        <tr><td>날짜</td></tr>
-                        <tr><td><h3>태그명</h3></td></tr>
-                        <tr><td>#연관태그1</td></tr>
-                        <tr><td>#연관태그2</td></tr>
+                        <tr><td>{{rank3_tagfreq}}</td></tr>
+                        <tr><td><h3>#{{rank3_tagname}}</h3></td></tr>
+                        <tr><td>#{{related_tagname3_1}}</td></tr>
+                        <tr><td>#{{related_tagname3_2}}</td></tr>
                     </table>
                 </div>
 
@@ -100,11 +88,12 @@
 
         <!--디테일 페이지-->
         <div id="go_to_detail">
-            
+
 <!-- <a href={% url 'analysis' %}><button type="button">분석</button></a> -->
-            <a href={% url 'analysisPlace' %}><button type="button" class="detail_btn">장소 분석</button></a>
-            <a href={% url 'analysisTime' %}><button type="button" class="detail_btn">시간 분석</button></a>
-            
+
+            <a href={% url 'analysisTime' %} ><button type="button" class="detail_btn">시간 분석</button></a>
+            <a href={% url 'analysisPlace' %} ><button type="button" class="detail_btn">장소 분석</button></a>
+
         </div>
 
 
