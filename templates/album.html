@@ -1,12 +1,24 @@
 {% extends 'base.html' %}
 {% block content %}
 
+{% comment %} 
+<div class="inputbox">
+  <div class="form-group">
+      <input class="form-field" type="text" placeholder="inseart tag here...">
+      <button>태그로 검색</button>
+  </div></div> {% endcomment %}
+
+
     <form method="get" class="post-form" action="search/">
-      {% csrf_token %}
+      {% comment %} {% csrf_token %} {% endcomment %}
+      <div class="inputbox">
+        <div class="form-group">
       <input type="text" value="{{ form.tag.value|default_if_none:'' }}" 
-      class="form-control" name="tag">
-      <button type="submit" class="btn btn-light">태그로 검색</button>
+      class="form-control form-field" name="tag" placeholder="inseart tag here...">
+      <button type="submit" >태그로 검색</button>
+      </div></div>
     </form>
+
 
 <div class="wrap">
   <div class="wall">
