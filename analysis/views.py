@@ -367,8 +367,9 @@ def analysisTime(request):
             'timezonetag':timezonetag,
             'weektag':weektag
             }
-            return render(request,'analysisTime.html', content)
-
+        return render(request,'analysisTime.html', content)
+    
+    date=request.GET['date'] #2002-07 형태
     user = get_user_model()
     user = request.user.id
     photo_id_list=list(Photo.objects.filter(author_id=user).values_list('id', flat=True))
