@@ -691,6 +691,13 @@ def analysis(request):
                 related_tagname3_1 = rank3_related_tagname[0]
                 related_tagname3_2 = rank3_related_tagname[1]
 
+
+                # rank1 태그의 사진 가져오기 # 수정
+                photo1 = Photo.objects.filter(id__in=related_photo1).first()
+                photourl = photo1.thumbnail
+
+
+
                 content = {
                     'rank1_tagname': rank1_tagname,  # 태그명
                     'rank2_tagname': rank2_tagname,
@@ -703,7 +710,8 @@ def analysis(request):
                     'related_tagname2_1': related_tagname2_1,
                     'related_tagname2_2': related_tagname2_2,
                     'related_tagname3_1': related_tagname3_1,
-                    'related_tagname3_2': related_tagname3_2
+                    'related_tagname3_2': related_tagname3_2,
+                    'photourl': photourl
                 }
             else:
                 content = {
@@ -718,7 +726,8 @@ def analysis(request):
                     'related_tagname2_1': 0,
                     'related_tagname2_2': 0,
                     'related_tagname3_1': 0,
-                    'related_tagname3_2': 0
+                    'related_tagname3_2': 0,
+                    'photourl': 0
                 }
 
         else:
@@ -735,7 +744,8 @@ def analysis(request):
                 'related_tagname2_1': 0,
                 'related_tagname2_2': 0,
                 'related_tagname3_1': 0,
-                'related_tagname3_2': 0
+                'related_tagname3_2': 0,
+                'photourl': 0
             }
 
     except:
@@ -811,6 +821,10 @@ def analysis(request):
                 related_tagname3_1 = rank3_related_tagname[0]
                 related_tagname3_2 = rank3_related_tagname[1]
 
+                # rank1 태그의 사진 가져오기 # 수정
+                photo1 = Photo.objects.filter(id__in=related_photo1).first()
+                photourl = photo1.photo
+
                 content = {
                     'rank1_tagname': rank1_tagname,  # 태그명
                     'rank2_tagname': rank2_tagname,
@@ -823,7 +837,8 @@ def analysis(request):
                     'related_tagname2_1': related_tagname2_1,
                     'related_tagname2_2': related_tagname2_2,
                     'related_tagname3_1': related_tagname3_1,
-                    'related_tagname3_2': related_tagname3_2
+                    'related_tagname3_2': related_tagname3_2,
+                    'photourl':photourl
                 }
 
             else:
@@ -839,7 +854,8 @@ def analysis(request):
                     'related_tagname2_1': 0,
                     'related_tagname2_2': 0,
                     'related_tagname3_1': 0,
-                    'related_tagname3_2': 0
+                    'related_tagname3_2': 0,
+                    'photourl': 0
                 }
 
         else:
@@ -855,7 +871,8 @@ def analysis(request):
                 'related_tagname2_1': 0,
                 'related_tagname2_2': 0,
                 'related_tagname3_1': 0,
-                'related_tagname3_2': 0
+                'related_tagname3_2': 0,
+                'photourl': 0
             }
 
     # ==========================================================================
@@ -900,14 +917,15 @@ def analysis(request):
     return render(request, 'analysis.html', content)  # ,{'map' : maps}
 
 
-
-#photo_id 참조하여 DB에서 정보 가져오는 함수 
+# photo_id 참조하여 DB에서 정보 가져오는 함수
 """
   user = get_user_model()
   user = user.id
   photo_id_list=list(Photo.objects.filter(author_id=request.user).values_list('id', flat=True))
   photo_id=','.join(map(str, photo_id_list))
 """
+
+
 # 함수 쓸 때 위에 있어야 하는 문장 사용:get_table(user,photo_id, 가져오고자 하는 테이블명)
 # DBtable: 'analysis', 'photo', 'phototag
 def get_table(user, photo_id, DBtable):
