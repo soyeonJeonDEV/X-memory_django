@@ -375,25 +375,23 @@ def yolo(img_buffer):
 def add_tag(request):
   print('add_tag 실행')
   # print(request)
-  # print(request.POST)
+  print(request.POST)
   # print(request.body)
   if request.method=="POST":
     form = TagForm(request.POST)
     if form.is_valid():
       print('form is valid')
-      tags=form.save(commit=False)
+      tagform=form.save(commit=False)
       # print(request.POST['photo'])
-      tags.photo=Photo.objects.get(id=int(request.POST['photo']))
-      print(tags.photo)
-      # print(tags.photo.photo)
+      tagform.photo=Photo.objects.get(id=int(request.POST['photo']))
+      print(tagform.photo)
       # print(request.POST['tags'])
-      tags.tags=request.POST['tags']
-      print(tags.tags)
-      print(tags)
-      tags.create_date=timezone.now()
-      print(tags.create_date)
-      # tags.imgurl=tags.photo.photo
-      tags.save()
+      tagform.tags=request.POST['tags']
+      # print(tags.tags)
+      # print(tags)
+      tagform.create_date=timezone.now()
+      print(tagform.create_date)
+      tagform.save()
       
       return JsonResponse({'code': '200', 'msg': '태그 전송 성공'})
     else:
