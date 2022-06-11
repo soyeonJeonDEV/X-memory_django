@@ -291,11 +291,12 @@ def search_by_tag(request):
   print(photo_result)
   for a_photo_id in photo_result:
     print(a_photo_id)
-    # photo_list.append(Photo.objects.get(id=a_photo_id)) #쿼리가 나옴 
-    # photo_list.append(Photo.objects.get(id=a_photo_id)['photo']) # 오류
-    # photo_list.append(Photo.objects.get(id=a_photo_id).values('photo')) photo 어트리뷰트가 없다
-    # photo_list.append(Photo.objects.get(id=a_photo_id).photo) #괜찮은거같은데 왜지... <>이렇게 감싸있는게 문젠가 
-    photo_list.append(str(Photo.objects.get(id=a_photo_id).photo))
+    found_photo=Photo.objects.get(id=a_photo_id)
+    print(request.user)
+    print(found_photo.author)
+    print(found_photo.id)
+    if found_photo.author == request.user:
+      photo_list.append(str(found_photo.photo))
 
 
   print(photo_list)
