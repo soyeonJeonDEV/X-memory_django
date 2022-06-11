@@ -1,26 +1,32 @@
-{% extends 'base.html' %}
-{% block content %}
+{% extends 'base.html' %} {% block content %}
+
+<form method="get" class="post-form" action={{index}}"/search/">
+  {% comment %} {% csrf_token %} {% endcomment %}
+  <div class="inputbox">
+    <div class="form-group">
+      <input
+        type="text"
+        value="{{ form.tag.value|default_if_none:'' }}"
+        class="form-control form-field"
+        name="tag"
+        placeholder="inseart tag here..."
+      />
+      <button type="submit">태그로 검색</button>
+    </div>
+  </div>
+</form>
 
 <div class="wrap">
   <div class="wall">
     <div class="container container-fluid">
-
-      {% comment %} 테스트디브
-      <div class="row row-eq-height">
-        <div class="col-4 album2">
-          <img class="pic1" src="static/monika-grabkowska-dtq_NLadQ08-unsplash.jpg" />
-        </div>
-      </div> {% endcomment %}
       <div class="row row-eq-height">
         {% for a_photo in photos %}
         <div class="col-4 col-sm-4 albums">
-            <img src="{{a_photo.url}}"
-            class="pic1 img-fluid " onclick="load_detail(this.id)" id= '{{a_photo.id}}' alt="">
-            <!-- {{a_photo}} -->
-            <script>  
-              console.log("{{a_photo.id}}") 
-            </script>
-
+          <img src="{{a_photo.url}}" class="pic1 img-fluid" onclick="load_detail(this.id)" id="{{a_photo.id}}" alt="" />
+          <!-- {{a_photo}} -->
+          <script>
+            console.log("{{a_photo.id}}");
+          </script>
         </div>
         {% endfor %}
       </div>
