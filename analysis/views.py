@@ -46,6 +46,7 @@ from folium import plugins
 import folium
 from matplotlib import font_manager, rc
 import seaborn as sns
+from datetime import date
 
 
 #위치 가져오기 위해 api접근
@@ -55,16 +56,16 @@ gmaps = googlemaps.Client(key='AIzaSyDlTe2iwy53wvvt8WNwJ15fgzLGNmAQpf8')
 # 장소 분석 페이지 관련 함수
 
 # 사진 많이 찍은 위치를 지도에 표시하는 함수
+# 수정 고려사항: popup을 클릭하면 해당 위치에서 찍은 사진들 출력되게 연동? 
 def myplace(tag_table):
     # 인풋값으로 태그테이블에 photo_id로 참조된 location필드가 merge된 데이터프레임을 받아옴
-    if 'location' in tag_table.columns:  # 사진의 위치값이 없으면 코드 실행X
+    if 'location' in tag_table.columns:  # 사진의 위치값이 없으면 해당 코드 실행X
         place_list = tag_table['location'].str.split()
         tag_table['city'] = place_list.str.get(1)
         tag_table['locality'] = place_list.str.get(2)
         placeTaken_photo = tag_table.drop_duplicates(['photo_id'])['locality'].value_counts()[0:3]
         placeTaken_photo = pd.DataFrame(placeTaken_photo)
         # 같은 날 찍은 사진도 카운팅됨
-        # 자주 방문 분석을 위해서 create_Date 추가 코드 필요
         placeTaken_photo['index'] = placeTaken_photo.index
         placeTaken_photo
         places = list(placeTaken_photo.index)
@@ -99,14 +100,6 @@ def myplace(tag_table):
                 list(Photo.objects.filter(id=fav_place_photo).values_list('thumbnail', flat=True))[0])
 
             myPhoto = '<img src= ' + fav_place_photo_img + '>'
-            # 이미지 링크를 가져와 띄우면 사진 크기가 안맞음
-            ##### 링크가 아닌 이미지로 가져와서 리사이징을 하면 크기 맞게 띄울 수는 있는데
-            # 이미지가 계속 쌓여서 굳이 저장하고싶진 않다 하지만 일단 구현은 해놓는게 좋겠지,,
-
-            # myphoto = 'X-travel-djanjo/analysis/지도에뜸.png'
-            # urllib.request.urlretrieve(fav_place_photo_img, myphoto)
-            # myPhoto = Image.open('X-travel-djanjo/analysis/지도에뜸.png')
-            # myPhoto = myPhoto.resize((256, 256))
 
             iframe = folium.IFrame(myPhoto, width=300, height=300)
             popup = folium.Popup(iframe, max_width=750)
@@ -115,7 +108,7 @@ def myplace(tag_table):
                           popup=popup,
                           tootip=str(placeTaken_photo['num'][i]) + '개의 사진을 찍었어요!').add_to(m)
         maps = m._repr_html_()
-    else:
+    else: #default로 한국 지도 띄워줌 
         m = folium.Map(
             location=(35.95, 128.25),
             zoom_start=7
@@ -189,7 +182,10 @@ def time_tag(tag_table):
     plt.ylabel('빈도', size=15)
     for index, value in enumerate(freq):
         plt.text(index - 0.5, value + 0.3, str(tag[index]), fontsize=15)  # 수치텍스트
-    plt.savefig('C:\PythonStudy\X-travel-django\X-travel-django\static\images\graphtime(24).png')
+    plt.savefig('C:\X-travel-django\X-travel-django\X-travel-django-1\static\images\graphtime(24).png') #로컬 테스트 경로
+    # currentPath = os.getcwd()
+    # plt.savefig(currentPath + '\static\images\graphtime(24).png')  # 클라우드
+
     plt.clf()
 
     return df # timezone_tag에 쓰기 위한 반환값
@@ -229,7 +225,9 @@ def timezone_tag(df):
 
             for index, value in enumerate(y):
                 plt.text(value+0.15, index - 0.1, str(value), fontsize=15)  # 수치텍스트
-            plt.savefig('C:\PythonStudy\X-travel-django\X-travel-django\static\images\graphtime_'+time+'.png')
+            plt.savefig('C:\X-travel-django\X-travel-django\X-travel-django-1\static\images\graphtime_'+time+'.png')#로컬 테스트 경로
+            # currentPath = os.getcwd()
+            # plt.savefig(currentPath + '\static\images\graphtime(24).png')  # 사진이 저장될 위치(클라우드)
             plt.clf()
 
     # 1시간 단위 태그 top1 분석
@@ -280,8 +278,9 @@ def weekday_tag(tag_table): # 일~토 인기 태그 top1개씩 한 그래프에
     for index, value in enumerate(mostcommon_byweekday[1]):
         plt.text(index - 0.25, value + 0.3, str(mostcommon_byweekday[0][index]), size=12)
     plt.title("요일별 인기 태그", size=20, loc='left', pad=15)
-    plt.savefig('C:\PythonStudy\X-travel-django\X-travel-django\static\images\graphweekday.png') # 저장
-
+    plt.savefig('C:\X-travel-django\X-travel-django\X-travel-django-1\static\images\graphweekday.png') # 로컬 테스트경로
+    # currentPath = os.getcwd()
+    # plt.savefig(currentPath + '\static\images\graphtime(24).png')  # 클라우드
     plt.clf()  # Clear the current figure
 
     weekday = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일']
@@ -302,47 +301,123 @@ def weekday_tag(tag_table): # 일~토 인기 태그 top1개씩 한 그래프에
         plt.pie(freq, labels=tags, autopct='%.1f%%', textprops={'fontsize': 14}, colors=sns.color_palette("Set3"),
                 wedgeprops=wedgeprops)
         plt.title(str(weekday[row]) + '의 인기 태그', size=20, loc='left', pad=15)
-        plt.savefig('C:\PythonStudy\X-travel-django\X-travel-django\static\images\graph_'+str(weekday[row]) +'.png')  # 저장
+        plt.savefig('C:\X-travel-django\X-travel-django\X-travel-django-1\static\images\graph_'+str(weekday[row]) +'.png')  # 로컬 테스트 경로
+        # currentPath = os.getcwd()
+        # plt.savefig(currentPath + '\static\images\graphtime(24).png')  # 클라우드
         plt.clf()
         #이미지 저장 경로 수정 필요(db에 user.id와 같이 업로드)
 
-
+@csrf_exempt
+def analysis(request):
+  try:
+    date=request.GET['date']
+    print(date) 
+  except:
+    print('date=null')
 
 # 디테일 페이지1 #############################################
+@csrf_exempt
 def analysisTime(request):
+    try: #사용자 요청 받은 날짜 데이터로 분석     
+        date=request.GET['date'] #2002-07 형태
+      
+        user = get_user_model()
+        user = request.user.id
+        photo_id_list=list(Photo.objects.filter(author_id=user).values_list('id', flat=True))
+        photo_id=','.join(map(str, photo_id_list))
+        # MySQL Connection 연결하고 테이블에서 데이터 가져옴
+        tag_table = get_table(user,photo_id,'phototag')
+        
+        if tag_table.empty == False:
+            #태그테이블에 데이터 존재하면 사용자 요청 받은 날짜인지 비교
+            year = date.year
+            month = date.month
+            tag_table['create_date']=pd.to_datetime(tag_table['create_date'])
+            tag_table['year'] = tag_table['create_date'].dt.year
+            tag_table['month'] = tag_table['create_date'].dt.month
+            tag_table=tag_table[(tag_table['year'] == year)&(tag_table['month'] == month)] #연도,월 일치하는 데이터만 가져옴
+
+            weektag = weekday_tag(tag_table)
+
+            timetag = time_tag(tag_table)
+            timezonetag = timezone_tag(timetag)
+            content={
+            'timezonetag':timezonetag,
+            'weektag':weektag
+            }
+
+        else: #태그테이블 비어있을 때 오류 나지 않게 처리
+            weektag=0
+            timezonetag=0
+            content={
+            'timezonetag':timezonetag,
+            'weektag':weektag
+            }
+    except: # default: 이번달 데이터 분석        
+        # MySQL Connection 연결하고 테이블에서 데이터 가져옴
+        user = get_user_model()
+        user = request.user.id
+        photo_id_list=list(Photo.objects.filter(author_id=user).values_list('id', flat=True))
+        photo_id=','.join(map(str, photo_id_list))
+        tag_table = get_table(user,photo_id,'phototag')
+
+        #현재 연월일에 해당하는 데이터를 가져옴
+        year=datetime.datetime.now().year
+        month=datetime.datetime.now().month
+
+        if tag_table.empty == False:
+
+            tag_table['create_date']=pd.to_datetime(tag_table['create_date'])
+            tag_table['year'] = tag_table['create_date'].dt.year
+            tag_table['month'] = tag_table['create_date'].dt.month
+            tag_table=tag_table[(tag_table['year'] == year)&(tag_table['month'] == month)] #연도,월 일치하는 데이터만 가져옴
+   
+            weektag = weekday_tag(tag_table)
+
+            timetag = time_tag(tag_table)
+            timezonetag = timezone_tag(timetag)
+            content={
+            'timezonetag':timezonetag,
+            'weektag':weektag
+            }
+
+        else: #태그테이블 비어있을 때 오류 나지 않게 처리
+            weektag=0
+            timezonetag=0
+            content={
+            'timezonetag':timezonetag,
+            'weektag':weektag
+            }
+    return render(request,'analysisTime.html', content)
+
 #DB에서 정보를 받아옴
 #받아온 정보를 변수에 저장
 
 # 변수 = 함수(DB정보)
 # 함수(위의 변수)
 #
-    user = get_user_model()
-    photo_id_list=list(Photo.objects.filter(author_id=request.user.id).values_list('id', flat=True))
-    photo_id=','.join(map(str, photo_id_list))
-    # MySQL Connection 연결하고 테이블에서 데이터 가져옴
-    conn = pymysql.connect(host='18.219.244.45', user='python', password='python',db='mysql_db', charset='utf8')
-    curs = conn.cursor(pymysql.cursors.DictCursor)
-    sql = 'select * from album_phototag where photo_id in (' + photo_id +')'
-    curs.execute(sql)
-    rows = curs.fetchall()
-    tag_table = pd.DataFrame(rows)
 
 
 
-    weektag = weekday_tag(tag_table)
-
-
-    timetag = time_tag(tag_table)
-    timezonetag = timezone_tag(timetag)
-
-
-    content={
-        'timezonetag':timezonetag,
-        'weektag':weektag
-    }
-
-    return render(request,'analysisTime.html', content)
 
 
 
 #수정
+#photo_id 참조하여 DB에서 정보 가져오는 함수 
+
+ # user = get_user_model()
+  #user = user.id
+  #photo_id_list=list(Photo.objects.filter(author_id=request.user).values_list('id', flat=True))
+  #photo_id=','.join(map(str, photo_id_list))
+#함수 쓸 때 위에 있어야 하는 문장 사용:get_table(user,photo_id, 가져오고자 하는 테이블명)
+# DBtable: 'analysisresult', 'photo', 'phototag
+def get_table(user,photo_id,DBtable):
+  # MySQL Connection 연결하고 테이블에서 데이터 가져옴
+  conn = pymysql.connect(host='18.219.244.45', user='python', password='python',db='mysql_db', charset='utf8')
+  curs = conn.cursor(pymysql.cursors.DictCursor)
+  sql = 'select * from album_' + DBtable + ' where photo_id in (' + photo_id +')'
+
+  curs.execute(sql)
+  rows = curs.fetchall()
+  table = pd.DataFrame(rows)
+  return table

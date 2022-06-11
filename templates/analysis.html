@@ -25,36 +25,18 @@
         <br><br>
         <h1>{{user.username}} 님의</h1><br>
         <br>
+        <div><form method="get" class="post-form" action=''>
+            {% csrf_token %}
+            <!-- <form action = 페이지 링크 연결>
+            연도버튼 -->
 
-        <!--연도버튼-->
-        <select name="year" class="year_month">
-            <option value="2022" selected>2022</option> <!--초기선택-->
-            <option value="2021">2021</option>
-            <option value="2020">2020</option>
-            <option value="2019">2019</option>
-            <option value="2018">2018</option>
-        </select>년
-
-        <!--월버튼-->
-        <select name="month" class="year_month">
-            <option value="01">01</option>
-            <option value="02">02</option>
-            <option value="03">03</option>
-            <option value="04">04</option>
-            <option value="05">05</option>
-            <option value="06" selected>06</option> <!--초기선택-->
-            <option value="07">07</option>
-            <option value="08">08</option>
-            <option value="09">09</option>
-            <option value="10">10</option>
-            <option value="11">11</option>
-            <option value="12">12</option>
-        </select>월
-
-        <!--확인버튼-->
-        <input type="button" id="result_btn" style="margin-left:10px;" value="분석결과 확인">
+            <input type="month" name = 'date' value="{{form.date.value|default_if_none:''}}">
+            <!--확인버튼-->
+            <input type="submit" id="result_btn" style="margin-left:10px;" value="분석결과 확인">
+        </form></div>
         <br>
         <br>
+        <!-- </form> -->
 
         <!--태그 랭킹-->
         <div id="ranking">

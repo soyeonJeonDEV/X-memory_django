@@ -7,7 +7,7 @@
 
 body{
     /*전체 배경*/
-    background: white;
+    background: 00BFF;
         /* url(https://mblogthumb-phinf.pstatic.net/20120629_279/libido83_1340957741380xqEzT_JPEG/bg-graph_paper.jpg?type=w2); */
     background-size:cover;
 }
@@ -25,12 +25,12 @@ body{
 
 /*연 월 선택 드롭다운박스*/
 .year_month {
-    /*margin:10px;
+    margin:10px;
     width:120px;
-    height:30px;*/
-    margin:1%;
+    height:30px;
+    /* margin:1%;
     width:8%;
-    height:4%;
+    height:4%; */
     font-size:medium;
 }
 

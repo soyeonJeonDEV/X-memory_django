@@ -27,3 +27,7 @@ class TagForm(forms.ModelForm):
   class Meta:
     model=PhotoTag
     fields=['photo','tags','create_date','latitude','longitude','review','starScore','imgurl']
+
+
+class monthForm(forms.Form):
+  date=forms.DateField()
