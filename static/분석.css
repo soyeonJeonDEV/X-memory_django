@@ -21,18 +21,26 @@ body{
     padding-left:5%;
     padding-right:5%;
 }
-
-
-/*연 월 선택 드롭다운박스*/
-.year_month {
-    margin:10px;
-    width:120px;
-    height:30px;
-    /* margin:1%;
-    width:8%;
-    height:4%; */
-    font-size:medium;
+/*뒤로가기*/
+#back_btn {
+    width:5%;
+    height:5%;
+    background-color:white;
+    border: solid 1px gray;
 }
+
+#back_btn:hover {
+    background-color:silver;
+}
+
+#back_img {
+    margin:0 auto;
+    align:center;
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
 
 /*분석결과 확인버튼*/
 #result_btn {

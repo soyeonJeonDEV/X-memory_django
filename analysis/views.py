@@ -8,7 +8,7 @@ from django.test import tag
 from django.utils import timezone
 from requests import request
 from album.forms import UserForm, PhotoForm
-from album.models import Photo, PhotoTag, AnalysisResult
+from album.models import Photo, PhotoTag, Analysis
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 import logging
@@ -101,8 +101,8 @@ def myplace(tag_table):
 
             myPhoto = '<img src= ' + fav_place_photo_img + '>'
 
-            iframe = folium.IFrame(myPhoto, width=300, height=300)
-            popup = folium.Popup(iframe, max_width=750)
+            iframe = folium.IFrame(myPhoto, width=130, height=130)
+            popup = folium.Popup(iframe, max_width=300)
 
             folium.Marker(coords[i],
                           popup=popup,
@@ -124,9 +124,9 @@ def analysisPlace(request):
     photo_id = ','.join(map(str, photo_id_list))
 
     tag_table = get_table(user, photo_id, 'phototag')  # 여기에 place열 있어야함
-    analysisresult_tb = get_table(user, photo_id, 'analysisresult')
-    if analysisresult_tb.empty == False:
-        tag_table = pd.merge(tag_table, analysisresult_tb, how='left', left_on='photo_id', right_on='photo_id')
+    analysis_tb = get_table(user, photo_id, 'analysis')
+    if analysis_tb.empty == False:
+        tag_table = pd.merge(tag_table, analysis_tb, how='left', left_on='photo_id', right_on='photo_id')
 
     maps = myplace(tag_table)
     return render(request, 'analysisPlace.html', {'map': maps})
@@ -135,100 +135,104 @@ def analysisPlace(request):
 # 시간대 분석 함수 시작 ########################################
 def time_tag(tag_table):
     df = tag_table.copy()
-    df['timezone'] = '점심'
-    df['create_date'] = pd.to_datetime(df['create_date'])
+    if df.empty == False:
+        df['timezone'] = '점심'
+        df['create_date'] = pd.to_datetime(df['create_date'])
 
-    dawn = df.loc[df['create_date'].dt.hour < 5].index
-    df.loc[dawn, 'timezone'] = '새벽'
+        dawn = df.loc[df['create_date'].dt.hour < 5].index
+        df.loc[dawn, 'timezone'] = '새벽'
 
-    morning = df.loc[(df['create_date'].dt.hour >= 5) & (df['create_date'].dt.hour < 9)].index
-    df.loc[morning, 'timezone'] = '아침'
+        morning = df.loc[(df['create_date'].dt.hour >= 5) & (df['create_date'].dt.hour < 9)].index
+        df.loc[morning, 'timezone'] = '아침'
 
-    evening = df.loc[(df['create_date'].dt.hour >= 17) & (df['create_date'].dt.hour < 21)].index
-    df.loc[evening, 'timezone'] = '저녁'
+        evening = df.loc[(df['create_date'].dt.hour >= 17) & (df['create_date'].dt.hour < 21)].index
+        df.loc[evening, 'timezone'] = '저녁'
 
-    night = df.loc[(df['create_date'].dt.hour >= 21) & (df['create_date'].dt.hour < 24)].index
-    df.loc[night, 'timezone'] = '밤'
-    # df.groupby('tags').count()
-    # table = df.groupby('timezone').count()
+        night = df.loc[(df['create_date'].dt.hour >= 21) & (df['create_date'].dt.hour < 24)].index
+        df.loc[night, 'timezone'] = '밤'
+        # df.groupby('tags').count()
+        # table = df.groupby('timezone').count()
 
-    # 시간별(0~23시) 가장 인기 태그 top1 분석 그래프
-    df['hour'] = df['create_date'].dt.hour
-    hourtags = df[['hour', 'tags']]
+        # 시간별(0~23시) 가장 인기 태그 top1 분석 그래프
+        df['hour'] = df['create_date'].dt.hour
+        hourtags = df[['hour', 'tags']]
 
-    hour_maxtag = []
-    for i in range(24):
-        hour_maxtag.append(collections.Counter(hourtags[hourtags['hour'] == i]['tags']).most_common(1))
+        hour_maxtag = []
+        for i in range(24):
+            hour_maxtag.append(collections.Counter(hourtags[hourtags['hour'] == i]['tags']).most_common(1))
 
-    for i in range(24):
-        if len(hour_maxtag[i]) == 0:  # 빈 리스트일 경우
-            hour_maxtag[i] = [('', 0)]
+        for i in range(24):
+            if len(hour_maxtag[i]) == 0:  # 빈 리스트일 경우
+                hour_maxtag[i] = [('', 0)]
 
-    # tag,freq 리스트 형태로 만들기
-    tag = []
-    freq = []
-    hour = list(range(24))
-    for j in range(24):
-        tag.append(hour_maxtag[j][0][0])
-        freq.append(hour_maxtag[j][0][1])
+        # tag,freq 리스트 형태로 만들기
+        tag = []
+        freq = []
+        hour = list(range(24))
+        for j in range(24):
+            tag.append(hour_maxtag[j][0][0])
+            freq.append(hour_maxtag[j][0][1])
 
-    plt.rc('font', family='nanumgothic')
-    plt.figure(figsize=(8, 5))
-    plt.title("시간별 인기 태그", size=20, loc='left', pad=15)
-    plt.plot(hour, freq, color='green', marker='o',linestyle='--', markersize=9)
-    plt.xticks(np.arange(0, 24))
-    plt.yticks(np.arange(min(freq), max(freq) + 2))
-    plt.xlabel('시', size=15)
-    plt.ylabel('빈도', size=15)
-    for index, value in enumerate(freq):
-        plt.text(index - 0.5, value + 0.3, str(tag[index]), fontsize=15)  # 수치텍스트
-    plt.savefig('C:\X-travel-django\X-travel-django\X-travel-django-1\static\images\graphtime(24).png') #로컬 테스트 경로
-    # currentPath = os.getcwd()
-    # plt.savefig(currentPath + '\static\images\graphtime(24).png')  # 클라우드
+        plt.rc('font', family='nanumgothic')
+        plt.figure(figsize=(8, 5))
+        plt.title("시간별 인기 태그", size=20, loc='left', pad=15)
+        plt.plot(hour, freq, color='green', marker='o',linestyle='--', markersize=9)
+        plt.xticks(np.arange(0, 24))
+        plt.yticks(np.arange(min(freq), max(freq) + 2))
+        plt.xlabel('시', size=15)
+        plt.ylabel('빈도', size=15)
+        for index, value in enumerate(freq):
+            plt.text(index - 0.5, value + 0.3, str(tag[index]), fontsize=15)  # 수치텍스트
+        plt.savefig('C:\X-travel-django\X-travel-django\X-travel-django-1\static\images\graphtime(24).png') #로컬 테스트 경로
+        # currentPath = os.getcwd()
+        # plt.savefig(currentPath + '\static\images\graphtime(24).png')  # 클라우드
 
-    plt.clf()
+        plt.clf()
 
     return df # timezone_tag에 쓰기 위한 반환값
 
 import numpy as np
 def timezone_tag(df):
     # 시간대별 ('아침', '점심', '저녁', '밤', '새벽') 태그 5순위까지 분석
-    for time in ['아침', '점심', '저녁', '밤', '새벽']:
-        timezone_tb = df[df['timezone'] == time]
+    if df.empty == False:
+        for time in ['아침', '점심', '저녁', '밤', '새벽']:
+            timezone_tb = df[df['timezone'] == time]
 
-        table_timegroup = timezone_tb.drop(timezone_tb.columns[[2, 3, 4, 5, 6, 7, 8, 9]], axis=1).groupby(
-            'tags').count().sort_values(by=['id'], ascending=False).head(5)
+            table_timegroup = timezone_tb.drop(timezone_tb.columns[[2, 3, 4, 5, 6, 7, 8, 9]], axis=1).groupby(
+                'tags').count().sort_values(by=['id'], ascending=False).head(5)
 
-        if (len(table_timegroup.index) < 5):
-            pass
-        else:
-            label = list(table_timegroup.index)
-            index = list(table_timegroup['id'])
-
-            x = label
-            y = index
-
-            plt.figure(figsize=(9, 7))
-            plt.rc('font', family='nanumgothic')
-            plt.barh(x, y, color=sns.color_palette('Set2'))
-
-            plt.title(str(time) + ' 시간대 인기 태그', size=20, loc='left', pad=15)
-            plt.yticks(size=14)
-
-            if (y[0] == y[1]) and (y[1] == y[2]) and (y[2] == y[3]) and (y[3] == y[4]):
-                plt.xlabel('빈도', fontsize=15)
-                plt.xticks(np.arange(y[0], y[0]+3))
-
+            if (len(table_timegroup.index) < 5):
+                pass
             else:
-                plt.xlabel('빈도', fontsize=15)
-                plt.xticks(np.arange(0,max(y)+3))
+                label = list(table_timegroup.index)
+                index = list(table_timegroup['id'])
 
-            for index, value in enumerate(y):
-                plt.text(value+0.15, index - 0.1, str(value), fontsize=15)  # 수치텍스트
-            plt.savefig('C:\X-travel-django\X-travel-django\X-travel-django-1\static\images\graphtime_'+time+'.png')#로컬 테스트 경로
-            # currentPath = os.getcwd()
-            # plt.savefig(currentPath + '\static\images\graphtime(24).png')  # 사진이 저장될 위치(클라우드)
-            plt.clf()
+                x = label
+                y = index
+
+                plt.figure(figsize=(9, 7))
+                plt.rc('font', family='nanumgothic')
+                plt.barh(x, y, color=sns.color_palette('Set2'))
+
+                plt.title(str(time) + ' 시간대 인기 태그', size=20, loc='left', pad=15)
+                plt.yticks(size=14)
+
+                if (y[0] == y[1]) and (y[1] == y[2]) and (y[2] == y[3]) and (y[3] == y[4]):
+                    plt.xlabel('빈도', fontsize=15)
+                    plt.xticks(np.arange(y[0], y[0]+3))
+
+                else:
+                    plt.xlabel('빈도', fontsize=15)
+                    plt.xticks(np.arange(0,max(y)+3))
+
+                for index, value in enumerate(y):
+                    plt.text(value+0.15, index - 0.1, str(value), fontsize=15)  # 수치텍스트
+                plt.savefig('C:\X-travel-django\X-travel-django\X-travel-django-1\static\images\graphtime_'+time+'.png')#로컬 테스트 경로
+                # currentPath = os.getcwd()
+                # plt.savefig(currentPath + '\static\images\graphtime(24).png')  # 사진이 저장될 위치(클라우드)
+                # 시간 된다면 user_id값과 그래프를 DB에 저장하는 것 고려
+
+                plt.clf()
 
     # 1시간 단위 태그 top1 분석
     # df['hour'] = df['create_date'].dt.hour
@@ -252,60 +256,60 @@ def weekday_tag(tag_table): # 일~토 인기 태그 top1개씩 한 그래프에
     font_path = "C:/Windows/Fonts/NGULIM.TTF"
     font = font_manager.FontProperties(fname=font_path).get_name()
     rc('font', family=font)
+    if df.empty == False:
+        df['create_date'] = pd.to_datetime(df['create_date'])
+        df['weekday'] = df['create_date'].dt.weekday  # 요일 추출
 
-    df['create_date'] = pd.to_datetime(df['create_date'])
-    df['weekday'] = df['create_date'].dt.weekday  # 요일 추출
+        weekdaytag_df = df[['tags', 'weekday']]  # 필요한 열로만 df 다시 만듦
 
-    weekdaytag_df = df[['tags', 'weekday']]  # 필요한 열로만 df 다시 만듦
+        # 일~토 top1 태그 추출해 그래프 생성
+        commontags_lst = []
+        for i in range(7):
+            commontags_lst.append(collections.Counter(weekdaytag_df[weekdaytag_df['weekday'] == i]['tags']).most_common(5))
 
-    # 일~토 top1 태그 추출해 그래프 생성
-    commontags_lst = []
-    for i in range(7):
-        commontags_lst.append(collections.Counter(weekdaytag_df[weekdaytag_df['weekday'] == i]['tags']).most_common(5))
-
-    mostcommon_byweekday = []
-    for j in range(7):
-        mostcommon_byweekday.append(commontags_lst[j][0])
-    mostcommon_byweekday = pd.DataFrame(mostcommon_byweekday)
-
-    plt.rc('font', family='nanumgothic')
-    plt.figure(figsize=(7, 5))
-    plt.bar(mostcommon_byweekday.index, mostcommon_byweekday[1], color=sns.color_palette('Set2'))
-    plt.xticks([0, 1, 2, 3, 4, 5, 6], labels=['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'])
-    plt.yticks(np.arange(0, max(mostcommon_byweekday[1]) + 3))
-    plt.xlabel('요일', size=13)
-    plt.ylabel('빈도', size=13)
-    for index, value in enumerate(mostcommon_byweekday[1]):
-        plt.text(index - 0.25, value + 0.3, str(mostcommon_byweekday[0][index]), size=12)
-    plt.title("요일별 인기 태그", size=20, loc='left', pad=15)
-    plt.savefig('C:\X-travel-django\X-travel-django\X-travel-django-1\static\images\graphweekday.png') # 로컬 테스트경로
-    # currentPath = os.getcwd()
-    # plt.savefig(currentPath + '\static\images\graphtime(24).png')  # 클라우드
-    plt.clf()  # Clear the current figure
-
-    weekday = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일']
-    for row in range(7):
-        tags_byweekend = pd.DataFrame(commontags_lst[row])
-
-        tags = list(tags_byweekend[0][0:4])  # top4 태그명
-        freq = list(tags_byweekend[1][0:4])  # top4 빈도 수
-
-        other_freq = sum(tags_byweekend[1][4:])  # 나머지는 기타로 처리
-        tags.append('기타')
-        freq.append(other_freq)
-
-        wedgeprops = {'width': 0.7, 'edgecolor': 'w', 'linewidth': 5}
+        mostcommon_byweekday = []
+        for j in range(7):
+            mostcommon_byweekday.append(commontags_lst[j][0])
+        mostcommon_byweekday = pd.DataFrame(mostcommon_byweekday)
 
         plt.rc('font', family='nanumgothic')
-        plt.figure(figsize=(7, 7))
-        plt.pie(freq, labels=tags, autopct='%.1f%%', textprops={'fontsize': 14}, colors=sns.color_palette("Set3"),
-                wedgeprops=wedgeprops)
-        plt.title(str(weekday[row]) + '의 인기 태그', size=20, loc='left', pad=15)
-        plt.savefig('C:\X-travel-django\X-travel-django\X-travel-django-1\static\images\graph_'+str(weekday[row]) +'.png')  # 로컬 테스트 경로
+        plt.figure(figsize=(7, 5))
+        plt.bar(mostcommon_byweekday.index, mostcommon_byweekday[1], color=sns.color_palette('Set2'))
+        plt.xticks([0, 1, 2, 3, 4, 5, 6], labels=['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'])
+        plt.yticks(np.arange(0, max(mostcommon_byweekday[1]) + 3))
+        plt.xlabel('요일', size=13)
+        plt.ylabel('빈도', size=13)
+        for index, value in enumerate(mostcommon_byweekday[1]):
+            plt.text(index - 0.25, value + 0.3, str(mostcommon_byweekday[0][index]), size=12)
+        plt.title("요일별 인기 태그", size=20, loc='left', pad=15)
+        plt.savefig('C:\X-travel-django\X-travel-django\X-travel-django-1\static\images\graphweekday.png') # 로컬 테스트경로
         # currentPath = os.getcwd()
         # plt.savefig(currentPath + '\static\images\graphtime(24).png')  # 클라우드
-        plt.clf()
-        #이미지 저장 경로 수정 필요(db에 user.id와 같이 업로드)
+        plt.clf()  # Clear the current figure
+
+        weekday = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일']
+        for row in range(7):
+            tags_byweekend = pd.DataFrame(commontags_lst[row])
+
+            tags = list(tags_byweekend[0][0:4])  # top4 태그명
+            freq = list(tags_byweekend[1][0:4])  # top4 빈도 수
+
+            other_freq = sum(tags_byweekend[1][4:])  # 나머지는 기타로 처리
+            tags.append('기타')
+            freq.append(other_freq)
+
+            wedgeprops = {'width': 0.7, 'edgecolor': 'w', 'linewidth': 5}
+
+            plt.rc('font', family='nanumgothic')
+            plt.figure(figsize=(7, 7))
+            plt.pie(freq, labels=tags, autopct='%.1f%%', textprops={'fontsize': 14}, colors=sns.color_palette("Set3"),
+                    wedgeprops=wedgeprops)
+            plt.title(str(weekday[row]) + '의 인기 태그', size=20, loc='left', pad=15)
+            plt.savefig('C:\X-travel-django\X-travel-django\X-travel-django-1\static\images\graph_'+str(weekday[row]) +'.png')  # 로컬 테스트 경로
+            # currentPath = os.getcwd()
+            # plt.savefig(currentPath + '\static\images\graphtime(24).png')  # 클라우드
+            plt.clf()
+            #이미지 저장 경로 수정 필요(db에 user.id와 같이 업로드)
 
 @csrf_exempt
 def analysis(request):
@@ -410,10 +414,10 @@ def analysisTime(request):
   #photo_id_list=list(Photo.objects.filter(author_id=request.user).values_list('id', flat=True))
   #photo_id=','.join(map(str, photo_id_list))
 #함수 쓸 때 위에 있어야 하는 문장 사용:get_table(user,photo_id, 가져오고자 하는 테이블명)
-# DBtable: 'analysisresult', 'photo', 'phototag
+# DBtable: 'analysis', 'photo', 'phototag
 def get_table(user,photo_id,DBtable):
   # MySQL Connection 연결하고 테이블에서 데이터 가져옴
-  conn = pymysql.connect(host='18.219.244.45', user='python', password='python',db='mysql_db', charset='utf8')
+  conn = pymysql.connect(host='18.223.252.140', user='python', password='python',db='mysql_db', charset='utf8')
   curs = conn.cursor(pymysql.cursors.DictCursor)
   sql = 'select * from album_' + DBtable + ' where photo_id in (' + photo_id +')'
 
