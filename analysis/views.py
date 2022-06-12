@@ -105,7 +105,7 @@ def myplace(tag_table):
             fav_place_photo_img = str(
                 list(Photo.objects.filter(id=fav_place_photo).values_list('photo', flat=True))[0])
             #내 사진 링크(그 지역의 태그 제일 많이 붙은 이미지 하나만 가져옴)
-            myPhoto = '<img src= ' + fav_place_photo_img + ' width="150" height="200">'
+            myPhoto = '<img src= ' + fav_place_photo_img + ' width="200" height="200">'
 
             iframe = folium.IFrame(myPhoto, width=130, height=130)
             # popup = folium.Popup(iframe, max_width=300)
@@ -118,10 +118,7 @@ def myplace(tag_table):
             placetag = placetag[2:]; num = num[:-2]
 
             html = '<h1>' + placename  + '</h1><br><p>' + placename + ' 에서 ' + str(place_photo_num) + '''개의 사진을 찍었어요! <br>
-            가장 많이 사용하신 태그는 <br>'''+ placetag  +"입니다" + myPhoto 
-            #+ '<a href= http://localhost:8000/search/?tag='+ placename+'''>
-            #사진 보기 </a></p>'''
-            ### a 태그 안 링크 수정필요! aws서버로(현재는 로컬)
+            가장 많이 사용하신 태그는 <br>'''+ placetag  +"입니다" + myPhoto #그 장소에서의 사진 띄워주기
 
 
             if place_photo_num < 5:
@@ -461,11 +458,33 @@ def analysisTime(request):
 # DBtable: 'analysis', 'photo', 'phototag
 def get_table(user,photo_id,DBtable):
   # MySQL Connection 연결하고 테이블에서 데이터 가져옴
-  conn = pymysql.connect(host='18.223.252.140', user='python', password='python',db='mysql_db', charset='utf8')
-  curs = conn.cursor(pymysql.cursors.DictCursor)
-  sql = 'select * from album_' + DBtable + ' where photo_id in (' + photo_id +')'
+    conn = pymysql.connect(host='18.223.252.140', user='python', password='python',db='mysql_db', charset='utf8')
+    curs = conn.cursor(pymysql.cursors.DictCursor)
+    sql = 'select * from album_' + DBtable + ' where photo_id in (' + photo_id +')'
 
-  curs.execute(sql)
-  rows = curs.fetchall()
-  table = pd.DataFrame(rows)
-  return table
+    curs.execute(sql)
+    rows = curs.fetchall()
+    table = pd.DataFrame(rows)
+    return table
+
+
+def search_by_tag(request):
+  tag=request.GET['tag']
+
+  print(request.body)
+
+  photo_list = []
+
+  photo_result= PhotoTag.objects.filter(tags=tag).values_list('photo_id',flat=True)
+
+  for a_photo_id in photo_result:
+
+    found_photo=Photo.objects.get(id=a_photo_id)
+    # print(request.user)
+    # print(found_photo.author)
+    # print(found_photo.id)
+    if found_photo.author == request.user:
+      photo_list.append(str(found_photo.photo))
+
+
+  return render (request,'a_search.html',{'tag':tag,'photo_list' : photo_list})

@@ -726,6 +726,8 @@ def analysis(request):
                     'related_tagname3_2': related_tagname3_2,
                     'photourl': photourl
                 }
+            
+
             else:
                 content = {
                     'rank1_tagname': 'NO PHOTO',  # 태그명
@@ -736,6 +738,7 @@ def analysis(request):
             content = {
                 'rank1_tagname': 'NO PHOTO',  # 태그명
             }
+            
         
         
         #==========================================================================
@@ -769,6 +772,7 @@ def analysis(request):
                 curs.executemany(sql, lst)
                 conn.commit()
                 conn.close()
+        
         # ==============================================================================
         return render(request, 'analysis.html', content) # 현재 월에 해당하는 분석값을 리턴 
 #=========================================================================================
@@ -872,7 +876,7 @@ def analysis(request):
             }
 
     else:
-        # pass #리턴할 값이 없으면 오류가 나므로 리턴값을 넣어주세요(현재는 페이지만 띄워줘서 pass했습니다)
+
         content = {
             'rank1_tagname': '사진이 없습니다',  # 태그명
         }

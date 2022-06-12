@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block content%}
+
+
+  <!--뒤로가기 버튼-->
+  <button onclick="history.back()" id="back_btn"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+    <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+    </svg></button>
+
+
+
+<div><h4>[ {{tag}} ](으)로 검색한 결과...</h4> </div>    
+
+
+<div class="container container-fluid">
+    <div class="row row-eq-height">
+      {% for photo in photo_list %}
+      <div class="col-4 col-sm-4 albums">
+          <img src="{{photo}}"
+          class="pic1 img-fluid " onclick="load_detail(this.id)" id= '{{a_photo.id}}' alt="">
+          <!-- {{a_photo}} -->
+          <script>  
+            console.log("{{a_photo.id}}") 
+          </script>
+
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+{% endblock%}
