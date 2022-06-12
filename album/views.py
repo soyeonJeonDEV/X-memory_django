@@ -626,6 +626,12 @@ def analysis(request):
         user = get_user_model()
         user = request.user.id
         photo_id_list = list(Photo.objects.filter(author_id=user).values_list('id', flat=True))
+        if photo_id_list == []:
+            rank1_tagname = 0
+            content = {
+                'rank1_tagname' : 'NO PHOTO'
+                }
+            return render(request, 'analysis.html', content)
         photo_id = ','.join(map(str, photo_id_list))
         # MySQL Connection 연결하고 테이블에서 데이터 가져옴
         tag_table = get_table(user, photo_id, 'phototag')
@@ -716,44 +722,56 @@ def analysis(request):
                 }
             else:
                 content = {
-                    'rank1_tagname': 0,  # 태그명
-                    'rank2_tagname': 0,
-                    'rank3_tagname': 0,
-                    'rank1_tagfreq': 0,  # 태그 빈도
-                    'rank2_tagfreq': 0,
-                    'rank3_tagfreq': 0,
-                    'related_tagname1_1': 0,  # 연관 태그명
-                    'related_tagname1_2': 0,
-                    'related_tagname2_1': 0,
-                    'related_tagname2_2': 0,
-                    'related_tagname3_1': 0,
-                    'related_tagname3_2': 0,
-                    'photourl': 0
+                    'rank1_tagname': 'NO PHOTO',  # 태그명
                 }
 
         else:
             # pass #리턴할 값이 없으면 오류가 나므로 리턴값을 넣어주세요(현재는 페이지만 띄워줘서 pass했습니다)
             content = {
-                'rank1_tagname': 0,  # 태그명
-                'rank2_tagname': 0,
-                'rank3_tagname': 0,
-                'rank1_tagfreq': 0,  # 태그 빈도
-                'rank2_tagfreq': 0,
-                'rank3_tagfreq': 0,
-                'related_tagname1_1': 0,  # 연관 태그명
-                'related_tagname1_2': 0,
-                'related_tagname2_1': 0,
-                'related_tagname2_2': 0,
-                'related_tagname3_1': 0,
-                'related_tagname3_2': 0,
-                'photourl': 0
+                'rank1_tagname': 'NO PHOTO',  # 태그명
             }
-        return render(request, 'analysis.html', content)
-#===========================================================================
+        
+        
+        #==========================================================================
+        #분석 페이지가 아니라 디테일 페이지 들어갔을 때 위치정보 저장받을 수 있도록 수정하기
+
+        # 페이지 접속하면 위치 정보 찾아줌
+        analyzed_photo_list = list(Analysis.objects.filter(user_id=user).values_list('photo_id', flat=True))
+        N_anaylazed_photos = list(set(photo_id_list) - set(analyzed_photo_list))
+        N_anaylazed_photo = ','.join(map(str, N_anaylazed_photos))
+        if N_anaylazed_photo:
+            tag_table = get_table(user, N_anaylazed_photo, 'phototag')
+
+            # 이미 위치정보가 저장된 사진에 대해서는 위치 찾는 함수 작동X ->DB에 위치정보가 계속 저장되는 것을 막음
+
+            if tag_table.empty == False:
+                tag_table['user_id'] = user
+                tag_table = search_place(tag_table)
+
+                # 분석한 내용 db로 보내기
+                lst = []
+                tag_table = tag_table.drop_duplicates(['photo_id'], keep='last')
+                for row in tag_table[['photo_id', 'place', 'user_id']].itertuples(index=False, name=None):
+                    lst.append(row)
+                tuple(lst)
+
+                conn = pymysql.connect(host='18.223.252.140', user='python', password='python', db='mysql_db',
+                                    charset='utf8')
+                curs = conn.cursor(pymysql.cursors.DictCursor)
+                sql = """insert into album_analysis(photo_id,location,user_id) 
+                values (%s, %s, %s)"""
+                curs.executemany(sql, lst)
+                conn.commit()
+                conn.close()
+        # ==============================================================================
+        return render(request, 'analysis.html', content) # 현재 월에 해당하는 분석값을 리턴 
+#=========================================================================================
  #사용자 요청 받은 날짜 페이지
     user = get_user_model()
     user = request.user.id
     photo_id_list = list(Photo.objects.filter(author_id=user).values_list('id', flat=True))
+    if photo_id_list == []:
+        return render(request, 'analysis.html')
     photo_id = ','.join(map(str, photo_id_list))
     # MySQL Connection 연결하고 테이블에서 데이터 가져옴
     tag_table = get_table(user, photo_id, 'phototag')
@@ -845,73 +863,14 @@ def analysis(request):
         else:
             content = {
                 'rank1_tagname': '사진이 없습니다',  # 태그명
-                'rank2_tagname': 0,
-                'rank3_tagname': 0,
-                'rank1_tagfreq': 0,  # 태그 빈도
-                'rank2_tagfreq': 0,
-                'rank3_tagfreq': 0,
-                'related_tagname1_1': 2,  # 연관 태그명
-                'related_tagname1_2': 0,
-                'related_tagname2_1': 0,
-                'related_tagname2_2': 0,
-                'related_tagname3_1': 0,
-                'related_tagname3_2': 0,
-                'photourl': 0
             }
 
     else:
         # pass #리턴할 값이 없으면 오류가 나므로 리턴값을 넣어주세요(현재는 페이지만 띄워줘서 pass했습니다)
         content = {
             'rank1_tagname': '사진이 없습니다',  # 태그명
-            'rank2_tagname': 0,
-            'rank3_tagname': 0,
-            'rank1_tagfreq': 0,  # 태그 빈도
-            'rank2_tagfreq': 0,
-            'rank3_tagfreq': 0,
-            'related_tagname1_1': 0,  # 연관 태그명
-            'related_tagname1_2': 0,
-            'related_tagname2_1': 0,
-            'related_tagname2_2': 0,
-            'related_tagname3_1': 0,
-            'related_tagname3_2': 0,
-            'photourl': 0
         }
 
-    
-    #==========================================================================
-    #분석 페이지가 아니라 디테일 페이지 들어갔을 때 위치정보 저장받을 수 있도록 수정하기
-
-    # 페이지 접속하면 위치 정보 찾아줌
-    analyzed_photo_list = list(Analysis.objects.filter(user_id=user).values_list('photo_id', flat=True))
-    N_anaylazed_photos = list(set(photo_id_list) - set(analyzed_photo_list))
-    N_anaylazed_photo = ','.join(map(str, N_anaylazed_photos))
-    if N_anaylazed_photo:
-        tag_table = get_table(user, N_anaylazed_photo, 'phototag')
-
-        # 이미 위치정보가 저장된 사진에 대해서는 위치 찾는 함수 작동X ->DB에 위치정보가 계속 저장되는 것을 막음
-
-        if tag_table.empty == False:
-            tag_table['user_id'] = user
-            tag_table = search_place(tag_table)
-
-            # 분석한 내용 db로 보내기
-            lst = []
-            tag_table = tag_table.drop_duplicates(['photo_id'], keep='last')
-            for row in tag_table[['photo_id', 'place', 'user_id']].itertuples(index=False, name=None):
-                lst.append(row)
-            tuple(lst)
-
-            conn = pymysql.connect(host='18.223.252.140', user='python', password='python', db='mysql_db',
-                                   charset='utf8')
-            curs = conn.cursor(pymysql.cursors.DictCursor)
-            sql = """insert into album_analysis(photo_id,location,user_id) 
-            values (%s, %s, %s)"""
-            curs.executemany(sql, lst)
-            conn.commit()
-            conn.close()
-
-    # 디테일 함수 안으로 넣어주세요(디테일 페이지 들어가면 작동되도록)
-    # ==============================================================================
 
     return render(request, 'analysis.html', content )  # ,{'map' : maps}
 

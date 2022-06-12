@@ -98,7 +98,7 @@ def myplace(tag_table):
         #지도는 그냥 한국 지도 띄워줌
         m = folium.Map(
             location=(35.95, 128.25),
-            zoom_start=8
+            zoom_start=7
         )
         for i in range(len(placeTaken_photo)):
             fav_place_photo = tag_table[tag_table['locality'] == places[i]]['photo_id'].value_counts().index[0]
@@ -118,8 +118,12 @@ def myplace(tag_table):
             placetag = placetag[2:]; num = num[:-2]
 
             html = '<h1>' + placename  + '</h1><br><p>' + placename + ' 에서 ' + str(place_photo_num) + '''개의 사진을 찍었어요! <br>
-            가장 많이 사용하신 태그는 <br>'''+ placetag  +"입니다</p>" + myPhoto  
-            
+            가장 많이 사용하신 태그는 <br>'''+ placetag  +"입니다" + myPhoto 
+            #+ '<a href= http://localhost:8000/search/?tag='+ placename+'''>
+            #사진 보기 </a></p>'''
+            ### a 태그 안 링크 수정필요! aws서버로(현재는 로컬)
+
+
             if place_photo_num < 5:
                 size = place_photo_num * 10
                 opacity = place_photo_num / 20 #사진 많아지면 수치 수정 
@@ -139,7 +143,7 @@ def myplace(tag_table):
     else: #default로 한국 지도 띄워줌 
         m = folium.Map(
             location=(35.95, 128.25),
-            zoom_start=8
+            zoom_start=7
         )
         maps = m._repr_html_()
 
@@ -211,7 +215,7 @@ def time_tag(tag_table):
         plt.ylabel('빈도', size=15)
         for index, value in enumerate(freq):
             plt.text(index - 0.5, value + 0.3, str(tag[index]), fontsize=15)  # 수치텍스트
-        plt.savefig('C:\X-travel-django\X-travel-django\X-travel-django-1\static\images\graphtime(24).png') #로컬 테스트 경로
+        plt.savefig('C:\X-travel-django\X-travel-django\X-travel-django-1\static\images\graphtime'+'(24).png') #로컬 테스트 경로
         # currentPath = os.getcwd()
         # plt.savefig(currentPath + '\static\images\graphtime(24).png')  # 클라우드
 
@@ -443,9 +447,6 @@ def analysisTime(request):
 # 변수 = 함수(DB정보)
 # 함수(위의 변수)
 #
-
-
-
 
 
 
