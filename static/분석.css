@@ -2,7 +2,7 @@
 
 *{
     margin: auto;
-    font-family: 'Nanum Myeongjo', serif; /*폰트*/
+    font-family: "Mukta Malar", sans-serif; /*폰트*/
 }
 
 body{
@@ -40,10 +40,11 @@ body{
     text-align:left;
     margin-bottom:4%;
     margin-left:5vw;
+    color:rgb(102,102,102); /*gray*/
+    font-weight:bold;
 }
 
-
-/*연 월 선택 드롭다운박스*/
+/*연 월 선택*/
 .post-form{
     text-align:center;
     margin-bottom:10%;
@@ -54,6 +55,10 @@ body{
     min-width:15%;
     height:4%;
     font-size:4vw;
+    color:rgb(251,192,188);
+    border: 2px solid rgb(251,192,188);
+    border-radius:3px;
+    color:gray;
 }
 
 /*분석결과 확인버튼*/
@@ -61,16 +66,18 @@ body{
     margin:1%;
     min-width:15%;
     border-radius:3px;
-    background-color:white;
     height:4%;
     font-size:4vw;
     text-align:center;
-    border:solid 1px gray;
+    background: rgb(251,192,188);
+    border: 2px solid rgb(251,192,188);
+    font-family: "Mukta Malar";
+    color:white;
 }
 
 #result_btn:hover {
     color:white;
-    border:silver;
+    border: 2px solid rgb(251,192,188);
     background-color: #EF9F9F;
     box-shadow: 0 10px 10px 0 rgba(0,0,0,0.24), 0 10px 10px 0 rgba(0,0,0,0.10);
 }
@@ -78,9 +85,10 @@ body{
 /*태그랭킹*/
 
 .subtitle{
-    margin-top:1%;
+    margin-top:3%;
     margin-bottom:4%;
     font-size:5vw;
+    color:rgb(102,102,102); /*gray*/
 }
 
 #ranking {
@@ -125,21 +133,27 @@ body{
     padding:1%;
     background: #FFF2F2;
     margin-bottom: 10%;
+    text-align:left;
+    color:rgb(102,102,102); /*gray*/
+}
+
+
+.freq{
+    margin-bottom:0;
+    margin-top:2%;
 }
 
 .rank_table dd{
     font-size: 2vw;
     text-align:left;
-    margin-left:7%;
+    margin-left:10%;
 }
 
-.freq{
-    margin-bottom:0;
-}
 
 .rank_table dt{
     font-size: 5vw;
     font-weight:800;
+    margin-left:7%;
     /*text-align:left;
     margin-left:7%;*/
 }
@@ -148,6 +162,11 @@ body{
 /*디테일 박스*/
 #go_to_detail{
     text-align:center;
+    color:rgb(102,102,102); /*gray*/
+}
+
+#detail_dd{
+    margin-top:10%;
 }
 
 /* 버튼 스타일 */
@@ -161,7 +180,6 @@ button::after {
 
 button {
   background: none;
-  border: 1px solid gray;
   border-radius: 20%;
   display: inline-block;
   font-weight: bold;
@@ -182,9 +200,11 @@ button::after {
     background-color:white;
     width:40%;
     font-size:4vw;
-    border:solid 1px gray;
-    background:#FFF5DE;
     margin-bottom:10%;
+    background: rgb(251,192,188);
+    border: 2px solid rgb(251,192,188);
+    font-family: "Mukta Malar";
+    color:white;
 }
 
 .detail_btn:hover {
@@ -204,10 +224,11 @@ button::after {
 }
 
 #made{
-    margin-top:20%;
+    margin-top:15%;
     margin-bottom:5%;
     text-align:center;
     font-size:3vw;
+    color:rgb(102,102,102); /*gray*/
 }
 
 /*로딩*/
