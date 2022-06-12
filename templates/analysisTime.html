@@ -1,14 +1,12 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/html">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
     <script src="../../../../static/jquery-3.6.0.min.js"></script> <!--수정-->
+    <meta charset="UTF-8">
     <title>Time Analysis</title>
 
-
     <!--장고용 서식-->
-    
     <link rel="stylesheet" type="text/css" href="{%static '시간분석.css'%}">
     <link rel="stylesheet" href="{%static 'bootstrap.min.css'%}">
     <link rel="stylesheet" href="{%static 'bootstrap.min.js'%}">
@@ -19,55 +17,64 @@
     <link href="https://fonts.googleapis.com/css2?family=Gamja+Flower&family=Nanum+Myeongjo:wght@700&display=swap" rel="stylesheet">
 
 
-
 </head>
 <body>
 
+<!--로딩-->
+<script type="text/javascript">
+    $(window).on('load', function(){
+        $('#loading').delay(100).fadeOut();
+    });
+</script>
+
+<div id="loading"><img id="loading-image" src="{%static 'images\loading.gif' %}" alt="Loading..." /></div><!--수정-->
+
     <div id="wrap">
-        <br><br>
-        <br><br>
+        <br>
 
         <!--뒤로가기 버튼-->
-        <button onclick="history.back()" id="back_btn"><img src="{% static 'images\back.png' %}" id="back_img"></button>
-        <br><br>
+        <button onclick="history.back()" id="back_btn"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+        </svg></button>
 
         <!--나타낼 제목-->
-        <h1>{{user.username}}님의</h1>
-        <br>
-        <h4>시간별 분석</h4>
-        <br>
+        <!--사용자 id-->
+        <div id="user_welcome">
+            <dd id="page_title">시간별 분석</dd>
+        </div>
+
 
         <div><form method="get" class="post-form" action=''>
             {% csrf_token %}
             <!-- <form action = 페이지 링크 연결>
             연도버튼 -->
 
-            <input type="month" name = 'date' value="{{form.date.value|default_if_none:''}}">
+            <input type="month" id='year_month' name='date' value="{{form.date.value|default_if_none:''}}">
             <!--확인버튼-->
-            <input type="submit" id="result_btn" style="margin-left:10px;" value="분석결과 확인">
+            <input type="submit" id="result_btn" value="분석결과보기">
         </form></div>
-
-        
-        <br>
-        <br>
-        <br>
-        <br>
 
 
         <!--시간대 그래프 나타내기-->
-        <caption><h3>시간대별 분석</h3></caption>
         <div id="time_div">
+            <div class="subtitle">시간대별 분석</div>
             <table id="time_tb">
-                <tr ><td style="text-align:center; padding:3%;">
+                <tr ><td style="text-align:center; padding-top:3%;">
+                    <input type="button" id="time24_btn" class="time_btn" value="시간별">
                     <input type="button" id="dawn_btn" class="time_btn" value="새벽">
                     <input type="button" id="morning_btn" class="time_btn" value="아침">
-                    <input type="button" id="lunch_btn" class="time_btn" value="점심">
                 </td></tr>
                 <tr style="text-align:center;"><td>
+                    <input type="button" id="lunch_btn" class="time_btn" value="점심">
                     <input type="button" id="evening_btn" class="time_btn" value="저녁">
                     <input type="button" id="night_btn" class="time_btn" value="밤">
                 </td></tr>
                 <tr><td>
+
+                    <div class="timegraph">
+                      <img src="{% static 'images\graphtime(24).png' %}" class="graph_img" id="time24_img" alt="">
+                    </div>
+
                     <div class="timegraph">
                       <img src="{% static 'images\graphtime_새벽.png' %}" class="graph_img" id="dawn_img" alt="">
                     </div>
@@ -90,61 +97,64 @@
                 </td></tr>
             </table>
         </div>
-        <br><br>
-        <caption><h3>요일별 분석</h3></caption>
+
+
+
+
         <!--요일별 태그 그래프로 나타내기-->
         <div id="week_div">
+            <div class="subtitle">요일별 분석</div>
             <table id="week_tb">
-                <tr ><td style="text-align:center; padding:3%;">
+                <tr><td style="text-align:center; padding:3%;">
                     <input type="button" id="week_top_btn" class="week_btn" value="요일별 인기">
-                    <input type="button" id="mon_btn" class="week_btn" value="월요일">
-                    <input type="button" id="tue_btn" class="week_btn" value="화요일">
-                    <input type="button" id="wed_btn" class="week_btn" value="수요일">
-                </td></tr>
-                <tr ><td style="text-align:center; padding:3%;">
-                    <input type="button" id="thur_btn" class="week_btn" value="목요일">
-                    <input type="button" id="fri_btn" class="week_btn" value="금요일">
-                    <input type="button" id="sat_btn" class="week_btn" value="토요일">
-                    <input type="button" id="sun_btn" class="week_btn" value="일요일">
+                    <input type="button" id="mon_btn" class="week_btn" value="월">
+                    <input type="button" id="tue_btn" class="week_btn" value="화">
+                    <input type="button" id="wed_btn" class="week_btn" value="수">
+                    <input type="button" id="thur_btn" class="week_btn" value="목">
+                    <input type="button" id="fri_btn" class="week_btn" value="금">
+                    <input type="button" id="sat_btn" class="week_btn" value="토">
+                    <input type="button" id="sun_btn" class="week_btn" value="일">
                 </td></tr>
                 <tr><td>
                     <!--요일별 Top1 태그 그래프 나타내기-->
-                    <div class="weekdaygraph_top1">
+                    <div class="weekdaygraph">
                       <img src="{% static 'images\graphweekday.png' %}" class="week_img" id="week_top_img" alt="">
                     </div>
 
                     <!--요일(월~일) Top5 태그 그래프 나타내기-->
-                    <div class="weekdaygraph_yoil">
+                    <div class="weekdaygraph">
                       <img src="{% static 'images\graph_월요일.png' %}" class="week_img" id="mon_img" alt="">
                     </div>
 
-                    <div class="weekdaygraph_yoil">
+                    <div class="weekdaygraph">
                       <img src="{% static 'images\graph_화요일.png' %}" class="week_img" id="tue_img" alt="">
                     </div>
 
-                    <div class="weekdaygraph_yoil">
+                    <div class="weekdaygraph">
                       <img src="{% static 'images\graph_수요일.png' %}" class="week_img" id="wed_img" alt="">
                     </div>
 
-                    <div class="weekdaygraph_yoil">
+                    <div class="weekdaygraph">
                       <img src="{% static 'images\graph_목요일.png' %}" class="week_img" id="thur_img" alt="">
                     </div>
 
-                    <div class="weekdaygraph_yoil">
+                    <div class="weekdaygraph">
                       <img src="{% static 'images\graph_금요일.png' %}" class="week_img" id="fri_img" alt="">
                     </div>
 
-                    <div class="weekdaygraph_yoil">
+                    <div class="weekdaygraph">
                       <img src="{% static 'images\graph_토요일.png' %}" class="week_img" id="sat_img" alt="">
                     </div>
 
-                    <div class="weekdaygraph_yoil">
+                    <div class="weekdaygraph">
                       <img src="{% static 'images\graph_일요일.png' %}" class="week_img" id="sun_img" alt="">
                     </div>
                 </td></tr>
             </table>
         </div>
 
+        <!--X-memory문구-->
+        <div id="made">X-memory</div>
     </div>
 
 
@@ -157,15 +167,27 @@
     /*시간별 분석에서 버튼 눌렀을 때 분석 이미지 표시*/
     $(document).ready(function(){
             /*웹페이지 열었을 때*/
+            $("#time24_img").show();/*초기 선택*/
             $("#dawn_img").hide();
             $("#morning_img").hide();
-            $("#lunch_img").show(); /*초기 선택*/
+            $("#lunch_img").hide();
             $("#evening_img").hide();
             $("#night_img").hide();
+
+            /*시간대 버튼 클릭했을 때 새벽 보여줌*/      /*******************새벽이랑 아침은 사진이 없어서 안뜹니당*****************/
+            $("#time24_btn").click(function(){
+                $("#time24_img").show();
+                $("#dawn_img").hide();
+                $("#morning_img").hide();
+                $("#lunch_img").hide();
+                $("#evening_img").hide();
+                $("#night_img").hide();
+            });
 
 
             /*새벽 버튼 클릭했을 때 새벽 보여줌*/      /*******************새벽이랑 아침은 사진이 없어서 안뜹니당*****************/
             $("#dawn_btn").click(function(){
+                $("#time24_img").hide();
                 $("#dawn_img").show();
                 $("#morning_img").hide();
                 $("#lunch_img").hide();
@@ -175,6 +197,7 @@
 
             /*아침 버튼 클릭했을 때 아침 보여줌*/
             $("#morning_btn").click(function(){
+                $("#time24_img").hide();
                 $("#dawn_img").hide();
                 $("#morning_img").show();
                 $("#lunch_img").hide();
@@ -184,6 +207,7 @@
 
             /*점심 버튼 클릭했을 때 점심 보여줌*/
             $("#lunch_btn").click(function(){
+                $("#time24_img").hide();
                 $("#dawn_img").hide();
                 $("#morning_img").hide();
                 $("#lunch_img").show();
@@ -193,6 +217,7 @@
 
             /*저녁 버튼 클릭했을 때 저녁 보여줌*/
             $("#evening_btn").click(function(){
+                $("#time24_img").hide();
                 $("#dawn_img").hide();
                 $("#morning_img").hide();
                 $("#lunch_img").hide();
@@ -202,6 +227,7 @@
 
             /*밤 버튼 클릭했을 때 밤 보여줌*/
             $("#night_btn").click(function(){
+                $("#time24_img").hide();
                 $("#dawn_img").hide();
                 $("#morning_img").hide();
                 $("#lunch_img").hide();
@@ -321,9 +347,6 @@
             });
 
         });
-
-
-
 </script>
 
 

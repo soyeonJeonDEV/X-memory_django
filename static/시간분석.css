@@ -1,51 +1,18 @@
 /*시간분석.css*/
 
-/*로딩*/
-#loading {
-    width: 100%;
-    height: 100%;
-    top: 0px;
-    left: 0px;
-    position: fixed;
-    display: block;
-    opacity: 0.8;
-    background-color: #fff;
-    z-index: 99;
-    text-align: center;
-}
-
-#loading-image {
-   position: absolute;
-   top: 50%;
-   left: 50%;
-   transform: translate(-50%, -50%);
-   z-index: 100;
-}
-
-
-
-
-
 *{
     margin: auto;
-    font-family: 'Nanum Myeongjo', serif; /*폰트*/
+    font-family: "Mukta Malar", sans-serif; /*폰트*/
 }
 
 body{
     /*전체 배경*/
-    background:url(https://mblogthumb-phinf.pstatic.net/20120629_279/libido83_1340957741380xqEzT_JPEG/bg-graph_paper.jpg?type=w2);
+    background: url(https://mblogthumb-phinf.pstatic.net/20120904_110/diasu21_1346762650565eqtQN_JPEG/480x800_%BF%AC%C7%CE%C5%A9.jpg?type=w2);
     /*background-size:cover; 이거 하면 사진이 너무 확대되어보임*/
 }
 
-
-
-
-
-
-
-
 #wrap{
-    width:80%;
+    width:90%;
     background-color:white;
     border:1px solid;
     margin-top:5%;
@@ -56,79 +23,108 @@ body{
 
 /*뒤로가기*/
 #back_btn {
-    width:5%;
-    height:5%;
+    width:10%;
+    height:10%;
     background-color:white;
-    border: solid 1px gray;
+    border: 0px;
+    margin-bottom:10vw;
 }
 
 #back_btn:hover {
     background-color:silver;
 }
 
-#back_img {
-    margin:0 auto;
-    align:center;
-    max-width: 100%;
-    height: auto;
-    display: block;
+/*페이지 제목*/
+#page_title {
+    font-size: 8vw;
+    text-align:center;
+    margin-bottom:4%;
+    color:rgb(102,102,102); /*gray*/
+    font-weight:bold;
 }
 
-/*연 월 선택 드롭다운박스*/
-.year_month {
+
+/*연 월 선택*/
+.post-form{
+    text-align:center;
+    margin-bottom:10%;
+}
+
+#year_month {
     margin:1%;
-    width:8%;
+    min-width:15%;
     height:4%;
-    font-size:medium;
+    font-size:4vw;
+    color:rgb(251,192,188);
+    border: 2px solid rgb(251,192,188);
+    border-radius:3px;
+    color:gray;
 }
 
 /*분석결과 확인버튼*/
 #result_btn {
-    border-radius:10%;
-    background-color:white;
-    width:12%;
+    margin:1%;
+    min-width:15%;
+    border-radius:3px;
     height:4%;
-    font-size:medium;
+    font-size:4vw;
     text-align:center;
+    background: rgb(251,192,188);
+    border: 2px solid rgb(251,192,188);
+    font-family: "Mukta Malar";
+    color:white;
 }
 
 #result_btn:hover {
     color:white;
-    border:silver;
-    background-color:skyblue;
+    border: 2px solid rgb(251,192,188);
+    background-color: #EF9F9F;
     box-shadow: 0 10px 10px 0 rgba(0,0,0,0.24), 0 10px 10px 0 rgba(0,0,0,0.10);
 }
 
 /*시간별 테이블*/
 #time_tb {
     width:100%;
-    border:1px solid;
-
+    border:1px solid rgb(102,102,102);
+    border-radius:3px;
+    margin-bottom:15%;
 }
 
 /*시간별 버튼*/
 .time_btn {
-    border-radius:10%;
-    background-color:white;
-    width:12%;
-    height:70%;
-    font-size:medium;
+    margin:1%;
+    min-width:15%;
+    border-radius:3px;
+    height:4%;
+    font-size:4vw;
     text-align:center;
+    background: rgb(251,192,188);
+    border: 2px solid rgb(251,192,188);
+    font-family: "Mukta Malar";
+    color:white;
 }
 
 .time_btn:hover {
     color:white;
-    border:silver;
-    background-color:skyblue;
+    border: 2px solid rgb(251,192,188);
+    background-color: #EF9F9F;
     box-shadow: 0 10px 10px 0 rgba(0,0,0,0.24), 0 10px 10px 0 rgba(0,0,0,0.10);
 }
 
 /*시간별 그래프*/
+.subtitle{
+    margin-top:3%;
+    margin-bottom:4%;
+    font-size:5vw;
+    color:rgb(102,102,102); /*gray*/
+    font-weight:bold;
+}
+
 .timegraph {
-    padding-right:5%;
     width:100%;
     height:100%;
-    /*text-align:left;*/
+    text-align:center;
+    margin-top:5%;
 }
 
 /*시간별 그래프 이미지*/
@@ -141,28 +137,38 @@ body{
 
 /*요일 테이블*/
 #week_tb {
-    margin-top:10%;
-    margin-bottom:10%;
     width:100%;
-    border:1px solid;
+    border:1px solid rgb(102,102,102);
+    border-radius:3px;
+    margin-bottom:20%;
 }
 
 /*요일별 버튼*/
 .week_btn {
-    border-radius:10%;
-    background-color:white;
-    width:10%;
+    margin:1%;
+    min-width:15%;
+    border-radius:3px;
     height:4%;
-    font-size:medium;
+    font-size:4vw;
     text-align:center;
-
+    background: rgb(251,192,188);
+    border: 2px solid rgb(251,192,188);
+    font-family: "Mukta Malar";
+    color:white;
 }
 
 .week_btn:hover {
     color:white;
-    border:silver;
-    background-color:skyblue;
+    border: 2px solid rgb(251,192,188);
+    background-color: #EF9F9F;
     box-shadow: 0 10px 10px 0 rgba(0,0,0,0.24), 0 10px 10px 0 rgba(0,0,0,0.10);
+}
+
+.weekdaygraph{
+    width:100%;
+    height:100%;
+    text-align:center;
+    margin-top:5%;
 }
 
 /*요일별 그래프 이미지*/
@@ -172,5 +178,37 @@ body{
     height: auto;
     display: block;
 }
+
+/*x-memory*/
+#made{
+    margin-top:15%;
+    margin-bottom:5%;
+    text-align:center;
+    font-size:3vw;
+    color:rgb(102,102,102); /*gray*/
+}
+
+/*로딩*/
+#loading {
+     width: 100%;
+     height: 100%;
+     top: 0px;
+     left: 0px;
+     position: fixed;
+     display: block;
+     opacity: 0.8;
+     background-color: #fff;
+     z-index: 99;
+     text-align: center;
+}
+
+#loading-image {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 100;
+}
+
 
 
