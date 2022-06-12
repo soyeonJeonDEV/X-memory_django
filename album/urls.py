@@ -33,6 +33,11 @@ urlpatterns = [
   path('app_upload/', views.UploadView.as_view(), name="AppUpload"),
   path('app_index/',views.IndexView.as_view(), name='AppIndex'),
   path('app_profile/',views.ProfileView.as_view(), name='AppProfile'),
+  path('app_detail/',views.UploadDetailView.as_view(), name='AppDetail'),
+  path('app_analysis/',views.AnalysisView.as_view(), name='AppAnalysis'),
+  path('app_index/search/',views.SearchView.as_view(),name='search_by_tag'),
+  path('app_index/detail/add_tag/',views.add_tag,name='add_tag'),
+  path('app_index/detect_tag/',views.detect_tag,name='detect_tag'),
 ]
 
 

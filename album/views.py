@@ -898,7 +898,22 @@ def get_table(user, photo_id, DBtable):
     return table
 
 
-# app_login api
+# Create your views here.
+from django.contrib.auth import authenticate
+from django.http import JsonResponse
+from django.shortcuts import render
+from django.utils import timezone
+from .forms import PhotoForm, DetailForm, ProfileForm
+from .models import Photo, ProfileImage
+
+from rest_framework.views import APIView
+from rest_framework.authtoken.models import Token
+from django.http import JsonResponse
+
+from analysis.views import *
+
+
+#app_login api
 class AppLoginView(APIView):
     def post(self, request):
 
@@ -911,53 +926,306 @@ class AppLoginView(APIView):
 
         if user:
             print("로그인 성공!")
-            return JsonResponse({'token': token.key, 'code': '200', 'msg': '로그인 성공입니다.'}, status=200)
+            return JsonResponse({'token':token.key, 'code': '200', 'msg': '로그인 성공입니다.'}, status=200)
         else:
             print("실패")
-            return JsonResponse({'token': 'x', 'code': '404', 'msg': '로그인 실패입니다.'}, status=404)
-
-
-# app_photo_uri_path save
+            return JsonResponse({'token':'x','code': '404', 'msg': '로그인 실패입니다.'}, status=404)
+            
+#app_photo_uri_path save
 class UploadView(APIView):
-    def post(self, request, format=None):
-        form = PhotoForm(request.POST)
-        photo = request.POST.get('photo', '')
-        print(request.POST)
+  def post(self,request,format=None):
+    form = PhotoForm(request.POST)
+    profile = ProfileForm(request.POST)
+    photo = request.POST.get('photo','')
+    profileImage = photo[:8]
+    print(request.POST)
 
-        if form.is_valid():
-            post = form.save(commit=False)
-
-            # s3경로
-            s3url = 'https://cloud01-2.s3.us-east-2.amazonaws.com/public/' + str(request.user.username) + '/' + photo
-            post.photo = s3url
-
-            post.author = request.user
-
-            # 세이브
-            post.save()
-            print('post save made')
-
-            return JsonResponse({'code': '200', 'msg': '성공입니다.'}, status=200)
+    if form.is_valid():
+      if profileImage == "profile/":
+        post = profile.save(commit=False)  
+          # s3경로 
+        s3url = 'https://cloud01-2.s3.us-east-2.amazonaws.com/public/' +str(request.user.username)+'/' + photo
+        post.profileImage=s3url
+        thumbnail_key = 'public/'+str(request.user.username)+'/'+str(post.profileImage)
+        # 썸네일 링크 저장
+        thumbnail_url = create_url("cloud01-2-resized", thumbnail_key)
+        post.thumbnail = thumbnail_url
+        post.user = request.user
+        count = ProfileImage.objects.filter(user_id = request.user.id).values_list("user_id", flat=True).count()
+        # 세이브
+        if count == 0:
+          post.save()
+          print('post save made')
+          return JsonResponse({'id': post.id, 'code': '200', 'msg': '성공입니다.'}, status=200)
         else:
-            return JsonResponse({'code': '404', 'msg': '실패입니다.'}, status=404)
+          post.id = ProfileImage.objects.get(user_id = request.user.id).id
+          post.save()
+          return JsonResponse({ 'code': '200', 'msg': '성공입니다.'}, status=200)
+          
+      else:
+        post = form.save(commit=False)  
 
+          # s3경로 
+        s3url = 'https://cloud01-2.s3.us-east-2.amazonaws.com/public/' +str(request.user.username)+'/' + photo
+        post.photo=s3url
+        thumbnail_key = 'public/'+str(request.user.username)+'/'+str(post.photo)
+        # 썸네일 링크 저장
+        thumbnail_url = create_url("cloud01-2-resized", thumbnail_key)
+        post.thumbnail = thumbnail_url
+        post.author = request.user
+        
 
+        # 세이브
+        post.save()
+        print('post save made')
+
+        return JsonResponse({'id': post.id, 'code': '200', 'msg': '성공입니다.'}, status=200)
+    else:
+      return JsonResponse({'code': '404', 'msg': '실패입니다.'}, status=404)
+
+    
+
+# 앨범 화면 api
 class IndexView(APIView):
-    def get(self, request, format=None):
-        photos = Photo.objects.filter(author_id=request.user.id).values_list('photo', flat=True)
-        print(photos)
-        context = {'photos': photos}
-        return render(request, 'album.html', context)
+  def get(self,request,format=None):
+    photo_list=Photo.objects.filter(author_id=request.user.id).values_list('photo', flat=True)
+    id_list=list(photo_list.values_list('id',flat=True))
+    photos=[]
+    count = 0
+    for a in photo_list:
+      if a is not None:
+        url = "https://d1e6tpyhrf8oqe.cloudfront.net" + a[44:]
+      #   response = requests.get(url)
+        photos.append({'url':url,'id':id_list[count]})
+        count +=1
+    context = {'photos':photos}
+    return render(request, 'album2.html', context)
+    #   # 조회
+    # photo_list=Photo.objects.filter(author_id=request.user.id).values_list('photo', flat=True)
+    # id_list=list(photo_list.values_list('id',flat=True))
+    # photos=[]
+    # count = 0
+    # for a in photo_list:
+    #   if a is not None:
+    #   #   response = requests.get(url)
+    #     photos.append({'url':a,'id':id_list[count]})
+    #     count +=1
+    # context = {'photos':photos}
+    # return render(request, 'album.html', context)
 
 
+# 사진 개수 api
 class ProfileView(APIView):
-    def post(self, request, format=None):
+  def post(self,request,format=None):
         # 사진 개수
         count = Photo.objects.filter(author_id=request.user.id).values_list('photo', flat=True).count()
-        print(count)
+        filename = str(ProfileImage.objects.get(user_id=request.user.id).profileImage)
+
+        print(filename)
+
         if request.user:
-            return JsonResponse({'count': count, 'code': '200', 'msg': '성공입니다.'}, status=200)
+          return JsonResponse({'count':count,'filename':filename, 'code': '200', 'msg': '성공입니다.'}, status=200)
         else:
-            return JsonResponse({'code': '404', 'msg': '실패입니다.'}, status=404)
+          return JsonResponse({'code': '404', 'msg': '실패입니다.'}, status=404)
+
+from datetime import datetime
+# 위도 경도 db 저장 api
+class UploadDetailView(APIView):
+  def post(self, request, format=None):
+    time = None
+    if request.POST.get('time',''):
+      time = request.POST.get('time','')
+      timeFormat = '%Y:%m:%d %H:%M:%S'
+      timedata = datetime.strptime(time,timeFormat)
+    if request.method=="POST":
+      form = DetailForm(request.POST)
+      if form.is_valid():
+        tags=form.save(commit=False)
+        tags.photo=Photo.objects.get(id=int(request.POST['photo']))
+        tags.latitude=request.POST['latitude']
+        tags.longitude=request.POST['longitude']
+        if time:
+          tags.create_date = timedata
+          print(tags.create_date)
+        else:
+          tags.create_date=timezone.now()
+        tags.save()
+
+      return JsonResponse({'code': '200', 'msg': '성공입니다.'}, status=200)
+    else:
+      return JsonResponse({'code': '404', 'msg': '실패입니다.'}, status=404)
+
+class AnalysisView(APIView):
+  def get(self,request, format=None):
+    try:
+        date = request.GET['date']
+
+    except: #기본 페이지(현재 날짜)
+
+        user = get_user_model()
+        user = request.user.id
+        photo_id_list = list(Photo.objects.filter(author_id=user).values_list('id', flat=True))
+        if photo_id_list == []:
+            rank1_tagname = 0
+            content = {
+                'rank1_tagname' : 'NO PHOTO'
+                }
+            return render(request, 'analysis.html', content)
+        photo_id = ','.join(map(str, photo_id_list))
+        # MySQL Connection 연결하고 테이블에서 데이터 가져옴
+        tag_table = get_table(user, photo_id, 'phototag')
+
+        if tag_table.empty == False:
+            year = datetime.datetime.now().year
+            month = datetime.datetime.now().month
+
+            tag_table['create_date'] = pd.to_datetime(tag_table['create_date'])
+            tag_table['year'] = tag_table['create_date'].dt.year
+            tag_table['month'] = tag_table['create_date'].dt.month
+            tag_table = tag_table[(tag_table['year'] == year) & (tag_table['month'] == month)]  # 연도,월 일치하는 데이터만 가져옴
+            # tag_table은 사용자가 요청한 연/월에 맞는 사용자의 phototag
+            # 태그 Top3에 대한 태그명, 태그 개수 구하기 ###########
+            ## new tag list
+            if tag_table.empty == False:
+                tags_lst = tag_table['tags']
+
+                ## Tag top 3
+                rank3 = collections.Counter(tags_lst).most_common(3)
+                ## tag name (rank1~3)
+                rank3_name = [list(row)[0] for row in rank3]
+                rank1_tagname = rank3_name[0]
+                rank2_tagname = rank3_name[1]
+                rank3_tagname = rank3_name[2]
+
+                ## tag frequency (rank1~3)
+                rank3_freq = [list(row)[1] for row in rank3]
+                rank1_tagfreq = rank3_freq[0]
+                rank2_tagfreq = rank3_freq[1]
+                rank3_tagfreq = rank3_freq[2]
+
+                # 태그 top3에 대해 각각 2개의 연관태그 생성 ###########
+                ## 태그 rank1를 가진 사진 id
+                related_photo1 = tag_table[tag_table['tags'] == rank1_tagname]['photo_id']
+                ## 태그 rank1에 대한 연관 태그
+                related_tags1 = tag_table[(tag_table['photo_id'].isin(related_photo1))&(tag_table['tags'].ne(rank1_tagname))&
+                                            (tag_table['tags'].ne(rank2_tagname))&(tag_table['tags'].ne(rank3_tagname))]['tags'] #수정
+                related_tags1_top2 = collections.Counter(related_tags1).most_common(2)  # 가장 많은 top2만
+                ## 태그 rank1에 대한 연관 태그 2개 각각 변수로 저장
+                rank1_related_tagname = [list(row)[0] for row in related_tags1_top2]
+                related_tagname1_1 = rank1_related_tagname[0]
+                related_tagname1_2 = rank1_related_tagname[1]
+
+                ## 태그 rank2를 가진 사진 id
+                related_photo2 = tag_table[tag_table['tags'] == rank2_tagname]['photo_id']
+                ## 태그 rank2에 대한 연관 태그
+                related_tags2 = tag_table[(tag_table['photo_id'].isin(related_photo2))&(tag_table['tags'].ne(rank1_tagname))&
+                                            (tag_table['tags'].ne(rank2_tagname))&(tag_table['tags'].ne(rank3_tagname))]['tags'] #수정
+                related_tags2_top2 = collections.Counter(related_tags2).most_common(2)  # 가장 많은 top2만
+                ## 태그 rank2에 대한 연관 태그 2개 각각 변수로 저장
+                rank2_related_tagname = [list(row)[0] for row in related_tags2_top2]
+                related_tagname2_1 = rank2_related_tagname[0]
+                related_tagname2_2 = rank2_related_tagname[1]
+
+                ## 태그 rank3를 가진 사진 id
+                related_photo3 = tag_table[tag_table['tags'] == rank3_tagname]['photo_id']
+                ## 태그 rank3에 대한 연관 태그
+                related_tags3 = tag_table[(tag_table['photo_id'].isin(related_photo3))&(tag_table['tags'].ne(rank1_tagname))&
+                                            (tag_table['tags'].ne(rank2_tagname))&(tag_table['tags'].ne(rank3_tagname))]['tags'] # 수정
+                related_tags3_top2 = collections.Counter(related_tags3).most_common(2)  # 가장 많은 top2만
+                ## 태그 rank3에 대한 연관 태그 2개 각각 변수로 저장
+                rank3_related_tagname = [list(row)[0] for row in related_tags3_top2]
+                related_tagname3_1 = rank3_related_tagname[0]
+                related_tagname3_2 = rank3_related_tagname[1]
 
 
+                # rank1 태그의 사진 가져오기 # 수정
+                photo1 = Photo.objects.filter(id__in=related_photo1).first()
+                photourl = photo1.photo
+
+
+
+                content = {
+                    'rank1_tagname': rank1_tagname,  # 태그명
+                    'rank2_tagname': rank2_tagname,
+                    'rank3_tagname': rank3_tagname,
+                    'rank1_tagfreq': rank1_tagfreq,  # 태그 빈도
+                    'rank2_tagfreq': rank2_tagfreq,
+                    'rank3_tagfreq': rank3_tagfreq,
+                    'related_tagname1_1': related_tagname1_1,  # 연관 태그명
+                    'related_tagname1_2': related_tagname1_2,
+                    'related_tagname2_1': related_tagname2_1,
+                    'related_tagname2_2': related_tagname2_2,
+                    'related_tagname3_1': related_tagname3_1,
+                    'related_tagname3_2': related_tagname3_2,
+                    'photourl': photourl
+                }
+            else:
+                content = {
+                    'rank1_tagname': 'NO PHOTO',  # 태그명
+                }
+
+        else:
+            # pass #리턴할 값이 없으면 오류가 나므로 리턴값을 넣어주세요(현재는 페이지만 띄워줘서 pass했습니다)
+            content = {
+                'rank1_tagname': 'NO PHOTO',  # 태그명
+            }
+        
+        
+        #==========================================================================
+        #분석 페이지가 아니라 디테일 페이지 들어갔을 때 위치정보 저장받을 수 있도록 수정하기
+
+        # 페이지 접속하면 위치 정보 찾아줌
+        analyzed_photo_list = list(Analysis.objects.filter(user_id=user).values_list('photo_id', flat=True))
+        N_anaylazed_photos = list(set(photo_id_list) - set(analyzed_photo_list))
+        N_anaylazed_photo = ','.join(map(str, N_anaylazed_photos))
+        if N_anaylazed_photo:
+            tag_table = get_table(user, N_anaylazed_photo, 'phototag')
+
+            # 이미 위치정보가 저장된 사진에 대해서는 위치 찾는 함수 작동X ->DB에 위치정보가 계속 저장되는 것을 막음
+
+            if tag_table.empty == False:
+                tag_table['user_id'] = user
+                tag_table = search_place(tag_table)
+
+                # 분석한 내용 db로 보내기
+                lst = []
+                tag_table = tag_table.drop_duplicates(['photo_id'], keep='last')
+                for row in tag_table[['photo_id', 'place', 'user_id']].itertuples(index=False, name=None):
+                    lst.append(row)
+                tuple(lst)
+
+                conn = pymysql.connect(host='18.223.252.140', user='python', password='python', db='mysql_db',
+                                    charset='utf8')
+                curs = conn.cursor(pymysql.cursors.DictCursor)
+                sql = """insert into album_analysis(photo_id,location,user_id) 
+                values (%s, %s, %s)"""
+                curs.executemany(sql, lst)
+                conn.commit()
+                conn.close()
+        # ==============================================================================
+        return render(request, 'analysis.html', content) # 현재 월에 해당하는 분석값을 리턴 
+
+class SearchView(APIView):
+  def get(self,request):
+
+      tag=request.GET['tag']
+      print(tag)
+      print(request.body)
+
+      photo_list = []
+
+      photo_result= PhotoTag.objects.filter(tags=tag).values_list('photo_id',flat=True)
+      print(photo_result)
+      for a_photo_id in photo_result:
+        print(a_photo_id)
+        found_photo=Photo.objects.get(id=a_photo_id)
+        # print(request.user)
+        # print(found_photo.author)
+        # print(found_photo.id)
+        if found_photo.author == request.user:
+          photo_list.append(str(found_photo.photo))
+
+
+      print(photo_list)
+
+      return render (request,'search.html',{'tag':tag,'photo_list' : photo_list})

@@ -2,7 +2,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
-from .models import Photo, PhotoTag
+from .models import Photo, PhotoTag, ProfileImage
 
 
 class UserForm(UserCreationForm):
@@ -33,4 +33,15 @@ class searchForm(forms.Form):
 
 class monthForm(forms.Form):
   date=forms.DateField()
+
+class DetailForm(forms.ModelForm):
+  class Meta:
+    model=PhotoTag
+    fields=['photo','latitude', 'longitude']
+
+class ProfileForm(forms.ModelForm):
+  class Meta:
+    model=ProfileImage
+    fields=['id', 'profileImage','thumbnail']
+
     
