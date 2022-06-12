@@ -1,5 +1,31 @@
 /*시간분석.css*/
 
+/*로딩*/
+#loading {
+    width: 100%;
+    height: 100%;
+    top: 0px;
+    left: 0px;
+    position: fixed;
+    display: block;
+    opacity: 0.8;
+    background-color: #fff;
+    z-index: 99;
+    text-align: center;
+}
+
+#loading-image {
+   position: absolute;
+   top: 50%;
+   left: 50%;
+   transform: translate(-50%, -50%);
+   z-index: 100;
+}
+
+
+
+
+
 *{
     margin: auto;
     font-family: 'Nanum Myeongjo', serif; /*폰트*/
@@ -10,6 +36,13 @@ body{
     background:url(https://mblogthumb-phinf.pstatic.net/20120629_279/libido83_1340957741380xqEzT_JPEG/bg-graph_paper.jpg?type=w2);
     /*background-size:cover; 이거 하면 사진이 너무 확대되어보임*/
 }
+
+
+
+
+
+
+
 
 #wrap{
     width:80%;

@@ -3,6 +3,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="../../../../static/jquery-3.6.0.min.js"></script> <!--수정-->
     <meta charset="UTF-8">
     <title>Analysis</title>
 
@@ -20,85 +21,126 @@
 </head>
 <body>
 
+<!--로딩-->
+<script type="text/javascript">
+    $(window).on('load', function(){
+        $('#loading').delay(2500).fadeOut();
+    });
+</script>
+
+<div id="loading"><img id="loading-image" src="{%static 'images\loading.gif' %}" alt="Loading..." /></div><!--수정-->
+
 {% block content %}
 
     <div id="wrap">
-        <br><br>
+        <br>
 
         <!--뒤로가기 버튼-->
-        <button onclick="history.back()" id="back_btn"><img src="{% static 'images\back.png' %}" id="back_img"></button>
-        <br><br>
+        <button onclick="history.back()" id="back_btn"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+        </svg></button>
 
-        <h1>{{user.username}} 님의</h1><br>
-        <br>
+        <!--사용자 id-->
+        <div id="user_welcome">
+            <dd id="user">{{user.username}} 님의</dd>
+        </div>
+
 
         <div><form method="get" class="post-form" action=''>
             {% csrf_token %}
-            <!-- 날짜 받아오는 폼 -->
-            <input type="month" name = 'date' value="{{form.date.value|default_if_none:''}}">
+            <!-- <form action = 페이지 링크 연결>
+            연도버튼 -->
+
+            <input type="month" name = 'date' id='year_month' value="{{form.date.value|default_if_none:''}}">
             <!--확인버튼-->
-            <input type="submit" id="result_btn" style="margin-left:10px;" value="분석결과 확인">
+            <input type="submit" id="result_btn" value="태그 분석">
         </form></div>
 
-        <br>
-        <br>
 
-        <!--태그 랭킹-->
+        <!--태그 박스들-->
         <div id="ranking">
-            <!--1위 태그-->
+            <!--1위 태그 박스(사진 포함)-->
+            <div class="subtitle"><dt>이번 달 가장 많은 태그</dt></div>
+
             <div id="rank_best">
-                <table>
-                    <tr><td style="padding:10%;"><h2>#{{rank1_tagname}}</h2></td></tr>
-                    <tr><td></td>{{firstrank1photo}}</tr>
-                    <tr><td><img src="{{photourl}}" id="rank1_img"></td></tr>
-                </table>
+                <img src="{{photourl}}" id="best-img">
+                <div class="img_text"><p><b>#{{rank1_tagname}}</b></p></div>
             </div>
             <br>
-            <!--1,2,3위 태그-->
+
+            <div class="subtitle"><dt>연관 태그</dt></div>
+
+            <!--1,2,3위 태그와 연관태그 내용 박스-->
             <div id="rank123">
+                <div class="rank_table">
+                    <dd class="freq">{{rank1_tagfreq}}</dd><!--1위 태그 빈도-->
+                    <dt>#{{rank1_tagname}}</dt><!--1위 태그명-->
+                    <dd>#{{related_tagname1_1}}<br><!--연관태그2개-->
+                        #{{related_tagname1_2}}</dd></div>
 
-                <div id="rank1" class="rank123">
-                    <table class="rank_table">
-                        <tr><td>{{rank1_tagfreq}}</td></tr>
-                        <tr><td><h3>#{{rank1_tagname}}</h3></td></tr>
-                        <tr><td>#{{related_tagname1_1}}</td></tr>
-                        <tr><td>#{{related_tagname1_2}}</td></tr>
-                    </table>
-                </div>
-                <div id="rank2" class="rank123">
-                    <table class="rank_table">
-                        <tr><td>{{rank2_tagfreq}}</td></tr>
-                        <tr><td><h3>#{{rank2_tagname}}</h3></td></tr>
-                        <tr><td>#{{related_tagname2_1}}</td></tr>
-                        <tr><td>#{{related_tagname2_2}}</td></tr>
-                    </table>
-                </div>
-                <div id="rank3" class="rank123">
-                    <table class="rank_table">
-                        <tr><td>{{rank3_tagfreq}}</td></tr>
-                        <tr><td><h3>#{{rank3_tagname}}</h3></td></tr>
-                        <tr><td>#{{related_tagname3_1}}</td></tr>
-                        <tr><td>#{{related_tagname3_2}}</td></tr>
-                    </table>
-                </div>
+                <div class="rank_table">
+                    <dd class="freq">{{rank2_tagfreq}}</dd><!--2위 태그 빈도-->
+                    <dt>#{{rank2_tagname}}</dt><!--2위 태그명-->
+                    <dd>#{{related_tagname2_1}}<br><!--연관태그2개-->
+                        #{{related_tagname2_2}}</dd></div>
 
+                <div class="rank_table">
+                    <dd class="freq">{{rank3_tagfreq}}</dd><!--3위 태그 빈도-->
+                    <dt>#{{rank3_tagname}}</dt><!--3위 태그명-->
+                    <dd>#{{related_tagname3_1}}<br><!--연관태그2개-->
+                        #{{related_tagname3_2}}</dd></div>
             </div>
-
         </div>
+
+
 
         <!--디테일 페이지-->
         <div id="go_to_detail">
-
+            <div class="subtitle"><dt>자세한 분석 보러가기</dt></div>
 <!-- <a href={% url 'analysis' %}><button type="button">분석</button></a> -->
+            <div class="detailpage_button">
+            <a href={% url 'analysisTime' %} ><button type="button" class="detail_btn"><svg xmlns="http://www.w3.org/2000/svg" width="14vw" height="14vw" fill="currentColor" class="bi bi-clock" viewBox="0 0 16 16">
+            <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/>
+            <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z"/>
+            </svg><br><dd>시간 분석</dd></button></a>
+            <a href={% url 'analysisPlace' %} ><button type="button" class="detail_btn"><svg xmlns="http://www.w3.org/2000/svg" width="14vw" height="14vw" fill="currentColor" class="bi bi-clock" viewBox="0 0 16 16">
+            <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/>
+            <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z"/>
+            </svg><br><dd>장소 분석</dd></button></a>
+            </div>
 
-            <a href={% url 'analysisTime' %} ><button type="button" class="detail_btn">시간 분석</button></a>
-            <a href={% url 'analysisPlace' %} ><button type="button" class="detail_btn">장소 분석</button></a>
 
         </div>
+
+
+        <!--X-memory문구-->
+        <div id="made">X-memory</div>
 
 
     </div>
 
 {% endblock %}
 </body>
+
+<script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+
+<script>
+    $(document).ready(function(){
+    var winWidth = $(window).width();
+    var boxWidth = $('#rank_best').width();
+    $('#rank_best').height(boxWidth);
+    });
+
+    $(document).ready(function(){
+    var winWidth = $(window).width();
+    var boxWidth = $('#rank_table').width();
+    $('#rank_table').height(boxWidth);
+    });
+
+    $(document).ready(function(){
+    var winWidth = $(window).width();
+    var boxWidth = $('.detail_btn').width();
+    $('.detail_btn').height(boxWidth);
+    });
+</script>
 </html>

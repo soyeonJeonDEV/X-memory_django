@@ -723,36 +723,12 @@ def analysis(request):
             else:
                 content = {
                     'rank1_tagname': 'NO PHOTO',  # 태그명
-                    # 'rank2_tagname': 0,
-                    # 'rank3_tagname': 0,
-                    # 'rank1_tagfreq': 0,  # 태그 빈도
-                    # 'rank2_tagfreq': 0,
-                    # 'rank3_tagfreq': 0,
-                    # 'related_tagname1_1': 0,  # 연관 태그명
-                    # 'related_tagname1_2': 0,
-                    # 'related_tagname2_1': 0,
-                    # 'related_tagname2_2': 0,
-                    # 'related_tagname3_1': 0,
-                    # 'related_tagname3_2': 0,
-                    # 'photourl': 0
                 }
 
         else:
             # pass #리턴할 값이 없으면 오류가 나므로 리턴값을 넣어주세요(현재는 페이지만 띄워줘서 pass했습니다)
             content = {
                 'rank1_tagname': 'NO PHOTO',  # 태그명
-                # 'rank2_tagname': 0,
-                # 'rank3_tagname': 0,
-                # 'rank1_tagfreq': 0,  # 태그 빈도
-                # 'rank2_tagfreq': 0,
-                # 'rank3_tagfreq': 0,
-                # 'related_tagname1_1': 0,  # 연관 태그명
-                # 'related_tagname1_2': 0,
-                # 'related_tagname2_1': 0,
-                # 'related_tagname2_2': 0,
-                # 'related_tagname3_1': 0,
-                # 'related_tagname3_2': 0,
-                # 'photourl': 0
             }
         
         
@@ -887,36 +863,12 @@ def analysis(request):
         else:
             content = {
                 'rank1_tagname': '사진이 없습니다',  # 태그명
-                # 'rank2_tagname': 0,
-                # 'rank3_tagname': 0,
-                # 'rank1_tagfreq': 0,  # 태그 빈도
-                # 'rank2_tagfreq': 0,
-                # 'rank3_tagfreq': 0,
-                # 'related_tagname1_1': 0,  # 연관 태그명
-                # 'related_tagname1_2': 0,
-                # 'related_tagname2_1': 0,
-                # 'related_tagname2_2': 0,
-                # 'related_tagname3_1': 0,
-                # 'related_tagname3_2': 0,
-                # 'photourl': 0
             }
 
     else:
         # pass #리턴할 값이 없으면 오류가 나므로 리턴값을 넣어주세요(현재는 페이지만 띄워줘서 pass했습니다)
         content = {
             'rank1_tagname': '사진이 없습니다',  # 태그명
-            # 'rank2_tagname': 0,
-            # 'rank3_tagname': 0,
-            # 'rank1_tagfreq': 0,  # 태그 빈도
-            # 'rank2_tagfreq': 0,
-            # 'rank3_tagfreq': 0,
-            # 'related_tagname1_1': 0,  # 연관 태그명
-            # 'related_tagname1_2': 0,
-            # 'related_tagname2_1': 0,
-            # 'related_tagname2_2': 0,
-            # 'related_tagname3_1': 0,
-            # 'related_tagname3_2': 0,
-            # 'photourl': 0
         }
 
 
