@@ -47,7 +47,7 @@ import folium
 from matplotlib import font_manager, rc
 import seaborn as sns
 from datetime import date
-
+import re 
 
 #위치 가져오기 위해 api접근
 gmaps = googlemaps.Client(key='AIzaSyDlTe2iwy53wvvt8WNwJ15fgzLGNmAQpf8')
@@ -98,7 +98,8 @@ def myplace(tag_table):
         #지도는 그냥 한국 지도 띄워줌
         m = folium.Map(
             location=(35.95, 128.25),
-            zoom_start=7
+            zoom_start=7,
+            height = '100%'
         )
         for i in range(len(placeTaken_photo)):
             fav_place_photo = tag_table[tag_table['locality'] == places[i]]['photo_id'].value_counts().index[0]
@@ -121,28 +122,24 @@ def myplace(tag_table):
             가장 많이 사용하신 태그는 <br>'''+ placetag  +"입니다" + myPhoto #그 장소에서의 사진 띄워주기
 
 
-            if place_photo_num < 5:
-                size = place_photo_num * 10
-                opacity = place_photo_num / 20 #사진 많아지면 수치 수정 
-            else:
-                size = 50
-                opacity = place_photo_num/20 #사진 많아지면 수치 수정
-                if opacity > 1:
-                    opacity == 1        
+     
             #마커
             folium.Marker(coords[i],
                         popup=html,
                         icon=folium.Icon(color='lightgray', icon='picture')
                         ).add_to(m)
 
-        maps = m._repr_html_()
+        maps = m.get_root().render()
+        
+
 
     else: #default로 한국 지도 띄워줌 
         m = folium.Map(
             location=(35.95, 128.25),
             zoom_start=7
         )
-        maps = m._repr_html_()
+
+        m.get_root().render()
 
     return maps
 
