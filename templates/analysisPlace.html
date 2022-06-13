@@ -1,13 +1,24 @@
-<!-- {% load static %} -->
+{% load static %}
 
-<!-- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>MAPS</title> -->
+    <title>나의 사진 지도</title>
+    {{map.header.render|safe}}
+    <link rel="stylesheet" href="{%static 'bootstrap.min.css'%}">
+    <link rel="stylesheet" href="{%static 'bootstrap.min.js'%}">
+    <link href="https://fonts.googleapis.com/css2?family=Gamja+Flower&family=Nanum+Myeongjo:wght@700&display=swap" rel="stylesheet">
 
-<div id='map'>
-    {{map|safe}}
-</div>
+</head>
+<body>
+  <div><h1 style= "font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">나의 사진 지도 보기:</h1></div>
+    <!-- 폰트 다른 페이지에서 뭐 쓰는지 몰라서 임의로 지정해놨어요! -->
 
-
+  <div id = 'map' style="width: 100%; height: 100%;">{{map|safe}}</div>
+  
+  <script>
+    <div id = 'map' style="width: 100%; height: 100%;">{{map.script.render|safe}}</div>
+  </script>
+</body>
+</html>

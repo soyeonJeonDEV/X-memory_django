@@ -473,12 +473,13 @@ def yolo(img_buffer):
                 # color = colors[class_ids[i]]
                 # cv2.rectangle(img, (x, y), (x + w, y + h), color, 2)
                 # cv2.putText(img, label, (x, y + 30), font, 3, color, 3)
-                
+
                 tag = []
                 for i in range(len(boxes)):
                   tag.append(classes[class_ids[i]])
                   
                 tag = set(tag)
+                
         # cv2.imshow("Image", img)
         # cv2.waitKey(0)
         # cv2.destroyAllWindows()
@@ -725,6 +726,8 @@ def analysis(request):
                     'related_tagname3_2': related_tagname3_2,
                     'photourl': photourl
                 }
+            
+
             else:
                 content = {
                     'rank1_tagname': 'NO PHOTO',  # 태그명
@@ -735,6 +738,7 @@ def analysis(request):
             content = {
                 'rank1_tagname': 'NO PHOTO',  # 태그명
             }
+            
         
         
         #==========================================================================
@@ -768,6 +772,7 @@ def analysis(request):
                 curs.executemany(sql, lst)
                 conn.commit()
                 conn.close()
+        
         # ==============================================================================
         return render(request, 'analysis.html', content) # 현재 월에 해당하는 분석값을 리턴 
 #=========================================================================================
@@ -871,7 +876,7 @@ def analysis(request):
             }
 
     else:
-        # pass #리턴할 값이 없으면 오류가 나므로 리턴값을 넣어주세요(현재는 페이지만 띄워줘서 pass했습니다)
+
         content = {
             'rank1_tagname': '사진이 없습니다',  # 태그명
         }

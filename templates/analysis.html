@@ -48,24 +48,35 @@
 
         <div><form method="get" class="post-form" action=''>
             {% csrf_token %}
-            <!-- <form action = 페이지 링크 연결>
-            연도버튼 -->
-
             <input type="month" name = 'date' id='year_month' value="{{form.date.value|default_if_none:''}}">
             <!--확인버튼-->
             <input type="submit" id="result_btn" value="태그 분석">
         </form></div>
 
 
-        <!--태그 박스들-->
+        <!-- 수정 시도해본 부분 -->
         <div id="ranking">
+            <form method="get" class="post-form" action="a_search">
+                <div class="subtitle"><dt>이번 달 가장 많은 태그</dt></div>
+                    <div id="rank_best">
+                    <input type="image" src = {{photourl}} id = 'best-img' >
+                    <!-- <img src="{{photourl}}" id="best-img"> -->
+                    <input type="hidden" name = tag value="{{rank1_tagname}}">
+                    <div class="img_text"><p><b>#{{rank1_tagname}}</b></p></div>
+                </div>
+            </form>
+        <!-- 수정 시도해본 부분 -->
+
+
+
+        <!--태그 박스들-->
             <!--1위 태그 박스(사진 포함)-->
-            <div class="subtitle"><dt>이번 달 가장 많은 태그</dt></div>
+            <!-- <div class="subtitle"><dt>이번 달 가장 많은 태그</dt></div>
 
             <div id="rank_best">
                 <img src="{{photourl}}" id="best-img">
                 <div class="img_text"><p><b>#{{rank1_tagname}}</b></p></div>
-            </div>
+            </div> -->
             <br>
 
             <div class="subtitle"><dt>연관 태그</dt></div>
