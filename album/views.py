@@ -598,21 +598,21 @@ def search_place(tag_table):
     place = photo[['longitude', 'latitude']]
     if place.empty == False:
         place = place.fillna(0)
-        __list__ = []
+        __list__=[]
         for row in place.itertuples(index=False, name=None):
-            if row == (0, 0):
+            if row == (0,0):
                 __list__.append(0)
             else:
                 try:
-                    geo_location = gmaps.reverse_geocode(row, language='ko')
-                    __list__.append(pd.DataFrame(geo_location)['formatted_address'][0])
+                    geo_location=gmaps.reverse_geocode(row, language='ko')
+                    __list__.append(pd.DataFrame(geo_location)['formatted_address'][0])      
                 except:
                     __list__.append(0)
-            photo = photo.copy()
-            photo['place'] = __list__
-            tag_table = pd.merge(tag_table, photo[['photo_id', 'place']], how='left', left_on='photo_id',
-                                 right_on='photo_id')
-        return tag_table
+        photo = photo.copy()
+    photo['place']= __list__
+    tag_table=pd.merge(tag_table,photo[['photo_id','place']], how='left', left_on='photo_id', right_on='photo_id')
+    return tag_table
+    
 
 
 # @login_required(login_url='login')
@@ -647,13 +647,12 @@ def analysis(request):
             # tag_table은 사용자가 요청한 연/월에 맞는 사용자의 phototag
             # 태그 Top3에 대한 태그명, 태그 개수 구하기 ###########
             ## new tag list
-            if tag_table.empty == False:
-                tags_lst = tag_table['tags']
-
-                ## Tag top 3
-                rank3 = collections.Counter(tags_lst).most_common(3)
+            if tag_table.empty == False: #태그테이블에 값 있어야 시작
+                tags_lst = tag_table['tags'] 
+                ## Tag top 3 # 
+                rank3 = collections.Counter(tags_lst).most_common(3) #태그 개수가 3개 안되면 오류날듯,,?
                 ## tag name (rank1~3)
-                rank3_name = [list(row)[0] for row in rank3]
+                rank3_name = [list(row)[0] for row in rank3] 
                 rank1_tagname = rank3_name[0]
                 rank2_tagname = rank3_name[1]
                 rank3_tagname = rank3_name[2]
@@ -695,9 +694,12 @@ def analysis(request):
                 related_tags3_top2 = collections.Counter(related_tags3).most_common(2)  # 가장 많은 top2만
                 ## 태그 rank3에 대한 연관 태그 2개 각각 변수로 저장
                 rank3_related_tagname = [list(row)[0] for row in related_tags3_top2]
-                related_tagname3_1 = rank3_related_tagname[0]
-                related_tagname3_2 = rank3_related_tagname[1]
-
+                if len(rank3_related_tagname) == 2: 
+                    related_tagname3_1 = rank3_related_tagname[0]
+                    related_tagname3_2 = rank3_related_tagname[1]
+                else:
+                    related_tagname3_1 = 0 
+                    related_tagname3_2 = 0
 
                 # rank1 태그의 사진 가져오기 # 수정
                 photo1 = Photo.objects.filter(id__in=related_photo1).first()
