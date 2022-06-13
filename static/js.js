@@ -5,7 +5,8 @@ function load_detail(photo_id) {
   // alert('load detail')
   console.log('load detail 실행')
   url = window.location.host+"/detail/" + photo_id;
-  window = location.href = url;
+  // window = location.href = url;
+  window.location.href=url;
 }
 
 function tag_adder() {

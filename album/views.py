@@ -416,6 +416,8 @@ def yolo(img_buffer):
     class_ids = []
     confidences = []
     boxes = []
+    tag = []
+    labels = []
     for out in outs:
         for detection in out:
             scores = detection[5:]
@@ -440,7 +442,7 @@ def yolo(img_buffer):
         print(indexes)
 
         font = cv2.FONT_HERSHEY_PLAIN
-        labels = []
+
         for i in range(len(boxes)):
             if i in indexes:
                 x, y, w, h = boxes[i]
@@ -450,7 +452,7 @@ def yolo(img_buffer):
                 # cv2.rectangle(img, (x, y), (x + w, y + h), color, 2)
                 # cv2.putText(img, label, (x, y + 30), font, 3, color, 3)
 
-                tag = []
+
                 for i in range(len(boxes)):
                   tag.append(classes[class_ids[i]])
                   
