@@ -299,28 +299,27 @@ def detail(request, photo_id):
     return render(request, 'detail.html', {'tags': tags, 'photo_id': photo_id, 'photo': url})
 
 
-def search_by_tag(request, tags):
-  tag=request.GET['tag']
-  print(tag)
-  print(request.body)
+@csrf_exempt
+def search_by_tag(request):
+    print('search_by_tag 함수')
+    tag=request.GET['tag']
+    print(tag)
+    # print(request.body)
+    # print(request.GET)
 
-  photo_list = []
+    photo_list = []
+    photo_result= PhotoTag.objects.filter(tags=tag).values_list('photo_id',flat=True)
+    print(photo_result)
+    for a_photo_id in photo_result:
+        print(a_photo_id)
+        found_photo=Photo.objects.get(id=a_photo_id)
+        if found_photo.author == request.user:
+            print(found_photo.photo_id)
+            photo_list.append({'url':str(found_photo.photo),'id':str(found_photo.id)})
+    
+    print(photo_list)
 
-  photo_result= PhotoTag.objects.filter(tags=tag).values_list('photo_id',flat=True)
-  print(photo_result)
-  for a_photo_id in photo_result:
-    print(a_photo_id)
-    found_photo=Photo.objects.get(id=a_photo_id)
-    # print(request.user)
-    # print(found_photo.author)
-    # print(found_photo.id)
-    if found_photo.author == request.user:
-      photo_list.append(str(found_photo.photo))
-
-
-  print(photo_list)
-
-  return render (request,'search.html',{'tag':tag,'photo_list' : photo_list})
+    return render (request,'search.html',{'tag':tag,'photo_list' : photo_list})
 
 
 
@@ -390,29 +389,6 @@ def detail(request,photo_id):
 
   return render(request, 'detail.html', {'tags' : tags,'photo_id':photo_id,'photo':url})
 
-@csrf_exempt
-def search_by_tag(request):
-  tag=request.GET['tag']
-  print(tag)
-  print(request.body)
-
-  photo_list = []
-
-  photo_result= PhotoTag.objects.filter(tags=tag).values_list('photo_id',flat=True)
-  print(photo_result)
-  for a_photo_id in photo_result:
-    print(a_photo_id)
-    found_photo=Photo.objects.get(id=a_photo_id)
-    # print(request.user)
-    # print(found_photo.author)
-    # print(found_photo.id)
-    if found_photo.author == request.user:
-      photo_list.append(str(found_photo.photo))
-
-
-  print(photo_list)
-
-  return render (request,'search.html',{'tag':tag,'photo_list' : photo_list})
 
 
 def yolo(img_buffer):
@@ -1218,24 +1194,29 @@ class AnalysisView(APIView):
 class SearchView(APIView):
   def get(self,request):
 
-      tag=request.GET['tag']
-      print(tag)
-      print(request.body)
+    print('search_by_tag 함수')
+    print('tag: '+tag)
+    print('request.body: '+request.body)
+    print('request.get: '+request.GET)
+    tag=request.GET['tag']
 
-      photo_list = []
+    photo_list = []
 
-      photo_result= PhotoTag.objects.filter(tags=tag).values_list('photo_id',flat=True)
-      print(photo_result)
-      for a_photo_id in photo_result:
+    photo_result= PhotoTag.objects.filter(tags=tag).values_list('photo_id',flat=True)
+    print(photo_result)
+    for a_photo_id in photo_result:
         print(a_photo_id)
         found_photo=Photo.objects.get(id=a_photo_id)
-        # print(request.user)
-        # print(found_photo.author)
-        # print(found_photo.id)
+    # print(request.user)
+    # print(found_photo.author)
+    # print(found_photo.id)
         if found_photo.author == request.user:
-          photo_list.append(str(found_photo.photo))
+            print(found_photo.photo_id)
+            photo_list.append({'url':str(found_photo.photo),'id':str(found_photo.id)})
+    #   photo_id_list.append(found_photo.id)
+    print(photo_list)
 
 
-      print(photo_list)
+    print(photo_list)
 
-      return render (request,'search.html',{'tag':tag,'photo_list' : photo_list})
+    return render (request,'search.html',{'tag':tag,'photo_list' : photo_list})

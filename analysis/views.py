@@ -468,7 +468,8 @@ def get_table(user,photo_id,DBtable):
     return table
 
 
-def search_by_tag(request):
+def analysisSearch(request):
+  print('analysis search')
   tag=request.GET['tag']
 
   print(request.body)

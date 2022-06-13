@@ -19,7 +19,7 @@
     />
     <link rel="stylesheet" type="text/css" href="{% static 'bootstrap.min.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}" />
-    <link rel="stylesheet" type="text/css" href="{% static 'style2.scss' %}" />
+    <!-- <link rel="stylesheet" type="text/css" href="{% static 'style2.scss' %}" /> -->
     
     <!-- <link rel="stylesheet" href="http://getbootstrap.com.vn/examples/equal-height-columns/equal-height-columns.css" /> -->
     <!-- font -->
@@ -39,15 +39,13 @@
     {% csrf_token %}
     {% block upload_js %}
     <script src="{% static 'js.js' %}"></script>
-    {% comment %} <!-- 먼저 로딩되어야 작동하는 js 파일 -->
-    <script src="{% static 'upper.js' %}"></script> {% endcomment %}
-    {% endblock %} {% include 'nav.html' %} {% block content %}{% endblock %} {% block script %}
+    {% comment %} <!-- 먼저 로딩되어야 작동하는 js 파일 -->{% endcomment %}
+    {% endblock %} {% block content %}{% endblock %} {% block script %}
 
     <!-- jQuery JS -->
     <script src="{% static 'jquery-3.6.0.min.js' %}"></script>
     <!-- Bootstrap JS -->
     <script src="{% static 'bootstrap.min.js' %}"></script>
-    <script src="{% static 'js.js' %}"></script>
 
     {% endblock %}
   </body>

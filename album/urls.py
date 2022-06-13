@@ -6,6 +6,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from . import views
 import analysis.views
+# import album.views
 
 urlpatterns = [
   path('',views.index,name='index'),
@@ -22,12 +23,13 @@ urlpatterns = [
   path('detail/add_tag/',views.add_tag,name='add_tag'),
   path('detect_tag/',views.detect_tag,name='detect_tag'),
 # 검색 페이지,
-  path('search/',views.search_by_tag,name='search_by_tag'),
+  path('search/', views.search_by_tag,name='search_by_tag'),
+  path('search/detail/<int:photo_id>',views.detail,name='detail'),
 # 분석 페이지
   path('analysis/', views.analysis, name='analysis'),
   path('analysis/analysisPlace',analysis.views.analysisPlace,name='analysisPlace'),
   path('analysis/analysisTime',analysis.views.analysisTime,name='analysisTime'),
-  path('analysis/a_search', analysis.views.search_by_tag, name='a_search'),   
+  path('analysis/a_search', analysis.views.analysisSearch, name='a_search'),   
 
 # app api 
   path('app_login/', views.AppLoginView.as_view(), name='AppLogin'),
