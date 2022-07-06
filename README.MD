@@ -1,4 +1,4 @@
-# X-memory 📱
+# X-memory📱
 
 ### 삼성 멀티캠퍼스 융복합 프로젝트 (빅데이터 / AI / IoT / 클라우드)
 
@@ -22,7 +22,7 @@
 <br />
 
 ### Django 연계 작업 링크
-- https://github.com/quantumleapj/X-travel-django
+- https://github.com/soyeonJeonDEV/X-memory
 
 <br />
 
